@@ -1,12 +1,10 @@
-
+import './GM_hock.ts'
 import './inject.ts'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 
 const app = createApp(App)
-
-window.console.log(111)
 
 const appRoot = document.createElement('div')
 appRoot.id = 'us-appRoot'

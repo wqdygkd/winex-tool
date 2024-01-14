@@ -3,3 +3,5 @@
 @forward 'element-plus/theme-chalk/src/mixins/config.scss' with (
   $namespace: 'wqdy'
 );
+
+@use 'element-plus/theme-chalk/src/message.scss' as *;
