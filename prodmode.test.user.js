@@ -3,8 +3,7 @@
 // @namespace    https://your.site/
 // @version      0.1.0
 // @description  What does your script do
-// @author       You
-// @include *
+// @author       zhang333
 // @match        ://*/*
 // @grant        GM_addElement
 // @noframes
@@ -12,11 +11,8 @@
 // @grant        unsafeWindow
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @require      https://cdn.jsdelivr.net/npm/vue@3.2.6/dist/vue.global.min.js
-// @require      file://D:\project\tool\packages\tampermonkey-script\dist\yourscript.user.js
+// @grant        GM_getTab
+// @grant        GM_saveTab
+// @require      https://cdn.jsdelivr.net/npm/vue@3.4.13/dist/vue.global.js
+// @require      file://D:\project\tool\packages\tampermonkey-script\winex-readcard\dist\yourscript.user.js
 // ==/UserScript==
-
-(function () {
-  'use strict'
-  // Your code here...
-})()
