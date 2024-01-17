@@ -2,6 +2,78 @@ export default {
   // 医保卡
   '152691': [
     {
+      name: '北大-虚拟测试卡',
+      date: '',
+      json: {
+        success: true,
+        errorDetail: {
+          code: '1',
+          message: '',
+          original: {
+            code: '1',
+            message: '',
+            ipAddress: '10.8.12.123'
+          }
+        },
+        data: {
+          identityTypeCode: '152691',
+          identityNo: '000005748010',
+          patientCardCheckBit: '',
+          personInfomation: {
+            name: '虚拟测试卡',
+            sexConceptId: '253816',
+            nationConceptId: '',
+            nationalityConceptId: 399205791,
+            maritalStatusConceptId: '',
+            birthday: '1970-01-01',
+            telphone: '',
+            photo: '',
+            photoURL: '',
+            detailedAddress: '',
+            defaultMedicalInsuranceCodeConceptId: 399202211,
+            fromHospitalDate: '1899-12-30'
+          },
+          otherReadCardInfo: {
+            fromHospital: '',
+            personType: '11',
+            isInRedList: 'true',
+            isInHospitalFlag: '0',
+            chronicCode: '',
+            isChronicHospital: 'false',
+            militaryDisabledLevel: '0',
+            isSpecifiedHospital: '1',
+            isWithholdingFlag: '0',
+            isInjury: '0',
+            isNation: '0',
+            fundtype: '3',
+            isCivil: '0',
+            exServiceFlag: '0',
+            areaCode: '',
+            personCount: '0.00'
+          },
+          accountInformationList: [],
+          entityCertificateInfomationList: [],
+          identityCertificateInfomationList: [
+            {
+              identityCertificateTypeConceptId: '391004456',
+              identityCertificateTypeCode: '152626',
+              identityCertificateNo: '100100197001011234'
+            },
+            {
+              identityCertificateTypeConceptId: '399586631',
+              identityCertificateTypeCode: '399586630',
+              identityCertificateNo: '00000574801S'
+            },
+            {
+              identityCertificateTypeConceptId: '399202505',
+              identityCertificateTypeCode: '152691',
+              identityCertificateNo: '000005748010'
+            }
+          ]
+        }
+      }
+    },
+    {
       name: '张三',
       date: '',
       json: {

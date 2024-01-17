@@ -23,12 +23,12 @@
   'use strict'
   // source: https://cn.vitejs.dev/guide/backend-integration.html
   GM_addElement('script', {
-    src: 'http://localhost:5174/@vite/client',
+    src: 'http://localhost:5173/@vite/client',
     type: 'module'
   })
 
   GM_addElement('script', {
-    src: 'http://localhost:5174/src/main.ts',
+    src: 'http://localhost:5173/src/main.ts',
     type: 'module'
   })
 
