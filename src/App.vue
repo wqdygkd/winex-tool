@@ -1,32 +1,35 @@
 <template>
   <el-config-provider namespace="wqdy" size="small">
-    <el-dialog v-model="dialogVisible" title="设置" width="800px" draggable :modal="false" :close-on-click-modal="false">
+    <el-dialog v-model="dialogVisible" title="设置" width="80%" draggable :modal="false" :close-on-click-modal="false">
       <!-- <Console /> -->
-      <el-container style="height: 100%">
+      <el-container style="height: 100%" class="container">
         <el-tabs :tab-position="tabPosition">
-          <el-tab-pane label="winex">
-            <el-tabs>
-              <el-tab-pane label="console">
-                <Console />
-              </el-tab-pane>
-              <el-tab-pane label="医保卡">
-                <Suspense>
-                  <Card type="399297247"></Card>
-                </Suspense>
-              </el-tab-pane>
-              <el-tab-pane label="身份证">
+          <!-- <el-tab-pane label="winex"> -->
+          <!-- <el-tabs> -->
+          <el-tab-pane label="信息">
+            <Info />
+          </el-tab-pane>
+          <el-tab-pane label="console">
+            <Console />
+          </el-tab-pane>
+          <el-tab-pane label="医保卡">
+            <Suspense>
+              <Card identityTypeCode="152691"></Card>
+            </Suspense>
+          </el-tab-pane>
+          <!-- <el-tab-pane label="身份证">
                 <Suspense>
                   <Card type="399626992"></Card>
                 </Suspense>
-              </el-tab-pane>
-              <!-- <el-tab-pane label="身份证">
+              </el-tab-pane> -->
+          <!-- <el-tab-pane label="身份证">
                 <Card type="identityCard"></Card>
               </el-tab-pane> -->
-              <!-- <el-tab-pane label="永居证">
+          <!-- <el-tab-pane label="永居证">
                 <Card type="identityCard"></Card>
               </el-tab-pane> -->
-            </el-tabs>
-          </el-tab-pane>
+          <!-- </el-tabs> -->
+          <!-- </el-tab-pane> -->
         </el-tabs>
       </el-container>
     </el-dialog>
@@ -34,10 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Console from './components/console.vue'
+import Info from './components/info.vue'
 import Card from './components/card.vue'
-const dialogVisible = ref(true)
+const dialogVisible = ref(false)
 const tabPosition = ref('left')
 
 GM_registerMenuCommand('设置', function () {
@@ -46,21 +50,18 @@ GM_registerMenuCommand('设置', function () {
 
 unsafeWindow.winning = {
   ...unsafeWindow.winning,
-  dispatchEvent(id: string, params: string, cb: Function) {
-    console.log('读卡方式id', id)
+  dispatchEvent(_: string, params: string, cb: Function) {
+    let identityTypeCode = JSON.parse(params).body.identityTypeCode[0]
     console.log('读卡入参', JSON.parse(params).body)
-    let storageKey = `${__namespace}${id}`
+    let storageKey = `${__namespace}${identityTypeCode}`
     let data: any = GM_getValue(storageKey, {
       enable: false
     })
     if (data.enable) {
-      console.log('读卡出参', data.current.json)
-      cb(JSON.stringify(data.current.json))
+      console.log('读卡出参', data.current?.json)
+      cb(JSON.stringify(data.current?.json || '请设置读卡出参'))
     } else {
-      ElMessage({
-        message: '请在WINEX环境中使用',
-        type: 'warning'
-      })
+      cb(JSON.stringify('请在WINEX环境中使用'))
     }
   },
   getMacadress() {
@@ -92,6 +93,16 @@ function randomIp() {
   const ip = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)]
   return ip.join('.')
 }
+
+onMounted(async () => {
+  document.querySelector('.main-tool.tool-btn')?.addEventListener('click', () => {
+    dialogVisible.value = !dialogVisible.value
+  })
+})
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.container {
+  height: 60vh !important;
+}
+</style>
