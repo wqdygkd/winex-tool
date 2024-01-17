@@ -7,15 +7,16 @@
       <Upload />
     </el-icon>
   </el-button>
-  <el-select style="width: 200px" size="small" @change="selectChange" filterable value-key="id">
+
+  <el-select style="width: 200px" @change="selectChange" filterable value-key="id">
     <el-option v-for="(item, index) in storage.data" :key="index" :label="item.date + item.name" :value="item" />
   </el-select>
 
-  <el-select style="width: 200px" size="small" @change="selectChange" filterable value-key="id">
+  <el-select style="width: 200px" @change="selectChange" filterable value-key="id">
     <el-option v-for="item in contentArray" :key="item.raw" :label="item.date + item.name" :value="item.json" />
   </el-select>
 
-  <div style="width: 800px; height: 400px" ref="jsoneditorRef"></div>
+  <div style="width: 800px; height: 400px" ref="editorBox"></div>
 </template>
 
 <script setup lang="ts">
@@ -27,10 +28,10 @@ import { Upload } from '@element-plus/icons-vue'
 
 import defaultData from './default'
 const props = defineProps<{
-  type: string
+  identityTypeCode: string
 }>()
 
-const storageKey = `${__namespace}${props.type}`
+const storageKey = `${__namespace}${props.identityTypeCode}`
 
 let storage: any = reactive(
   GM_getValue(storageKey, {
@@ -40,19 +41,21 @@ let storage: any = reactive(
   })
 )
 
-let data = defaultData[props.type as keyof typeof defaultData] || []
+let data = defaultData[props.identityTypeCode as keyof typeof defaultData] || []
+
 if (!storage.data.length) {
   storage.data = data
   GM_setValue(storageKey, storage)
 }
 
 const status = ref(storage.enable)
+
 watch(status, (newStatus) => {
   storage.enable = newStatus
   GM_setValue(storageKey, storage)
 })
 
-const jsoneditorRef = ref<any>(null)
+const editorBox = ref<any>(null)
 let jsoneditor: JSONEditor
 let contentArray: any[] = reactive([])
 
@@ -145,7 +148,7 @@ onMounted(async () => {
     mainMenuBar: false,
     statusBar: false
   }
-  jsoneditor = new JSONEditor(jsoneditorRef.value, options)
+  jsoneditor = new JSONEditor(editorBox.value, options)
   const initialJson = storage.current || undefined
   jsoneditor.set(initialJson)
 })

@@ -32,7 +32,7 @@
     type: 'module'
   })
 
-  GM_registerMenuCommand('设置', function () {
-    document.querySelector("#us-appRoot div").style.display = 'block'
-  })
+  // GM_registerMenuCommand('设置', function () {
+  //   document.querySelector("#us-appRoot div").style.display = 'block'
+  // })
 })()
