@@ -149,7 +149,7 @@ onMounted(async () => {
     statusBar: false
   }
   jsoneditor = new JSONEditor(editorBox.value, options)
-  const initialJson = storage.current || undefined
+  const initialJson = storage.current.json || undefined
   jsoneditor.set(initialJson)
 })
 
