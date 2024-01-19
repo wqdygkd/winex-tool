@@ -16,15 +16,14 @@
     <el-option v-for="item in contentArray" :key="item.raw" :label="item.date + item.name" :value="item.json" />
   </el-select>
 
-  <div style="width: 800px; height: 400px" ref="editorBox"></div>
+  <JsonEditor v-model="current.json" mode="code" />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, toRaw, watch } from 'vue'
-import JSONEditor from 'jsoneditor'
-import type { JSONEditorOptions } from 'jsoneditor'
-import 'jsoneditor/dist/jsoneditor.css'
+
 import { Upload } from '@element-plus/icons-vue'
+import JsonEditor from './jsonEditor.vue'
 
 import defaultData from './default'
 const props = defineProps<{
@@ -42,21 +41,35 @@ let storage: any = reactive(
 )
 
 let data = defaultData[props.identityTypeCode as keyof typeof defaultData] || []
-
-if (!storage.data.length) {
+if (!storage.data || !storage.data.length) {
   storage.data = data
   GM_setValue(storageKey, storage)
 }
 
-const status = ref(storage.enable)
+let current: any = reactive(
+  Object.assign(
+    {
+      name: '',
+      date: '',
+      json: undefined
+    },
+    storage.current
+  )
+)
 
-watch(status, (newStatus) => {
-  storage.enable = newStatus
+watch(current, (val) => {
+  console.log('watch current', val)
+  storage.current = val
   GM_setValue(storageKey, storage)
 })
 
-const editorBox = ref<any>(null)
-let jsoneditor: JSONEditor
+const status = ref(storage.enable)
+
+watch(status, (val) => {
+  storage.enable = val
+  GM_setValue(storageKey, storage)
+})
+
 let contentArray: any[] = reactive([])
 
 function importFile() {
@@ -100,9 +113,6 @@ function importFile() {
               })
           )
 
-          if (contentArray.length === 1) {
-            jsoneditor.set(toRaw(contentArray[0]))
-          }
           console.log(toRaw(contentArray))
           // this.saveContentToLocal(toolName, file.name, evt.target.result);
         }
@@ -140,23 +150,12 @@ function extractJSON(content: string) {
   return null
 }
 
-onMounted(async () => {
-  const options: JSONEditorOptions = {
-    mode: 'code',
-    // modes: ['text', 'code', 'tree'],
-    search: true,
-    mainMenuBar: false,
-    statusBar: false
-  }
-  jsoneditor = new JSONEditor(editorBox.value, options)
-  const initialJson = storage.current.json || undefined
-  jsoneditor.set(initialJson)
-})
+onMounted(async () => {})
 
 function selectChange(val: any) {
-  jsoneditor.set(toRaw(val.json))
-  storage.current = val
-  GM_setValue(storageKey, storage)
+  current.json = val.json
+  current.date = val.date
+  current.name = val.name
 }
 
 // const fileInput = ref(null)

@@ -1,6 +1,14 @@
 <template>
-  <el-config-provider namespace="wqdy" size="small">
-    <el-dialog v-model="dialogVisible" title="设置" width="80%" draggable :modal="false" :close-on-click-modal="false">
+  <el-config-provider namespace="wqdy" size="small" :zIndex="20000">
+    <el-dialog
+      v-model="dialogVisible"
+      title="设置"
+      width="80%"
+      draggable
+      :modal="false"
+      :close-on-click-modal="false"
+      modal-class="wqdy-custom-dialog"
+    >
       <!-- <Console /> -->
       <el-container style="height: 100%" class="container">
         <el-tabs :tab-position="tabPosition">
@@ -15,6 +23,16 @@
           <el-tab-pane label="医保卡">
             <Suspense>
               <Card identityTypeCode="152691"></Card>
+            </Suspense>
+          </el-tab-pane>
+          <el-tab-pane label="身份证">
+            <Suspense>
+              <Card identityTypeCode="152695"></Card>
+            </Suspense>
+          </el-tab-pane>
+          <el-tab-pane label="永居证">
+            <Suspense>
+              <Card identityTypeCode="399668724"></Card>
             </Suspense>
           </el-tab-pane>
           <!-- <el-tab-pane label="身份证">
@@ -61,7 +79,7 @@ unsafeWindow.winning = {
       console.log('读卡出参', data.current?.json)
       cb(JSON.stringify(data.current?.json || '请设置读卡出参'))
     } else {
-      cb(JSON.stringify('请在WINEX环境中使用'))
+      cb('"读卡模拟未启用"')
     }
   },
   getMacadress() {
@@ -104,5 +122,26 @@ onMounted(async () => {
 <style scoped lang="scss">
 .container {
   height: 60vh !important;
+}
+
+.wqdy-custom-dialog {
+  pointer-events: none;
+  .wqdy-overlay-dialog {
+    pointer-events: none;
+  }
+  .wqdy-dialog {
+    pointer-events: auto;
+  }
+}
+</style>
+<style lang="scss">
+.wqdy-custom-dialog {
+  pointer-events: none;
+  .wqdy-overlay-dialog {
+    pointer-events: none;
+  }
+  .wqdy-dialog {
+    pointer-events: auto;
+  }
 }
 </style>
