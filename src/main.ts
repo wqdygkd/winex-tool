@@ -1,4 +1,4 @@
-import './GM_hock.ts'
+import './GM.ts'
 import './inject.ts'
 
 import { createApp } from 'vue'

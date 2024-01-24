@@ -10,8 +10,9 @@ function GM_setValue(key: string, value: any) {
   sessionStorage.setItem('GM_hock_' + key, JSON.stringify(value))
 }
 
-var unsafeWindow = window
-window.unsafeWindow = unsafeWindow
-window.GM_getValue = GM_getValue
-window.GM_setValue = GM_setValue
-window.GM_registerMenuCommand = (() => {}) as any
+if (process.env.NODE_ENV !== 'production') {
+  window.unsafeWindow = window as typeof unsafeWindow
+  window.GM_getValue = GM_getValue
+  window.GM_setValue = GM_setValue
+  window.GM_registerMenuCommand = (() => {}) as any
+}

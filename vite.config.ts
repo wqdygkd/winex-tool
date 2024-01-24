@@ -6,6 +6,12 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+import injectMeta from './vite-plugin-inject-meta'
+
+import devMeta from './src/meta/dev.meta'
+import getMetaString from './src/meta/'
+import prodMeta from './src/meta/prod.meta'
+
 import vue from '@vitejs/plugin-vue'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 const pathSrc = resolve(__dirname, 'src')
@@ -16,7 +22,7 @@ export default defineConfig(({ command, mode }) => {
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __namespace: '"GM_wqdy_"',
-      'process.env.NODE_ENV': '"production"'
+      'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`
     },
     resolve: {
       alias: {
@@ -36,44 +42,8 @@ export default defineConfig(({ command, mode }) => {
           })
         ]
       }),
-      cssInjectedByJsPlugin()
-      // (() => {
-      //   /**
-      //    * 如果用到了额外的 GM_functions，需要添加对应 @grant
-      //    * 虽然可以全部不添加，但只有TamperMonkey会自动推断，其他扩展不一定
-      //    * 在上面 extenral 声明的库，此处需要添加对应的 @require 要注意全局变量名称
-      //    */
-      //   const headers = `
-      //     // ==UserScript==
-      //     // @name         Your Script (prod mode)
-      //     // @namespace    https://your.site/
-      //     // @version      0.1.0
-      //     // @description  What does your script do
-      //     // @author       You
-      //     // @include *
-      //     // @grant        GM_addStyle
-      //     // @noframes
-      //     // @require      https://cdn.jsdelivr.net/npm/vue@3.2.6/dist/vue.global.min.js
-      //     // ==/UserScript==
-      //     `
-
-      //   return {
-      //     name: 'inject-css',
-      //     apply: 'build', // 仅在构建模式下启用
-      //     enforce: 'post', // 在最后处理
-      //     generateBundle(options, bundle) {
-      //       // 从 bundle 中提取 style.css 内容，并加入到脚本中
-      //       const keyword = 'user.js'
-      //       if (!bundle['style.css'] || bundle['style.css'].type !== 'asset') return
-      //       const css = bundle['style.css'].source
-      //       const [, target] = Object.entries(bundle).find(([name]) => {
-      //         return name.includes(keyword)
-      //       }) ?? []
-      //       if (!target || target.type !== 'chunk') return
-      //       target.code = `${headers}\nGM_addStyle(\`${css}\`)\n${target.code}`
-      //     },
-      //   }
-      // })(),
+      cssInjectedByJsPlugin(),
+      injectMeta(getMetaString(prodMeta))
     ],
     hmr: {
       protocol: 'ws',
@@ -84,7 +54,7 @@ export default defineConfig(({ command, mode }) => {
         entry: resolve(__dirname, 'src/main.ts'),
         name: 'userscript',
         formats: ['iife'], // 自运行打包格式，与默认模版一致
-        fileName: (format) => `yourscript.user.js` // 非函数的常量会自动添加后缀
+        fileName: (format) => `index.user.js`
       },
       rollupOptions: {
         external: ['vue'],
@@ -98,10 +68,10 @@ export default defineConfig(({ command, mode }) => {
       },
       minify: 'terser',
       terserOptions: {
-        mangle: false, // 关闭名称混淆，遵守Greasefork规则
-        format: {
-          beautify: true // 美化代码开启缩进，遵守Greasefork规则
-        }
+        // mangle: false, // 关闭名称混淆，遵守Greasefork规则
+        // format: {
+        //   beautify: true // 美化代码开启缩进，遵守Greasefork规则
+        // }
       }
     },
     css: {
