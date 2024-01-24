@@ -14,8 +14,6 @@
 // @grant        unsafeWindow
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant        GM_getTab
-// @grant        GM_saveTab
 // @require      https://cdn.jsdelivr.net/npm/vue@3.4.13/dist/vue.global.js
 // ==/UserScript==
 
