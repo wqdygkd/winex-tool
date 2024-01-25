@@ -6,9 +6,10 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-import injectMeta from './vite-plugin-inject-meta'
+import { meta as injectMeta } from '@wqdy/tool-core'
+// import { meta as injectMeta } from '../../core/index'
+console.log(injectMeta)
 
-import devMeta from './src/meta/dev.meta'
 import getMetaString from './src/meta/'
 import prodMeta from './src/meta/prod.meta'
 
@@ -43,7 +44,7 @@ export default defineConfig(({ command, mode }) => {
         ]
       }),
       cssInjectedByJsPlugin(),
-      injectMeta(getMetaString(prodMeta))
+      // injectMeta(getMetaString(prodMeta))
     ],
     hmr: {
       protocol: 'ws',
