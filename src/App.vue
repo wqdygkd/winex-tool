@@ -94,7 +94,8 @@ unsafeWindow.winning = {
   deltaResult() {
     return true
   },
-  showMsg() {}
+  showMsg() {},
+  postMessage() {}
 }
 function randomMac() {
   const mac = [
