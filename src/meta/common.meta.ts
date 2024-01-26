@@ -6,7 +6,7 @@ export default {
   author: 'zhang333',
   match: ['://*/*'],
   'run-at': 'document-start',
-  grant: ['unsafeWindow', 'GM_getValue', 'GM_setValue', 'GM_addElement', 'GM_registerMenuCommand'],
+  grant: ['unsafeWindow', 'GM_getValue', 'GM_setValue', 'GM_registerMenuCommand'],
   require: ['https://cdn.jsdelivr.net/npm/vue@3.4.13/dist/vue.global.js'],
-  icon: 'https://www.google.com/s2/favicons?domain=douyu.com'
+  icon: 'https://weberp.winning.com.cn/favicon.ico'
 }

@@ -1,5 +1,6 @@
-import common from './common.meta.ts'
+import common from './common.meta'
 
 export default Object.assign(common, {
-  name: 'Winex助手(dev mode)'
+  name: 'Winex助手(dev mode)',
+  grant: ['GM_addElement'],
 })

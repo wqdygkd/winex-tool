@@ -1,4 +1,4 @@
-import commonMeta from './common.meta.ts'
+import commonMeta from './common.meta'
 
 export default function getMetaString(meta: object): string {
   return `// ==UserScript==\n${Object.entries(Object.assign(commonMeta, meta))
