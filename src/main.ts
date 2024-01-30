@@ -17,6 +17,3 @@ window.addEventListener('load', () => {
     app.mount('#us-appRoot')
   }
 })
-
-import { meta as injectMeta } from '@wqdy/tool-core'
-console.log(injectMeta)
