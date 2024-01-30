@@ -1,5 +1,11 @@
 <template>
   <el-config-provider namespace="wqdy" size="small" :zIndex="20000">
+    <div class="winex-tool-btn" draggable="true" @mousedown="handleMouseDown" @mouseup="handleMouseUp" :style="winexToolBtnStyle">
+      winex
+      <br />
+      Tool
+    </div>
+
     <el-dialog
       v-model="dialogVisible"
       title="设置"
@@ -11,7 +17,7 @@
     >
       <!-- <Console /> -->
       <el-container style="height: 100%" class="container">
-        <el-tabs :tab-position="tabPosition">
+        <el-tabs tab-position="left">
           <!-- <el-tab-pane label="winex"> -->
           <!-- <el-tabs> -->
           <el-tab-pane label="信息">
@@ -55,12 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
+import { throttle } from 'lodash-es'
+
 import Console from './components/console.vue'
 import Info from './components/info.vue'
 import Card from './components/card.vue'
+
 const dialogVisible = ref(false)
-const tabPosition = ref('left')
 
 GM_registerMenuCommand('设置', function () {
   dialogVisible.value = true
@@ -118,6 +126,47 @@ onMounted(async () => {
     dialogVisible.value = !dialogVisible.value
   })
 })
+
+const winexToolBtnTransform = reactive({
+  offsetX: 0,
+  offsetY: 0
+})
+
+const isMouseMove = ref(false)
+const winexToolBtnStyle = computed(() => {
+  const { offsetX, offsetY } = winexToolBtnTransform
+  const style = {
+    transform: `translate(${offsetX}px, ${offsetY}px)`
+  }
+  return style
+})
+
+function handleMouseDown(e: MouseEvent) {
+  const { offsetX, offsetY } = winexToolBtnTransform
+  const startY = e.clientY
+  const startX = e.clientX
+
+  const _dragHandler = throttle((ev) => {
+    const clientY = ev.clientY > window.innerHeight - 50 ? window.innerHeight - 50 : ev.clientY < 50 ? 50 : ev.clientY
+    const clientX = ev.clientX > window.innerWidth - 50 ? window.innerWidth - 50 : ev.clientX < 50 ? 50 : ev.clientX
+    isMouseMove.value = true
+    winexToolBtnTransform.offsetX = offsetX + clientX - startX
+    winexToolBtnTransform.offsetY = offsetY + clientY - startY
+  })
+  document.addEventListener('mousemove', _dragHandler)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', _dragHandler)
+    setTimeout(() => {
+      isMouseMove.value = false
+    }, 500)
+  })
+  e.preventDefault()
+}
+function handleMouseUp() {
+  if (!isMouseMove.value) {
+    dialogVisible.value = true
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -125,14 +174,16 @@ onMounted(async () => {
   height: 60vh !important;
 }
 
-.wqdy-custom-dialog {
-  pointer-events: none;
-  .wqdy-overlay-dialog {
-    pointer-events: none;
-  }
-  .wqdy-dialog {
-    pointer-events: auto;
-  }
+.winex-tool-btn {
+  position: absolute;
+  top: 200px;
+  right: 0;
+  text-align: center;
+  background: var(--COLOR-NORMAL, #2d5afa);
+  color: #fff;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
 }
 </style>
 <style lang="scss">
