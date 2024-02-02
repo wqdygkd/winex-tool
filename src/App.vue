@@ -127,38 +127,47 @@ onMounted(async () => {
   })
 })
 
-const winexToolBtnTransform = reactive({
-  offsetX: 0,
-  offsetY: 0
+let padding = ref(10)
+const winexToolBtnPosition = reactive({
+  top: 200,
+  right: 0 + padding.value
 })
 
 const isMouseMove = ref(false)
 const winexToolBtnStyle = computed(() => {
-  const { offsetX, offsetY } = winexToolBtnTransform
+  const { top, right } = winexToolBtnPosition
   const style = {
-    transform: `translate(${offsetX}px, ${offsetY}px)`
+    top: `${top}px`,
+    right: `${right}px`
   }
   return style
 })
 
 function handleMouseDown(e: MouseEvent) {
-  const { offsetX, offsetY } = winexToolBtnTransform
+  const pad = padding.value
+  const btn: HTMLDivElement = document.querySelector('.winex-tool-btn')!
+  const oH = btn.offsetHeight
+  const oW = btn.offsetWidth
+  const iH = window.innerHeight
+  const iW = window.innerWidth
+
+  const { top, right } = winexToolBtnPosition
   const startY = e.clientY
   const startX = e.clientX
 
   const _dragHandler = throttle((ev) => {
-    const clientY = ev.clientY > window.innerHeight - 50 ? window.innerHeight - 50 : ev.clientY < 50 ? 50 : ev.clientY
-    const clientX = ev.clientX > window.innerWidth - 50 ? window.innerWidth - 50 : ev.clientX < 50 ? 50 : ev.clientX
     isMouseMove.value = true
-    winexToolBtnTransform.offsetX = offsetX + clientX - startX
-    winexToolBtnTransform.offsetY = offsetY + clientY - startY
+    const nTop = top + ev.clientY - startY
+    const nRight = right - ev.clientX + startX
+    winexToolBtnPosition.top = nTop < pad ? pad : nTop > iH - oH - pad ? iH - oH - pad : nTop
+    winexToolBtnPosition.right = nRight < pad ? pad : nRight > iW - oW - pad ? iW - oW - pad : nRight
   })
   document.addEventListener('mousemove', _dragHandler)
   document.addEventListener('mouseup', () => {
     document.removeEventListener('mousemove', _dragHandler)
     setTimeout(() => {
       isMouseMove.value = false
-    }, 500)
+    }, 300)
   })
   e.preventDefault()
 }
@@ -176,14 +185,13 @@ function handleMouseUp() {
 
 .winex-tool-btn {
   position: absolute;
-  top: 200px;
-  right: 0;
   text-align: center;
   background: var(--COLOR-NORMAL, #2d5afa);
   color: #fff;
   border-radius: 50%;
   padding: 5px;
   cursor: pointer;
+  z-index: 20000;
 }
 </style>
 <style lang="scss">
