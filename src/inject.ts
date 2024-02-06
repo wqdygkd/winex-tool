@@ -15,6 +15,7 @@ for (const item of ['log', 'info']) {
     },
     set(v) {
       unsafeWindow[`__fake${item}`] = v
-    }
+    },
+    configurable: false
   })
 }
