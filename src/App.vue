@@ -64,6 +64,7 @@
 import { ref, onMounted, computed, reactive } from 'vue'
 import { throttle } from 'lodash-es'
 
+import useWindowResize from './useWindowResize'
 import Console from './components/console.vue'
 import Info from './components/info.vue'
 import Card from './components/card.vue'
@@ -125,6 +126,25 @@ onMounted(async () => {
   document.querySelector('.main-tool.tool-btn')?.addEventListener('click', () => {
     dialogVisible.value = !dialogVisible.value
   })
+
+  // onMounted(() => {
+    //   window.onresize = () => {
+    //     let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+    //     let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    //     const iH = window.innerHeight
+    //     const iW = window.innerWidth
+
+    //     let top = winexToolBtnPosition.top
+    //     let right = winexToolBtnPosition.right
+
+    //     winexToolBtnPosition.top = top < pad ? pad : nTop > iH - oH - pad ? iH - oH - pad : nTop
+    //     winexToolBtnPosition.right
+
+    //     return (() => {
+    //       screenWidth.value = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+    //     })()
+    //   }
+    // })
 })
 
 let padding = ref(10)
@@ -148,8 +168,11 @@ function handleMouseDown(e: MouseEvent) {
   const btn: HTMLDivElement = document.querySelector('.winex-tool-btn')!
   const oH = btn.offsetHeight
   const oW = btn.offsetWidth
-  const iH = window.innerHeight
-  const iW = window.innerWidth
+  // const iH = window.innerHeight
+  // const iW = window.innerWidth
+  const { width, height } = useWindowResize()
+  const iH = height.value
+  const iW = width.value
 
   const { top, right } = winexToolBtnPosition
   const startY = e.clientY
