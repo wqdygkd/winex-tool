@@ -1,4 +1,6 @@
 export default {
+  // identityTypeCode 152691 医保卡，152695 身份证，399668724 永居证
+
   // 医保卡
   '152691': [
     {
@@ -61,7 +63,7 @@ export default {
             },
             {
               identityCertificateTypeConceptId: '399586631',
-              identityCertificateTypeCode: '399586630',
+              identityCertificateTypeCode: '399586630', // 医保手册号
               identityCertificateNo: '00000574801S'
             },
             {
@@ -260,6 +262,8 @@ export default {
       }
     }
   ],
+  // 身份证
+  '152695': [],
   '399297247': [
     {
       name: '张三',
