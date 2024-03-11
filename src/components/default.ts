@@ -1,5 +1,5 @@
 export default {
-  // identityTypeCode 152691 医保卡，152695 身份证，399668724 永居证
+  // identityTypeCode 152691 医保卡，152695 身份证，399668724 永居证 399541368 医保电子凭证
 
   // identityCertificateTypeCode
   // 152626  身份证
@@ -273,7 +273,116 @@ export default {
     }
   ],
   // 身份证
-  '152695': [],
+  '152695': [
+    {
+      name: '张三',
+      date: '',
+      json: {
+        success: true,
+        data: {
+          identityTypeCode: '152695',
+          identityNo: '362301194709061041',
+          patientCardCheckBit: '',
+          otherReadCardInfo: {
+            fromHospital: '',
+            personType: '',
+            isInRedList: '',
+            isInHospitalFlag: '',
+            chronicCode: '',
+            isChronicHospital: '',
+            militaryDisabledLevel: '',
+            isSpecifiedHospital: '',
+            isWithholdingFlag: '',
+            isInjury: '',
+            isNation: '',
+            fundtype: '',
+            isCivil: '',
+            exServiceFlag: '',
+            areaCode: '',
+            personCount: ''
+          },
+          personInfomation: {
+            name: '张三',
+            sexConceptId: '253817',
+            nationConceptId: '', // 民族
+            nationalityConceptId: 399205791, // 399205791 中国  399205748 阿富汗
+            maritalStatusConceptId: '',
+            birthday: '1947-09-06',
+            telphone: '',
+            photo: '',
+            photoURL: '',
+            detailedAddress: '',
+            defaultMedicalInsuranceCodeConceptId: 399202211,
+            fromHospitalDate: null,
+            psnNo: '3600002300000000100051943',
+            mdtrtCertType: '03',
+            mdtrtCertNo: '474163442',
+            expiTime: '',
+            baseinfo: {
+              age: '76',
+              brdy: '1947-09-06',
+              certno: '362301194709061041',
+              expContent: {
+                crtYearBalc: null,
+                calYearBalc: null,
+                expiTime: null
+              },
+              gend: '2',
+              naty: null,
+              psnCertType: '90',
+              psnName: '颜菊花',
+              psnNo: '3600002300000000100051943'
+            }
+          }
+        }
+      }
+    },
+    {
+      name: '泰康生产-张三',
+      date: '',
+      json: {
+        success: true,
+        data: {
+          identityTypeCode: '152695',
+          identityNo: '420322199401023313',
+          personInfomation: {
+            name: '戢国斌',
+            sexConceptId: '253816',
+            sex: '男',
+            sexOid: '1.2.156.112604.1.2.5.2',
+            sexCode: '50602',
+            nation: '汉',
+            nationConceptId: '391004355',
+            nationOid: '1.2.156.112604.1.2.2258.1',
+            nationCode: '951807',
+            nationality: null,
+            nationalityConceptId: null,
+            maritalStatusConceptId: null,
+            birthday: '1994-01-02',
+            telphone: null,
+            photo:'',
+            photoURL: null,
+            detailedAddress: '湖北省郧西县六郎乡大石堰村３组56号',
+            defaultMedicalInsuranceCodeConceptId: '399202211',
+            startDate: '2021-09-24',
+            endDate: '2041-09-24'
+          },
+          accountInformationList: [
+            {
+              accountStatusConceptId: null,
+              accountBalance: null
+            }
+          ],
+          identityCertificateInfomationList: [
+            {
+              identitycertificateTypeConceptId: 391004456,
+              identitycertificateNo: '420322199401023312'
+            }
+          ]
+        }
+      }
+    }
+  ],
   '399297247': [
     {
       name: '张三',
