@@ -7,6 +7,6 @@ export default {
   match: ['://*/*'],
   'run-at': 'document-start',
   grant: ['unsafeWindow', 'GM_getValue', 'GM_setValue', 'GM_registerMenuCommand'],
-  require: ['https://cdn.jsdelivr.net/npm/vue@3.4.13/dist/vue.global.js'],
+  require: ['https://cdn.jsdelivr.net/npm/vue@3.4.20/dist/vue.global.js'],
   icon: 'https://weberp.winning.com.cn/favicon.ico'
 }

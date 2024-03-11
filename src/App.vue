@@ -163,6 +163,8 @@ const winexToolBtnStyle = computed(() => {
   return style
 })
 
+const { width, height } = useWindowResize()
+
 function handleMouseDown(e: MouseEvent) {
   const pad = padding.value
   const btn: HTMLDivElement = document.querySelector('.winex-tool-btn')!
@@ -170,7 +172,7 @@ function handleMouseDown(e: MouseEvent) {
   const oW = btn.offsetWidth
   // const iH = window.innerHeight
   // const iW = window.innerWidth
-  const { width, height } = useWindowResize()
+
   const iH = height.value
   const iW = width.value
 
