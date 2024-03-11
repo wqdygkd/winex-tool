@@ -1,4 +1,4 @@
-import './GM.ts'
+import '@wqdy/tool-core/src/utils/GM'
 import './inject.ts'
 
 import { createApp } from 'vue'
