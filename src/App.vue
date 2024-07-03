@@ -1,10 +1,12 @@
 <template>
   <el-config-provider namespace="wqdy" size="small" :zIndex="20000">
-    <div class="winex-tool-btn" draggable="true" @mousedown="handleMouseDown" @mouseup="handleMouseUp" :style="winexToolBtnStyle">
+    <div v-if="isShowWinexToolBtn" class="winex-tool-btn" draggable="true" @mousedown="handleMouseDown" @mouseup="handleMouseUp" :style="winexToolBtnStyle">
       winex
       <br />
       Tool
     </div>
+
+    <WinSearchHistory></WinSearchHistory>
 
     <el-dialog
       v-model="dialogVisible"
@@ -68,6 +70,7 @@ import useWindowResize from './useWindowResize'
 import Console from './components/console.vue'
 import Info from './components/info.vue'
 import Card from './components/card.vue'
+import WinSearchHistory from './components/WinSearchHistory.vue'
 
 const dialogVisible = ref(false)
 
@@ -122,29 +125,15 @@ function randomIp() {
   return ip.join('.')
 }
 
+const isShowWinexToolBtn = ref(false)
+
 onMounted(async () => {
   document.querySelector('.main-tool.tool-btn')?.addEventListener('click', () => {
     dialogVisible.value = !dialogVisible.value
   })
-
-  // onMounted(() => {
-    //   window.onresize = () => {
-    //     let width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-    //     let height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-    //     const iH = window.innerHeight
-    //     const iW = window.innerWidth
-
-    //     let top = winexToolBtnPosition.top
-    //     let right = winexToolBtnPosition.right
-
-    //     winexToolBtnPosition.top = top < pad ? pad : nTop > iH - oH - pad ? iH - oH - pad : nTop
-    //     winexToolBtnPosition.right
-
-    //     return (() => {
-    //       screenWidth.value = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
-    //     })()
-    //   }
-    // })
+  if (!unsafeWindow.parent.winexToolInited) {
+    isShowWinexToolBtn.value = true
+  }
 })
 
 let padding = ref(10)
@@ -165,13 +154,16 @@ const winexToolBtnStyle = computed(() => {
 
 const { width, height } = useWindowResize()
 
+// 创建顶层mask
+const mask = document.createElement('div')
+mask.style.cssText = 'position: absolute;top: 0;left: 0;width: 100vw;height: 100vh;z-index: 9999;'
+mask.setAttribute('id', 'mousemoveMask')
+
 function handleMouseDown(e: MouseEvent) {
   const pad = padding.value
   const btn: HTMLDivElement = document.querySelector('.winex-tool-btn')!
   const oH = btn.offsetHeight
   const oW = btn.offsetWidth
-  // const iH = window.innerHeight
-  // const iW = window.innerWidth
 
   const iH = height.value
   const iW = width.value
@@ -187,11 +179,15 @@ function handleMouseDown(e: MouseEvent) {
     winexToolBtnPosition.top = nTop < pad ? pad : nTop > iH - oH - pad ? iH - oH - pad : nTop
     winexToolBtnPosition.right = nRight < pad ? pad : nRight > iW - oW - pad ? iW - oW - pad : nRight
   })
-  document.addEventListener('mousemove', _dragHandler)
-  document.addEventListener('mouseup', () => {
-    document.removeEventListener('mousemove', _dragHandler)
+
+  document.body.append(mask)
+
+  mask.addEventListener('mousemove', _dragHandler)
+  mask.addEventListener('mouseup', () => {
+    mask.removeEventListener('mousemove', _dragHandler)
     setTimeout(() => {
       isMouseMove.value = false
+      mask.remove()
     }, 300)
   })
   e.preventDefault()
@@ -200,6 +196,7 @@ function handleMouseUp() {
   if (!isMouseMove.value) {
     dialogVisible.value = true
   }
+  mask.remove()
 }
 </script>
 

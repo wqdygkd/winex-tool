@@ -6,14 +6,18 @@ import App from './App.vue'
 
 const app = createApp(App)
 
-const appRoot = document.createElement('div')
-appRoot.id = 'us-appRoot'
-document.body?.appendChild(appRoot)
-app.mount('#us-appRoot')
+const appRoot = unsafeWindow.document.createElement('div')
+appRoot.id = 'winex-tool-appRoot'
 
-window.addEventListener('load', () => {
-  if (!document.querySelector('#us-appRoot')) {
-    document.body.appendChild(appRoot)
-    app.mount('#us-appRoot')
+function winexToolMount() {
+  unsafeWindow.document.body?.appendChild(appRoot)
+  app.mount(`#${appRoot.id}`)
+  unsafeWindow.winexToolInited = true
+}
+
+winexToolMount()
+unsafeWindow.addEventListener('load', () => {
+  if (!unsafeWindow.document.querySelector(`#${appRoot.id}`)) {
+    winexToolMount()
   }
 })
