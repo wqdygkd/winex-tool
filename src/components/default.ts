@@ -270,6 +270,164 @@ export default {
           }
         }
       }
+    },
+    {
+      name: '北京延庆医院-张擎阳',
+      json: {
+        success: true,
+        errorDetail: {
+          code: '1',
+          message: '',
+          original: {
+            code: '1',
+            message: '',
+            ipAddress: '172.16.240.4'
+          }
+        },
+        data: {
+          identityTypeCode: '152691',
+          identityNo: '127414014006',
+          patientCardCheckBit: '',
+          personInfomation: {
+            name: '张擎阳',
+            sexConceptId: '253816',
+            nationConceptId: '',
+            nationalityConceptId: 399205791,
+            maritalStatusConceptId: '',
+            birthday: '1999-06-26',
+            telphone: '',
+            photo: '',
+            photoURL: '',
+            detailedAddress: '',
+            defaultMedicalInsuranceCodeConceptId: 399202211,
+            transHospitalNo: '',
+            transHospitalEndAt: '18991230',
+            personTypeCode: '11',
+            InRedFlag: 'true',
+            specifiedHospitalFlag: '1',
+            chronicHospitalFlag: 'false',
+            chronicNo: '',
+            militaryDisabledLevelCode: '0',
+            inHospitalFlag: '0',
+            withholdingFlag: '0'
+          },
+          accountInformationList: [],
+          otherReadCardInfo: [],
+          identityCertificateInfomationList: [
+            {
+              identityCertificateTypeConceptId: '391004456',
+              identityCertificateTypeCode: '152626',
+              identityCertificateNo: '130125199906269018'
+            },
+            {
+              identityCertificateTypeConceptId: '399586631',
+              identityCertificateTypeCode: '399586630',
+              identityCertificateNo: '12741401400S'
+            },
+            {
+              identityCertificateTypeConceptId: '399202505',
+              identityCertificateTypeCode: '152691',
+              identityCertificateNo: '127414014006'
+            }
+          ],
+          chronicIdiopathy: [],
+          Insuinfo: [
+            {
+              balc: '167.82',
+              crtYearBalc: null,
+              calYearBalc: null,
+              insutype: '3',
+              psnType: '11',
+              psnInsuStas: null,
+              psnInsuDate: null,
+              pausInsuDate: null,
+              cvlservFlag: null,
+              insuplcAdmdvs: '3100',
+              empName: null
+            }
+          ],
+          EmphasisInfo: []
+        }
+      }
+    },
+    {
+      name: '北京延庆医院-门振宇',
+      json: {
+        success: true,
+        errorDetail: {
+          code: '1',
+          message: '',
+          original: {
+            code: '1',
+            message: '',
+            ipAddress: '172.16.240.4'
+          }
+        },
+        data: {
+          identityTypeCode: '152691',
+          identityNo: '117684445026',
+          patientCardCheckBit: '',
+          personInfomation: {
+            name: '门振宇',
+            sexConceptId: '253816',
+            nationConceptId: '',
+            nationalityConceptId: 399205791,
+            maritalStatusConceptId: '',
+            birthday: '1990-01-05',
+            telphone: '',
+            photo: '',
+            photoURL: '',
+            detailedAddress: '',
+            defaultMedicalInsuranceCodeConceptId: 399202211,
+            transHospitalNo: '',
+            transHospitalEndAt: '18991230',
+            personTypeCode: '11',
+            InRedFlag: 'true',
+            specifiedHospitalFlag: '1',
+            chronicHospitalFlag: 'false',
+            chronicNo: '',
+            militaryDisabledLevelCode: '0',
+            inHospitalFlag: '0',
+            withholdingFlag: '0'
+          },
+          accountInformationList: [],
+          otherReadCardInfo: [],
+          identityCertificateInfomationList: [
+            {
+              identityCertificateTypeConceptId: '391004456',
+              identityCertificateTypeCode: '152626',
+              identityCertificateNo: '150429199001052717'
+            },
+            {
+              identityCertificateTypeConceptId: '399586631',
+              identityCertificateTypeCode: '399586630',
+              identityCertificateNo: '11768444502S'
+            },
+            {
+              identityCertificateTypeConceptId: '399202505',
+              identityCertificateTypeCode: '152691',
+              identityCertificateNo: '117684445026'
+            }
+          ],
+          chronicIdiopathy: [],
+          Insuinfo: [
+            {
+              balc: '2926.59',
+              crtYearBalc: null,
+              calYearBalc: null,
+              insutype: '3',
+              psnType: '11',
+              psnInsuStas: null,
+              psnInsuDate: null,
+              pausInsuDate: null,
+              cvlservFlag: null,
+              insuplcAdmdvs: '3100',
+              empName: null
+            }
+          ],
+          EmphasisInfo: []
+        }
+      }
     }
   ],
   // 身份证
@@ -360,7 +518,7 @@ export default {
             maritalStatusConceptId: null,
             birthday: '1994-01-02',
             telphone: null,
-            photo:'',
+            photo: '',
             photoURL: null,
             detailedAddress: '湖北省郧西县六郎乡大石堰村３组56号',
             defaultMedicalInsuranceCodeConceptId: '399202211',

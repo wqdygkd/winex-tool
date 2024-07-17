@@ -1,7 +1,7 @@
 {
   "name": "@wqdy/tool-winex-readcard",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite",
