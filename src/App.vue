@@ -25,9 +25,9 @@
           <el-tab-pane label="信息">
             <Info />
           </el-tab-pane>
-          <el-tab-pane label="console">
+          <!-- <el-tab-pane label="console">
             <Console />
-          </el-tab-pane>
+          </el-tab-pane> -->
           <el-tab-pane label="医保卡">
             <Suspense>
               <Card identityTypeCode="152691"></Card>
@@ -41,6 +41,11 @@
           <el-tab-pane label="永居证">
             <Suspense>
               <Card identityTypeCode="399668724"></Card>
+            </Suspense>
+          </el-tab-pane>
+          <el-tab-pane label="存储storage">
+            <Suspense>
+              <StorageCopy></StorageCopy>
             </Suspense>
           </el-tab-pane>
           <!-- <el-tab-pane label="身份证">
@@ -71,6 +76,7 @@ import Console from './components/console.vue'
 import Info from './components/info.vue'
 import Card from './components/card.vue'
 import WinSearchHistory from './components/WinSearchHistory.vue'
+import StorageCopy from './components/StorageCopy.vue'
 
 const dialogVisible = ref(false)
 

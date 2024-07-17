@@ -26,4 +26,14 @@
     <p>identityTypeCode: ['399668724']</p>
     <p>indexSearchMethodId: "1699585728534648358"</p>
   </div>
+
+  <div>隐私保护权限 399686084 患者真实信息可读可写 399686083 患者真实信息可读</div>
+
+  <div>
+    realNameAuthResultCode 实名认证结果  399694277 "未认证", 399694278,"临时认证" 399694279,"完全认证"
+  </div>
+  <div>
+    realNameAuthLevelCode 实名认证等级  255834 人工认证  255835机器认证   255799 未认证  255836生物认证
+  </div>
+  <div>允许编辑已实名认证档案的用户角色集合  CON2376</div>
 </template>
