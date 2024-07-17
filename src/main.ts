@@ -1,5 +1,5 @@
 import '@wqdy/tool-core/src/utils/GM'
-import './inject.ts'
+// import './inject.ts'
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -10,9 +10,11 @@ const appRoot = unsafeWindow.document.createElement('div')
 appRoot.id = 'winex-tool-appRoot'
 
 function winexToolMount() {
-  unsafeWindow.document.body?.appendChild(appRoot)
-  app.mount(`#${appRoot.id}`)
-  unsafeWindow.winexToolInited = true
+  if (unsafeWindow.document.body) {
+    unsafeWindow.document.body.appendChild(appRoot)
+    app.mount(`#${appRoot.id}`)
+    unsafeWindow.winexToolInited = true
+  }
 }
 
 winexToolMount()
