@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                Winex助手(prod mode)
 // @namespace           Winex
-// @version             0.0.0
+// @version             0.0.1
 // @description         Winex助手
 // @author              zhang333
 // @match               http://localhost:*/*
@@ -12,7 +12,7 @@
 // @grant               GM_getValue
 // @grant               GM_setValue
 // @grant               GM_registerMenuCommand
-// @require             https://cdn.jsdelivr.net/npm/vue@3.4.20/dist/vue.global.js
+// @require             https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.js
 // @icon                https://weberp.winning.com.cn/favicon.ico
 // ==/UserScript==
 
