@@ -16,6 +16,7 @@
     "element-plus": "^2.7.6",
     "jsoneditor": "^10.1.0",
     "lodash-es": "^4.17.21",
+    "naive-ui": "^2.39.0",
     "sass": "^1.77.6",
     "terser": "^5.31.1",
     "vue": "^3.4.31"
