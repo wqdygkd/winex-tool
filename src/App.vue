@@ -48,19 +48,6 @@
               <StorageCopy></StorageCopy>
             </Suspense>
           </el-tab-pane>
-          <!-- <el-tab-pane label="身份证">
-                <Suspense>
-                  <Card type="399626992"></Card>
-                </Suspense>
-              </el-tab-pane> -->
-          <!-- <el-tab-pane label="身份证">
-                <Card type="identityCard"></Card>
-              </el-tab-pane> -->
-          <!-- <el-tab-pane label="永居证">
-                <Card type="identityCard"></Card>
-              </el-tab-pane> -->
-          <!-- </el-tabs> -->
-          <!-- </el-tab-pane> -->
         </el-tabs>
       </el-container>
     </el-dialog>
