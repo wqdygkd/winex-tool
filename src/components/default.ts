@@ -539,6 +539,129 @@ export default {
           ]
         }
       }
+    },
+    {
+      name: '老人院-张三-病种-工作单位',
+      date: '',
+      json: {
+        success: true,
+        data: {
+          "success": true,
+          "errorDetail": {
+            "code": "1",
+            "message": "",
+            "original": {
+              "code": "1",
+              "message": "",
+              "ipAddress": "172.172.14.11"
+            }
+          },
+          "data": {
+            "identityTypeCode": "152691",
+            "identityNo": "44010000001049066973",
+            "patientCardCheckBit": "",
+            "otherReadCardInfo": {
+              "fromHospital": "",
+              "personType": "",
+              "isInRedList": "",
+              "isInHospitalFlag": "",
+              "chronicCode": "",
+              "isChronicHospital": "",
+              "militaryDisabledLevel": "",
+              "isSpecifiedHospital": "",
+              "isWithholdingFlag": "",
+              "isInjury": "",
+              "isNation": "",
+              "fundtype": "",
+              "isCivil": "",
+              "exServiceFlag": "",
+              "areaCode": "",
+              "personCount": ""
+            },
+            "accountInformationList": [],
+            "entityCertificateInfomationList": [],
+            "identityCertificateInfomationList": [
+              {
+                "identityCertificateTypeConceptId": "391004456",
+                "identityCertificateTypeCode": "152626",
+                "identityCertificateNo": "440122195209100618"
+              },
+              {
+                "identityCertificateTypeConceptId": "399202505",
+                "identityCertificateTypeCode": "152691",
+                "identityCertificateNo": "44010000001049066973"
+              }
+            ],
+            "chronicIdiopathy": [
+              {
+                "diseTypeCode": "399392523",
+                "opspDiseCode": "M03900",
+                "opspDiseName": "高血压病",
+                "diagCode": "",
+                "diagName": "",
+                "insuAdmdvs": "",
+                "begndate": "2008-04-24",
+                "enddate": "2099-12-31"
+              },
+              {
+                "diseTypeCode": "399392523",
+                "opspDiseCode": "M04600",
+                "opspDiseName": "冠心病",
+                "diagCode": "",
+                "diagName": "",
+                "insuAdmdvs": "",
+                "begndate": "2008-04-24",
+                "enddate": "2099-12-31"
+              }
+            ],
+            "Insuinfo": [
+              {
+                "balc": "0",
+                "insutype": "310",
+                "psnType": "12",
+                "psnInsuStas": null,
+                "psnInsuDate": null,
+                "pausInsuDate": null,
+                "cvlservFlag": "0",
+                "insuplcAdmdvs": "440117",
+                "empName": "广州市从化区太平镇中心卫生院(广州市从化区太平镇医院、广州市从化区太平镇疾病预防控制中心、广州市从化区太平镇妇幼保健计划生育服务站)",
+                "crtYearBalc": "0",
+                "calYearBalc": "0"
+              }
+            ],
+            "personInfomation": {
+              "name": "谢焕良",
+              "sexConceptId": "253816",
+              "nationConceptId": "",
+              "nationalityConceptId": 399205791,
+              "maritalStatusConceptId": "",
+              "birthday": "1952-09-10",
+              "telphone": "",
+              "photo": "",
+              "photoURL": "",
+              "detailedAddress": "",
+              "defaultMedicalInsuranceCodeConceptId": 399202211,
+              "fromHospitalDate": null,
+              "psnNo": "44010000001049066973",
+              "mdtrtCertType": "03",
+              "mdtrtCertNo": "440122195209100618",
+              "expiTime": "",
+              "baseinfo": {
+                "psnNo": "44010000001049066973",
+                "psnCertType": "01",
+                "certno": "440122195209100618",
+                "psnName": "谢焕良",
+                "gend": "1",
+                "naty": "01",
+                "brdy": "1952-09-10",
+                "age": "71",
+                "expContent": null
+              }
+            }
+          }
+        }
+
+      }
     }
   ],
   '399297247': [
@@ -815,3 +938,120 @@ export default {
   // 就诊卡/磁卡
   '152690': []
 }
+
+
+
+
+
+
+
+
+
+
+
+// {
+//   "success": true,
+//   "data": {
+//     "identityTypeCode": "152695",
+//     "identityNo": "440107193206030316",
+//     "patientCardCheckBit": "",
+//     "otherReadCardInfo": {
+//       "fromHospital": "",
+//       "personType": "",
+//       "isInRedList": "",
+//       "isInHospitalFlag": "",
+//       "chronicCode": "",
+//       "isChronicHospital": "",
+//       "militaryDisabledLevel": "",
+//       "isSpecifiedHospital": "",
+//       "isWithholdingFlag": "",
+//       "isInjury": "",
+//       "isNation": "",
+//       "fundtype": "",
+//       "isCivil": "",
+//       "exServiceFlag": "",
+//       "areaCode": "",
+//       "personCount": ""
+//     },
+//     "accountInformationList": [],
+//     "entityCertificateInfomationList": [],
+//     "identityCertificateInfomationList": [
+//       {
+//         "identityCertificateTypeConceptId": "391004456",
+//         "identityCertificateTypeCode": "152626",
+//         "identityCertificateNo": "440107193206030316"
+//       },
+//       {
+//         "identityCertificateTypeConceptId": "399202505",
+//         "identityCertificateTypeCode": "152691",
+//         "identityCertificateNo": "313993768"
+//       }
+//     ],
+//     "chronicIdiopathy": [
+//       {
+//         "diseTypeCode": "399392523",
+//         "opspDiseCode": "M01600",
+//         "opspDiseName": "糖尿病不伴有并发症",
+//         "diagCode": "E14.900",
+//         "diagName": "糖尿病",
+//         "insuAdmdvs": "449900",
+//         "begndate": "20221215",
+//         "enddate": "20991231"
+//       },
+//       {
+//         "diseTypeCode": "399392523",
+//         "opspDiseCode": "M03900",
+//         "opspDiseName": "良性高血压",
+//         "diagCode": "I10.x07",
+//         "diagName": "高血压病",
+//         "insuAdmdvs": "449900",
+//         "begndate": "20221215",
+//         "enddate": "20991231"
+//       }
+//     ],
+//     "Insuinfo": [
+//       {
+//         "balc": null,
+//         "insutype": "350",
+//         "psnType": "2",
+//         "psnInsuStas": null,
+//         "psnInsuDate": null,
+//         "pausInsuDate": null,
+//         "cvlservFlag": null,
+//         "insuplcAdmdvs": "449900",
+//         "empName": "广东省省直机关事业单位",
+//         "crtYearBalc": "0",
+//         "calYearBalc": "0"
+//       }
+//     ],
+//     "personInfomation": {
+//       "name": "周燕龙",
+//       "sexConceptId": "253816",
+//       "nationConceptId": "",
+//       "nationalityConceptId": 399205791,
+//       "maritalStatusConceptId": "",
+//       "birthday": "1970-01-01",
+//       "telphone": "",
+//       "photo": "",
+//       "photoURL": "",
+//       "detailedAddress": "",
+//       "defaultMedicalInsuranceCodeConceptId": 399202211,
+//       "fromHospitalDate": null,
+//       "psnNo": "313993768",
+//       "mdtrtCertType": "",
+//       "mdtrtCertNo": "440107193206030316",
+//       "expiTime": "",
+//       "baseinfo": {
+//         "psnNo": "313993768",
+//         "psnCertType": "01",
+//         "certno": "440107193206030316",
+//         "psnName": "周燕龙",
+//         "gend": "1",
+//         "naty": null,
+//         "brdy": "1970-01-01",
+//         "age": null,
+//         "expContent": null
+//       }
+//     }
+//   }
+// }
