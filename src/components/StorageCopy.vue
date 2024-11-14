@@ -71,7 +71,7 @@ function getSessonstorage() {
   let items = {}
   for (let i = 0; i < sessionStorage.length; i++) {
     let key = sessionStorage.key(i)
-    if (key === 'GM_hock_winex.storageCopy') return
+    if (key === 'GM_hook_winex.storageCopy') return
     items[key] = sessionStorage.getItem(key)
   }
   return items

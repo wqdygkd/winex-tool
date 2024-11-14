@@ -8,7 +8,7 @@ export default {
   'run-at': 'document-start',
   grant: ['unsafeWindow', 'GM_getValue', 'GM_setValue', 'GM_registerMenuCommand'],
   require: [
-    'https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.js',
+    'https://cdn.jsdelivr.net/npm/vue@3.4.31/dist/vue.global.js'
     // 'https://cdn.bootcss.com/jquery/3.1.0/jquery.min.js',
     // 'https://unpkg.com/ajax-hook@3.0.3/dist/ajaxhook.min.js'
   ],
