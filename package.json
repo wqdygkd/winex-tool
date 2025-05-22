@@ -1,9 +1,10 @@
 {
   "name": "@wqdy/tool-winex-readcard",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
   "scripts": {
+    "vite": "vite",
     "dev": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite",
     "build": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build",
     "build:watch": "vite build --watch",
@@ -12,6 +13,8 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@wqdy/tool-core": "workspace:*",
+    "ajax-hook": "^3.0.3",
+    "codemirror": "^6.0.1",
     "dayjs": "^1.11.13",
     "element-plus": "^2.8.7",
     "jsoneditor": "^10.1.0",

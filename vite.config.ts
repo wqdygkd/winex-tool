@@ -6,7 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
-import { meta as injectMeta } from '@wqdy/tool-core'
+import { meta as injectMeta } from './src/vite-plugin-inject-banner'
 
 import getMetaString from './src/meta/'
 import prodMeta from './src/meta/prod.meta'

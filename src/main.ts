@@ -3,6 +3,9 @@ import '@wqdy/tool-core/src/utils/GM'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import produceBuild from './hooks/winex-devops/produceBuild'
+import productManager from './hooks/winex-devops/productManager'
+
 
 const app = createApp(App)
 
@@ -17,9 +20,17 @@ function winexToolMount() {
   }
 }
 
-winexToolMount()
-unsafeWindow.addEventListener('load', () => {
-  if (!unsafeWindow.document.querySelector(`#${appRoot.id}`)) {
-    winexToolMount()
-  }
-})
+
+console.log(location.origin + location.pathname)
+
+if (location.host !== '172.16.0.197:8089') {
+  winexToolMount()
+  unsafeWindow.addEventListener('load', () => {
+    if (!unsafeWindow.document.querySelector(`#${appRoot.id}`)) {
+      winexToolMount()
+    }
+  })
+} else {
+  productManager()
+  produceBuild()
+}
