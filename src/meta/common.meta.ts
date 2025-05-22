@@ -1,7 +1,15 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const packageJson = fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf8')
+console.log()
 export default {
   name: 'Winex助手',
   namespace: 'Winex',
-  version: '0.0.1',
+  version: JSON.parse(packageJson).version,
   description: 'Winex助手：读卡模拟，共享浏览器存储，密码同步',
   author: 'zhang333',
   match: ['://*/*'],
