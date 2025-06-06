@@ -13,23 +13,14 @@ const appRoot = unsafeWindow.document.createElement('div')
 appRoot.id = 'winex-tool-appRoot'
 
 function winexToolMount() {
-  if (unsafeWindow.document.body) {
+  if (unsafeWindow.top === unsafeWindow && unsafeWindow.document.body) {
     unsafeWindow.document.body.appendChild(appRoot)
     app.mount(`#${appRoot.id}`)
-    unsafeWindow.winexToolInited = true
   }
 }
 
-
-console.log(location.origin + location.pathname)
-
 if (location.host !== '172.16.0.197:8089') {
   winexToolMount()
-  unsafeWindow.addEventListener('load', () => {
-    if (!unsafeWindow.document.querySelector(`#${appRoot.id}`)) {
-      winexToolMount()
-    }
-  })
 } else {
   productManager()
   produceBuild()
