@@ -1,6 +1,17 @@
 <template>
   <el-config-provider namespace="wqdy" size="small" :zIndex="20000">
-    <ToolBar v-model="dialogVisible"></ToolBar>
+    <FloatingButton
+      v-model="dialogVisible"
+      :initial-position="{ x: initialPositionX, y: 200 }"
+    >
+      <template #icon>
+        <div style="font-size: 14px;">
+          winex
+          <br />
+          Tool
+        </div>
+      </template>
+    </FloatingButton>
 
     <!-- <WinSearchHistory></WinSearchHistory> -->
     <ToolContent v-model="dialogVisible"></ToolContent>
@@ -9,16 +20,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from 'vue'
-import ToolBar from './components/ToolBar.vue'
+import FloatingButton from './components/FloatingButton.vue'
 import ToolContent from './components/ToolContent.vue'
+
+const initialPositionX = ref( window.innerWidth - 60)
 
 const dialogVisible = ref(false)
 
 unsafeWindow.winning = {
   ...unsafeWindow.winning,
   dispatchEvent(_: string, params: string, cb: Function) {
-    let identityTypeCode = JSON.parse(params).body.identityTypeCode[0]
     console.log('读卡入参', JSON.parse(params).body)
+    let identityTypeCode = JSON.parse(params).body?.identityTypeCode?.[0]
+    if (!identityTypeCode) return
     let storageKey = `${__namespace}${identityTypeCode}`
     let data: any = GM_getValue(storageKey, {
       enable: false
@@ -31,34 +45,19 @@ unsafeWindow.winning = {
     }
   },
   getMacadress() {
-    return randomMac()
+    return '00:00:00:00:00:00'
   },
   getPcName() {
-    return '0'
+    return '-'
   },
   getIP() {
-    return randomIp()
+    return '0.0.0.0'
   },
   deltaResult() {
     return true
   },
   showMsg() {},
   postMessage() {}
-}
-function randomMac() {
-  const mac = [
-    Math.floor(Math.random() * 0xff).toString(16),
-    Math.floor(Math.random() * 0xff).toString(16),
-    Math.floor(Math.random() * 0xff).toString(16),
-    Math.floor(Math.random() * 0xff).toString(16),
-    Math.floor(Math.random() * 0xff).toString(16),
-    Math.floor(Math.random() * 0xff).toString(16)
-  ]
-  return mac.join(':').toUpperCase()
-}
-function randomIp() {
-  const ip = [Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255)]
-  return ip.join('.')
 }
 
 GM_registerMenuCommand('设置', function () {
