@@ -29,16 +29,17 @@ const dialogVisible = ref(false)
 
 unsafeWindow.winning = {
   ...unsafeWindow.winning,
-  dispatchEvent(_: string, params: string, cb: Function) {
-    console.log('读卡入参', JSON.parse(params).body)
-    let identityTypeCode = JSON.parse(params).body?.identityTypeCode?.[0]
+  dispatchEvent(eventId: string, params: string, cb: Function) {
+    let paramsObj = typeof params === 'string' ? JSON.parse(params) : params
+    console.log('dispatchEvent', `事件id${eventId}`, '入参:', paramsObj?.body)
+    let identityTypeCode = paramsObj.body?.identityTypeCode?.[0]
     if (!identityTypeCode) return
     let storageKey = `${__namespace}${identityTypeCode}`
     let data: any = GM_getValue(storageKey, {
       enable: false
     })
     if (data.enable) {
-      console.log('读卡出参', data.current?.json)
+      console.log('dispatchEvent', `事件id${eventId}`, '出参:', data.current?.json)
       cb(JSON.stringify(data.current?.json || '请设置读卡出参'))
     } else {
       cb('"读卡模拟未启用"')

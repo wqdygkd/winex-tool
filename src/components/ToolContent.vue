@@ -15,6 +15,11 @@
             <Card identityTypeCode="152691"></Card>
           </Suspense>
         </el-tab-pane>
+        <el-tab-pane label="电子健康卡">
+          <Suspense>
+            <Card identityTypeCode="256808"></Card>
+          </Suspense>
+        </el-tab-pane>
         <el-tab-pane label="身份证">
           <Suspense>
             <Card identityTypeCode="152695"></Card>
@@ -41,7 +46,7 @@ import Console from './console.vue'
 import Info from './info.vue'
 import Card from './card.vue'
 import WinSearchHistory from './WinSearchHistory.vue'
-import StorageCopy from './StorageCopy.vue'
+import StorageCopy from './tools/StorageCopy/index.vue'
 
 const props = defineProps({
   modelValue: Boolean
@@ -56,7 +61,6 @@ const dialogVisible = computed({
     emit('update:modelValue', val)
   }
 })
-console.log(dialogVisible)
 </script>
 
 <style scoped lang="scss"></style>
