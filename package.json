@@ -8,7 +8,8 @@
     "dev": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite",
     "build": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build",
     "build:watch": "vite build --watch",
-    "clean": "pnpx rimraf node_modules"
+    "clean": "pnpx rimraf node_modules",
+    "build1": "turbo run build"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
