@@ -28,7 +28,6 @@ export default defineConfig(({ command, mode }) => {
         '~/': `${pathSrc}/`
       }
     },
-    // server: {port: 3000,}
     plugins: [
       vue(),
       AutoImport({
@@ -79,6 +78,10 @@ export default defineConfig(({ command, mode }) => {
           additionalData: `@use "~/styles/element/index.scss" as *;`
         }
       }
+    },
+    server: {
+      port: 5173,
+      cors: true
     }
   }
 })

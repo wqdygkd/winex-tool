@@ -2,14 +2,9 @@
   <el-dialog v-model="dialogVisible" title="设置" width="80%" draggable :modal="false" :close-on-click-modal="false" modal-class="wqdy-custom-dialog">
     <el-container style="height: 100%" class="container">
       <el-tabs tab-position="left">
-        <!-- <el-tab-pane label="winex"> -->
-        <!-- <el-tabs> -->
         <el-tab-pane label="信息">
           <Info />
         </el-tab-pane>
-        <!-- <el-tab-pane label="console">
-            <Console />
-          </el-tab-pane> -->
         <el-tab-pane label="医保卡">
           <Suspense>
             <Card identityTypeCode="152691"></Card>
@@ -31,9 +26,10 @@
           </Suspense>
         </el-tab-pane>
         <el-tab-pane label="存储storage">
-          <Suspense>
-            <StorageCopy></StorageCopy>
-          </Suspense>
+          <StorageCopy></StorageCopy>
+        </el-tab-pane>
+        <el-tab-pane label="自定义页面">
+          <CustomPage></CustomPage>
         </el-tab-pane>
       </el-tabs>
     </el-container>
@@ -47,6 +43,7 @@ import Info from './info.vue'
 import Card from './card.vue'
 import WinSearchHistory from './WinSearchHistory.vue'
 import StorageCopy from './tools/StorageCopy/index.vue'
+import CustomPage from './tools/CustomPage/index.vue'
 
 const props = defineProps({
   modelValue: Boolean
@@ -61,6 +58,9 @@ const dialogVisible = computed({
     emit('update:modelValue', val)
   }
 })
+
+const contomPageListKey = 'GM_hook_winex.contomPageList'
+
 </script>
 
 <style scoped lang="scss"></style>
@@ -72,6 +72,9 @@ const dialogVisible = computed({
   }
   .wqdy-dialog {
     pointer-events: auto;
+  }
+  .wqdy-tabs--left {
+    width: 100%;
   }
 }
 </style>
