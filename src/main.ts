@@ -4,6 +4,7 @@ import '@wqdy/tool-core/src/utils/GM'
 import { createApp } from 'vue'
 import App from './App.vue'
 import produceBuild from './hooks/winex-devops/produceBuild'
+import products from './hooks/winex-devops/products'
 import productManager from './hooks/winex-devops/productManager'
 
 const app = createApp(App)
@@ -28,4 +29,5 @@ if (location.host !== '172.16.0.197:8089') {
 } else {
   productManager()
   produceBuild()
+  products()
 }
