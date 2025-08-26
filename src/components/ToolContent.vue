@@ -10,6 +10,11 @@
             <Card identityTypeCode="152691"></Card>
           </Suspense>
         </el-tab-pane>
+        <el-tab-pane label="磁卡">
+          <Suspense>
+            <Card identityTypeCode="152690"></Card>
+          </Suspense>
+        </el-tab-pane>
         <el-tab-pane label="电子健康卡">
           <Suspense>
             <Card identityTypeCode="256808"></Card>
