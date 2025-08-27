@@ -36,6 +36,9 @@
         <el-tab-pane label="自定义页面">
           <CustomPage></CustomPage>
         </el-tab-pane>
+        <el-tab-pane label="设置">
+          <Settings></Settings>
+        </el-tab-pane>
       </el-tabs>
     </el-container>
   </el-dialog>
@@ -49,6 +52,7 @@ import Card from './card.vue'
 import WinSearchHistory from './WinSearchHistory.vue'
 import StorageCopy from './tools/StorageCopy/index.vue'
 import CustomPage from './tools/CustomPage/index.vue'
+import Settings from './Settings/index.vue'
 
 const props = defineProps({
   modelValue: Boolean
