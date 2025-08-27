@@ -1,7 +1,7 @@
 {
   "name": "@wqdy/tool-winex-readcard",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "scripts": {
     "vite": "vite",
