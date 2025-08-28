@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { storageKey } from '../../hooks/winex-devops/运维平台登录'
+import { storageKey, url } from '../../hooks/winex-devops/运维平台登录'
 
 let storage: any = reactive(
   GM_getValue(storageKey, {
@@ -17,6 +17,8 @@ const enable = ref(storage.enable)
 watch(enable, (val) => {
   storage.enable = val
   GM_setValue(storageKey, storage)
-  location.reload()
+  if (location.href.includes(url)) {
+    location.reload()
+  }
 })
 </script>
