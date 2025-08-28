@@ -25,9 +25,9 @@ function winexToolMount() {
   }
 }
 
-if (location.host !== '172.16.0.197:8089') {
-  winexToolMount()
-} else {
+winexToolMount()
+
+if (location.host === '172.16.0.197:8089') {
   productManager()
   produceBuild()
   products()
