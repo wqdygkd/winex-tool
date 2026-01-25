@@ -1,9 +1,9 @@
 <script setup lang="ts">
-// import CustomPage from './tools/CustomPage/index.vue'
-import Others from './others'
 // import Console from './console.vue'
 // import Info from './info.vue'
-// import Card from './card.vue'
+import Card from '../components/card.vue'
+// import CustomPage from './tools/CustomPage/index.vue'
+import Others from './others'
 // import WinSearchHistory from './WinSearchHistory.vue'
 import StorageCopy from './storage-copy'
 
@@ -34,7 +34,7 @@ const dialogVisible = computed({
         </el-tab-pane>
         <el-tab-pane label="医保卡">
           <Suspense>
-            <!-- <Card identityTypeCode="152691"></Card> -->
+            <Card identity-type-code="152691" />
           </Suspense>
         </el-tab-pane>
         <el-tab-pane label="磁卡">

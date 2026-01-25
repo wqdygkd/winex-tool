@@ -1,108 +1,140 @@
-<template>
-  <div style="width: 800px; height: 400px" ref="editorBox"></div>
-</template>
-
 <script setup lang="ts">
-import { onMounted, watch, ref, nextTick } from 'vue'
-import JSONEditor from 'jsoneditor'
-import type { JSONEditorOptions, JSONEditorMode, SchemaValidationError, ParseError } from 'jsoneditor'
-import 'jsoneditor/dist/jsoneditor.min.css'
+import { json } from '@codemirror/lang-json'
+import { Compartment, StateEffect } from '@codemirror/state'
+import { EditorSelection } from '@codemirror/view'
+import { basicSetup, EditorView } from 'codemirror'
 
 const props = defineProps<{
-  modelValue: Object | undefined
-  mode: JSONEditorMode
+  modelValue: object | undefined
+  mode?: string
 }>()
 
 const emit = defineEmits(['change', 'error', 'update:modelValue', 'validationError'])
 
-const editorBox = ref<any>(null)
-let jsoneditor: JSONEditor
-let internalChange = ref(false)
-let error = ref(false)
+const editorRef = ref<HTMLElement>()
+let editorView: EditorView
+let internalChange = false
 
-// const state = reactive({
-//   editor: null as any,
-//   error: false,
-//   json: {},
-//   internalChange: false
-// })
-
-function expandAll() {
-  nextTick(() => {
-    // jsoneditor.expandAll()
-  })
-}
-function onChange() {
-  console.log('jsoneditor onChange')
-  try {
-    const data = jsoneditor.get()
-    console.log('jsoneditor onChange data', data)
-    error.value = false
-    emit('update:modelValue', data)
-    emit('change', data)
-    internalChange.value = true
-    nextTick(() => {
-      internalChange.value = false
-    })
-  } catch (e) {
-    error.value = true
-    emit('error', e)
-  }
-}
-
-function onValidationError(errors: readonly (SchemaValidationError | ParseError)[]) {
-  console.log('jsoneditor onValidationError', errors)
-  emit('validationError', jsoneditor, errors)
-}
-
-watch(
-  () => props.modelValue as unknown as any,
-  async (val) => {
-    console.log('watch props.modelValue', val)
-    if (!internalChange.value) {
-      jsoneditor.set(val)
-      error.value = false
-      expandAll()
-    }
-  }
-  // { immediate: true, deep: true }
-)
+// 创建一个动态语言支持的 compartment
+const languageConf = new Compartment()
 
 onMounted(() => {
-  const options: JSONEditorOptions = {
-    mode: props.mode || 'code',
-    // modes: ['text', 'code', 'tree'],
-    search: true,
-    // mainMenuBar: false,
-    // statusBar: false,
-    language: 'zh-CN',
-    indentation: 2,
-    // theme: 'foundation5',
-    onChange,
-    onValidationError
-    // onModeChange,
-    // onTextSelectionChange,
-    // onSelectionChange,
-    // onColorPicker,
-    // onFocus,
-    // onBlur,
-    // onValidationError,
+  if (!editorRef.value) return
+
+  const jsonString = props.modelValue ? JSON.stringify(props.modelValue, null, 2) : ''
+
+  editorView = new EditorView({
+    doc: jsonString,
+    extensions: [
+      basicSetup,
+      languageConf.of(json()),
+      EditorView.theme({
+        '&': {
+          height: '400px',
+          width: '800px',
+        },
+        '.cm-content': {
+          fontFamily: 'Monaco, Menlo, \'Ubuntu Mono\', Consolas, \'Source Code Pro\', source-code-pro, monospace',
+        },
+      }),
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          const content = update.state.doc.toString()
+
+          try {
+            if (content.trim()) {
+              // 尝试解析JSON以验证语法
+              const parsed = JSON.parse(content)
+              internalChange = true
+
+              emit('update:modelValue', parsed)
+              emit('change', parsed)
+
+              setTimeout(() => {
+                internalChange = false
+              }, 0)
+            }
+          } catch (e) {
+            emit('error', e)
+          }
+        }
+      }),
+    ],
+    parent: editorRef.value,
+  })
+})
+
+// 监听 modelValue 的变化并更新编辑器内容
+watch(
+  () => props.modelValue,
+  async (newValue) => {
+    if (!internalChange && editorView) {
+      const jsonString = newValue ? JSON.stringify(newValue, null, 2) : ''
+      const currentValue = editorView.state.doc.toString()
+
+      if (jsonString !== currentValue) {
+        editorView.dispatch({
+          changes: {
+            from: 0,
+            to: currentValue.length,
+            insert: jsonString,
+          },
+        })
+      }
+    }
+  },
+  { deep: true },
+)
+
+onBeforeUnmount(() => {
+  if (editorView) {
+    editorView.destroy()
   }
-  jsoneditor = new JSONEditor(editorBox.value, options)
-  jsoneditor.set(props.modelValue)
-  expandAll()
+})
+
+defineExpose({
+  expandAll: () => {
+    // CodeMirror 中不需要展开功能
+  },
+  focus: () => {
+    if (editorView) {
+      editorView.focus()
+    }
+  },
 })
 </script>
-<style scoped lang="scss">
-:deep(.ace_editor) {
-  div,
-  dl,
-  label,
-  li,
-  p,
-  span,
-  td {
-    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, 'Source Code Pro', source-code-pro, monospace;
-  }
+
+<template>
+  <div class="json-editor">
+    <div ref="editorRef" class="code-editor" />
+  </div>
+</template>
+
+<style scoped>
+.json-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.code-editor {
+  flex: 1;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+:deep(.cm-editor) {
+  height: 100%;
+  outline: none;
+}
+
+:deep(.cm-scroller) {
+  font-family: inherit;
+}
+
+:deep(.cm-focused) {
+  outline: none;
+  border: 1px solid #409eff;
 }
 </style>
