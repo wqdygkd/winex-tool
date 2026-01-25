@@ -29,7 +29,10 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       AutoImport({
-        resolvers: [ElementPlusResolver()],
+        imports: [
+          'vue',
+          '@vueuse/core',
+        ],
       }),
       Components({
         resolvers: [

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import FloatingButton from './components/FloatingButton.vue'
 import ToolContent from './tools/ToolContent.vue'
 

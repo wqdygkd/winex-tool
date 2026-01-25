@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
 const storageKey = 'winex.storageCopy'
 const ignoreSessionKey = 'GM_hook_winex.storageCopy'
 

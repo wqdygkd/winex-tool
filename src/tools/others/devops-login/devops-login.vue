@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
 import { storageKey, urls } from './devops-login'
 
 const storage: any = reactive(
@@ -21,5 +20,4 @@ watch(enable, (val) => {
 
 <template>
   <el-checkbox v-model="enable" label="运维平台/运营中心关闭SleepWell登录" />
-  <!-- <el-checkbox v-model="enable" label="运维平台关闭SleepWell登录" /> -->
 </template>

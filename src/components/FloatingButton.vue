@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useEventListener, useWindowSize } from '@vueuse/core'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-
 interface Position {
   x: number
   y: number

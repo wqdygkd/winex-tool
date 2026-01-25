@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 // import CustomPage from './tools/CustomPage/index.vue'
 import Others from './others'
 // import Console from './console.vue'
