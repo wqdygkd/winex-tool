@@ -9,13 +9,13 @@ unsafeWindow.__realConsole = (iframe.contentWindow as Window & typeof globalThis
 for (const item of ['log', 'info']) {
   Object.defineProperty(unsafeWindow.console, item, {
     get() {
-      let real = unsafeWindow.__realConsole[item]
-      let fake = unsafeWindow[`__fake${item}`]
+      const real = unsafeWindow.__realConsole[item]
+      const fake = unsafeWindow[`__fake${item}`]
       return GM_getValue('winex.console', false) ? real : fake || real
     },
     set(v) {
       unsafeWindow[`__fake${item}`] = v
     },
-    configurable: false
+    configurable: false,
   })
 }
