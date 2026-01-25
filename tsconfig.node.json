@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "composite": true,
-    "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
-  "include": ["vite.config.ts", "src/meta/", "src/vite-plugin-inject-banner.ts"],
+  "include": ["vite.config.ts", "src/utils/meta/", "src/utils/vite-plugin-inject-meta.ts"],
   "ts-node": {
     // Tell ts-node CLI to install the --loader automatically
     // 或者使用 ts-node-esm .\index.ts
