@@ -5,10 +5,8 @@
  * 目标网址: /cluster/action/login/login
  */
 
-import { init, storageKey } from './devops-login.ts'
 import DevopsLogin from './devops-login.vue'
 
-DevopsLogin.storageKey = storageKey
-DevopsLogin.init = init
+export { init as DevopsLoginInit } from './devops-login.ts'
 
 export default DevopsLogin

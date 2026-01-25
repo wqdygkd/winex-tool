@@ -5,9 +5,8 @@
  * 目标网址: /cluster/cluster/portal/dashboard
  */
 
-import { init } from './devops-dashboard.ts'
 import DevopsDashboard from './devops-dashboard.vue'
 
-DevopsDashboard.init = init
+export { init as DevopsDashboardInit } from './devops-dashboard.ts'
 
 export default DevopsDashboard

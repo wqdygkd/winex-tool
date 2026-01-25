@@ -2,15 +2,11 @@ import { resolve } from 'node:path'
 import process from 'node:process'
 
 import vue from '@vitejs/plugin-vue'
-// 自动加载 element 组件
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-
 import Components from 'unplugin-vue-components/vite'
-
 import { defineConfig, loadEnv } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
-
 import getMetaString from './src/utils/meta/'
 import prodMeta from './src/utils/meta/prod.meta'
 import injectMeta from './src/utils/vite-plugin-inject-meta'
