@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
 import { storageKey } from './disable-traceid.ts'
 
 const storage: any = reactive(

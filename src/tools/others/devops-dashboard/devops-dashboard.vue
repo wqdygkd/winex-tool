@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
 import { storageKey, url } from './devops-dashboard'
 
 const storage: any = reactive(
