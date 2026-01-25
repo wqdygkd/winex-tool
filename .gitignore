@@ -14,7 +14,6 @@ build
 *.spec
 package-lock.json
 /**/dist/*
-!index.user.js
 
 auto-imports.d.ts
 components.d.ts
