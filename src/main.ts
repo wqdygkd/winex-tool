@@ -6,14 +6,11 @@ import App from './App.vue'
 // import products from './hooks/winex-devops/products'
 // import productManager from './hooks/winex-devops/productManager'
 // import 运营平台登录, { url as 运营平台登录url } from './hooks/winex-devops/运营平台登录'
-import DevopsDashboard from './tools/others/devops-dashboard'
-import DevopsLogin from './tools/others/devops-login'
-import DisableTraceid from './tools/others/disable-traceid'
+import { OthersInit } from './tools/others'
+
 import './utils/GM'
 
-DisableTraceid.init()
-DevopsLogin.init()
-DevopsDashboard.init()
+OthersInit()
 
 const app = createApp(App)
 
