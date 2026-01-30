@@ -1,5 +1,8 @@
 import { proxy } from 'ajax-hook'
 
+import getAppMenuByUserAndCollectResponse from './getAppMenuByUserAndCollectResponse'
+import getUserInfoResponse from './getUserInfoResponse'
+
 export const storageKey = `${__namespace}devops-dashboard`
 export const url = '/cluster/cluster/portal'
 
@@ -12,21 +15,15 @@ export function init() {
       onResponse: (response, handler) => {
         const responseObj = JSON.parse(response.response)
         const data = responseObj.data
+
         if (response.config.url === '/api/v1/cop/portal/getAppMenuByUserAndCollect') {
-          data.appMenu = data.appMenu.map((menu: { children: any[] }) => {
-            menu.children = menu.children.map((child) => {
-              child.enable = true
-              return child
-            })
-            return menu
-          })
-          sessionStorage.setItem('appMenu', JSON.stringify(data.appMenu))
+          data.appMenu = getAppMenuByUserAndCollectResponse(data.appMenu)
         }
+
         if (response.config.url === '/api/v1/cop/portal/getUserInfo') {
-          data.role = {
-            name: 'admin',
-          }
-          data.appConfigList = [] // TODO
+          const { role, appConfigList } = getUserInfoResponse()
+          data.role = role
+          data.appConfigList = appConfigList
         }
 
         responseObj.data = data
