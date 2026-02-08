@@ -83,11 +83,6 @@ function deleteAll() {
 
 <template>
   <div class="storage-copy">
-    <p class="tip">
-      用于不同页面间克隆 Storage。
-      在 A 页面点击「复制」，到 B 页面点击「粘贴」即可同步 Cookie / LocalStorage / SessionStorage。
-    </p>
-
     <div class="actions">
       <el-button type="primary" @click="copy">
         复制
@@ -132,11 +127,6 @@ function deleteAll() {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-.tip {
-  color: #666;
-  line-height: 1.6;
-  margin: 0;
 }
 .actions {
   display: flex;

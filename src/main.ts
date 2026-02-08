@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 // import './inject.ts'
 
 import App from './App.vue'
+import { EventMockInit } from './tools/eventMock'
 // import produceBuild from './hooks/winex-devops/produceBuild'
 // import products from './hooks/winex-devops/products'
 // import productManager from './hooks/winex-devops/productManager'
@@ -10,6 +11,7 @@ import { OthersInit } from './tools/others'
 
 import './utils/GM'
 
+EventMockInit()
 OthersInit()
 
 const app = createApp(App)

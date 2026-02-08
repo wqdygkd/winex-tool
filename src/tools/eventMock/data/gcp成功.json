@@ -1,0 +1,46 @@
+// 卫宁GCP服务接口出参
+{
+  "id": "1",
+  "title": "gcp成功",
+  "data": {
+    "version": "V1",
+    "bizSysCode": 399543540,
+    "bizSysName": null,
+    "transactionNo": "GCP03",
+    "transactionName": null,
+    "interfaceCode": null,
+    "interfaceName": null,
+    "beforeTransactionNo": null,
+    "state": "pending",
+    "actionType": "success",
+    "messageInfo": { "type": null, "message": null },
+    "operation": null,
+    "businessType": "NULL",
+    "business": "NULL",
+    "businessInfo": null,
+    "messageBoxInfo": {
+      "type": null,
+      "title": null,
+      "message": null,
+      "isShowConfirm": false,
+      "isShowCancel": false,
+      "confirmTxt": null,
+      "cancelTxt": null,
+      "skipTxt": "跳过",
+      "isShowSkip": false,
+      "inputPlaceholder": "",
+      "inputPassword": false
+    },
+    "data": {
+      "gcpResult": {
+        "resultCode": "0",
+        "resultMessage": "操作成功",
+        "result": [{ "xmbm": "演示测试", "xmmc": "演示测试", "sytype": "1", "fsbh": "1", "fsmc": "全部", "clinicalTrialType": null }]
+      }
+    },
+    "type": null,
+    "useFlag": null,
+    "autoLogin": null,
+    "accessType": null
+  }
+}
