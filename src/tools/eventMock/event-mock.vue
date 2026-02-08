@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Delete, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import JsonEditor from '../../components/jsonEditor.vue'
+import { storageKey } from './event-mock'
+import EventMock from './handle'
 
 interface AccordionItem {
   id: string
@@ -49,6 +51,8 @@ const saveTemplateDialogVisible = ref(false)
 const newTemplateName = ref('')
 const newTemplateValue = ref('')
 const currentEventIdForTemplate = ref('')
+const enableMock = ref(false)
+const saving = ref(false)
 
 function addAccordionItem() {
   const maxId = Math.max(...accordionItems.value.map(item => Number.parseInt(item.id) || 0))
@@ -161,11 +165,68 @@ function expandAll() {
 function collapseAll() {
   activeNames.value = []
 }
+
+// 加载存储的数据
+function loadData() {
+  try {
+    const storage = GM_getValue(storageKey, {})
+    enableMock.value = storage.enable || false
+    if (storage.events) {
+      accordionItems.value = storage.events.map(event => ({
+        id: event.id,
+        title: event.title,
+        data: event.data,
+        isBuiltIn: event.isBuiltIn || false,
+        template: event.template || '',
+      }))
+    }
+  } catch (error) {
+    console.error('Failed to load event mock data:', error)
+  }
+}
+
+// 保存数据
+function saveData() {
+  saving.value = true
+  try {
+    const data = {
+      enable: enableMock.value,
+      events: accordionItems.value.map(item => ({
+        id: item.id,
+        title: item.title,
+        data: item.data,
+        isBuiltIn: item.isBuiltIn,
+        template: item.template,
+      })),
+    }
+    GM_setValue(storageKey, data)
+    // 更新EventMock的处理器
+    EventMock.saveHandlers(data.events)
+    ElMessage.success('保存成功')
+  } catch (error) {
+    console.error('Failed to save event mock data:', error)
+    ElMessage.error('保存失败')
+  } finally {
+    saving.value = false
+  }
+}
+
+// 初始化加载数据
+onMounted(() => {
+  loadData()
+})
 </script>
 
 <template>
   <div class="event-mock-container">
     <div class="header-buttons">
+      <el-switch
+        v-model="enableMock"
+        inline-prompt
+        active-text="启用"
+        inactive-text="禁用"
+        size="small"
+      />
       <el-button size="small" @click="expandAll">
         全部展开
       </el-button>
@@ -175,6 +236,9 @@ function collapseAll() {
       <el-button type="primary" size="small" @click="addAccordionItem">
         <el-icon><Plus /></el-icon>
         添加事件
+      </el-button>
+      <el-button type="success" size="small" :loading="saving" @click="saveData">
+        保存配置
       </el-button>
     </div>
 
