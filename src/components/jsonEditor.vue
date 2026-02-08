@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { json } from '@codemirror/lang-json'
 import { Compartment, StateEffect } from '@codemirror/state'
-import { EditorSelection } from '@codemirror/view'
 import { basicSetup, EditorView } from 'codemirror'
 
 const props = defineProps<{
@@ -15,7 +14,6 @@ const editorRef = ref<HTMLElement>()
 let editorView: EditorView
 let internalChange = false
 
-// 创建一个动态语言支持的 compartment
 const languageConf = new Compartment()
 
 onMounted(() => {
@@ -31,7 +29,6 @@ onMounted(() => {
       EditorView.theme({
         '&': {
           height: '400px',
-          width: '800px',
         },
         '.cm-content': {
           fontFamily: 'Monaco, Menlo, \'Ubuntu Mono\', Consolas, \'Source Code Pro\', source-code-pro, monospace',
@@ -92,36 +89,79 @@ onBeforeUnmount(() => {
   }
 })
 
+function formatJson() {
+  if (!editorView) return
+
+  const content = editorView.state.doc.toString()
+  try {
+    if (content.trim()) {
+      const parsed = JSON.parse(content)
+      const formatted = JSON.stringify(parsed, null, 2)
+
+      editorView.dispatch({
+        changes: {
+          from: 0,
+          to: content.length,
+          insert: formatted,
+        },
+      })
+
+      internalChange = true
+      emit('update:modelValue', parsed)
+      emit('change', parsed)
+
+      setTimeout(() => {
+        internalChange = false
+      }, 0)
+    }
+  } catch (e) {
+    emit('error', e)
+  }
+}
+
 defineExpose({
   expandAll: () => {
-    // CodeMirror 中不需要展开功能
   },
   focus: () => {
     if (editorView) {
       editorView.focus()
     }
   },
+  formatJson,
 })
 </script>
 
 <template>
-  <div class="json-editor">
+  <div class="json-editor-container">
+    <div class="editor-toolbar">
+      <el-button size="small" @click="formatJson">
+        格式化
+      </el-button>
+    </div>
     <div ref="editorRef" class="code-editor" />
   </div>
 </template>
 
 <style scoped>
-.json-editor {
+.json-editor-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #dcdfe6;
+  gap: 8px;
 }
 
 .code-editor {
   flex: 1;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  overflow: hidden;
 }
 
 :deep(.cm-editor) {

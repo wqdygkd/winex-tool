@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // import Console from './console.vue'
 // import Info from './info.vue'
-import Card from '../components/card.vue'
+// import Card from '../components/card.vue'
 // import CustomPage from './tools/CustomPage/index.vue'
+import EventMock from './eventMock'
 import Others from './others'
 // import WinSearchHistory from './WinSearchHistory.vue'
 import StorageCopy from './storage-copy'
@@ -27,42 +28,45 @@ const dialogVisible = computed({
 
 <template>
   <el-dialog v-model="dialogVisible" title="设置" width="80%" draggable :modal="false" :close-on-click-modal="false" modal-class="wqdy-custom-dialog">
-    <el-container style="height: 100%" class="container">
+    <el-container style="height: 600px" class="container">
       <el-tabs tab-position="left">
-        <el-tab-pane label="信息">
-          <!-- <Info /> -->
+        <el-tab-pane :label="EventMock.name">
+          <EventMock />
         </el-tab-pane>
+        <!-- <el-tab-pane label="信息">
+          <Info />
+        </el-tab-pane> -->
         <el-tab-pane label="医保卡">
           <Suspense>
-            <Card identity-type-code="152691" />
+            <!-- <Card identity-type-code="152691" /> -->
           </Suspense>
         </el-tab-pane>
-        <el-tab-pane label="磁卡">
+        <!-- <el-tab-pane label="磁卡">
           <Suspense>
-            <!-- <Card identityTypeCode="152690"></Card> -->
+            <Card identityTypeCode="152690"></Card>
           </Suspense>
-        </el-tab-pane>
-        <el-tab-pane label="电子健康卡">
+        </el-tab-pane> -->
+        <!-- <el-tab-pane label="电子健康卡">
           <Suspense>
-            <!-- <Card identityTypeCode="256808"></Card> -->
+            <Card identityTypeCode="256808"></Card>
           </Suspense>
-        </el-tab-pane>
-        <el-tab-pane label="身份证">
+        </el-tab-pane> -->
+        <!-- <el-tab-pane label="身份证">
           <Suspense>
-            <!-- <Card identityTypeCode="152695"></Card> -->
+            <Card identityTypeCode="152695"></Card>
           </Suspense>
-        </el-tab-pane>
-        <el-tab-pane label="永居证">
+        </el-tab-pane> -->
+        <!-- <el-tab-pane label="永居证">
           <Suspense>
-            <!-- <Card identityTypeCode="399668724"></Card> -->
+            <Card identityTypeCode="399668724"></Card>
           </Suspense>
-        </el-tab-pane>
+        </el-tab-pane> -->
         <el-tab-pane :label="StorageCopy.name">
           <StorageCopy />
         </el-tab-pane>
-        <el-tab-pane label="自定义页面">
-          <!-- <CustomPage></CustomPage> -->
-        </el-tab-pane>
+        <!-- <el-tab-pane label="自定义页面"> -->
+        <!-- <CustomPage></CustomPage> -->
+        <!-- </el-tab-pane> -->
         <el-tab-pane :label="Others.name">
           <Others />
         </el-tab-pane>
