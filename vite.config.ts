@@ -56,10 +56,10 @@ export default defineConfig(({ mode }) => {
         fileName: () => `index.user.js`,
       },
       rollupOptions: {
-        external: ['vue'],
+        // external: ['vue'],
         output: {
           globals: {
-            vue: 'Vue',
+            // vue: 'Vue',
             // GM_addStyle: 'GM_addStyle', // 油猴脚本API，用于添加样式到页面
           },
           inlineDynamicImports: true, // 库构建模式下不能进行代码分割，开启此功能可将本应分割的代码整合在一起避免报错（代码分割可能由其他插件引起）
