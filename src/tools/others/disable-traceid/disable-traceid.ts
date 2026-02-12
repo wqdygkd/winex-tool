@@ -2,10 +2,10 @@ export const storageKey = `${__namespace}DisableTraceid`
 
 export function init() {
   const storage = GM_getValue(storageKey, {
-    DisableTraceid: false,
+    enable: false,
   })
 
-  if (storage.DisableTraceid) {
+  if (storage.enable) {
     const iframe = document.createElement('iframe')
     iframe.style.width = '0'
     iframe.style.height = '0'

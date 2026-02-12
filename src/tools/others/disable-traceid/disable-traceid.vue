@@ -3,18 +3,18 @@ import { storageKey } from './disable-traceid.ts'
 
 const storage: any = reactive(
   GM_getValue(storageKey, {
-    DisableTraceid: false,
+    enable: false,
   }),
 )
 
-const DisableTraceid = ref(storage.DisableTraceid)
+const enable = ref(storage.enable)
 
-watch(DisableTraceid, (val) => {
-  storage.DisableTraceid = val
+watch(enable, (val) => {
+  storage.enable = val
   GM_setValue(storageKey, storage)
 })
 </script>
 
 <template>
-  <el-checkbox v-model="DisableTraceid" label="禁用请求添加traceid" />
+  <el-checkbox v-model="enable" label="禁用请求添加traceid" />
 </template>
