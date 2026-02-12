@@ -10,6 +10,5 @@
 // @grant        unsafeWindow
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @require      https://cdn.jsdelivr.net/npm/vue@3.4.13/dist/vue.global.js
 // @require      file://D:\project\tool\packages\tampermonkey-script\winex-readcard\dist\yourscript.user.js
 // ==/UserScript==
