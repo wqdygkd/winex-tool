@@ -8,11 +8,13 @@ import { EventMockInit } from './tools/eventMock'
 // import productManager from './hooks/winex-devops/productManager'
 // import 运营平台登录, { url as 运营平台登录url } from './hooks/winex-devops/运营平台登录'
 import { OthersInit } from './tools/others'
+import { ParamMockInit } from './tools/param-mock'
 
 import './utils/GM'
 
 EventMockInit()
 OthersInit()
+ParamMockInit()
 
 const app = createApp(App)
 
