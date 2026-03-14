@@ -5,6 +5,7 @@
 // import CustomPage from './tools/CustomPage/index.vue'
 import EventMock from './eventMock'
 import Others from './others'
+import ParamMock from './param-mock'
 // import WinSearchHistory from './WinSearchHistory.vue'
 import StorageCopy from './storage-copy'
 
@@ -63,6 +64,9 @@ const dialogVisible = computed({
         </el-tab-pane> -->
         <el-tab-pane :label="StorageCopy.name">
           <StorageCopy />
+        </el-tab-pane>
+        <el-tab-pane :label="ParamMock.name">
+          <ParamMock />
         </el-tab-pane>
         <!-- <el-tab-pane label="自定义页面"> -->
         <!-- <CustomPage></CustomPage> -->
