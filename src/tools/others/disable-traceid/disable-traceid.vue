@@ -1,18 +1,8 @@
 <script setup lang="ts">
+import { useGMStorageWithEnable } from '~/composables/useGMStorage'
 import { storageKey } from './disable-traceid.ts'
 
-const storage: any = reactive(
-  GM_getValue(storageKey, {
-    enable: false,
-  }),
-)
-
-const enable = ref(storage.enable)
-
-watch(enable, (val) => {
-  storage.enable = val
-  GM_setValue(storageKey, storage)
-})
+const { enable } = useGMStorageWithEnable(storageKey, { enable: false })
 </script>
 
 <template>

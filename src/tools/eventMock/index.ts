@@ -1,13 +1,21 @@
 /**
- * 事件模拟
- *
- * 目标网址: portal
+ * 事件模拟工具模块
  */
 
+import { registerTool } from '../registry'
+import { init, storageKey } from './event-mock'
 import EventMock from './event-mock.vue'
 
-export { init as EventMockInit } from './event-mock.ts'
+const name = '事件模拟'
 
-EventMock.name = '事件模拟'
+registerTool({
+  name,
+  storageKey,
+  init,
+  component: EventMock,
+})
 
+EventMock.name = name
+
+export { init as EventMockInit }
 export default EventMock

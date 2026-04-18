@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const storageKey = 'winex.storageCopy'
+import { useGMStorage } from '~/composables/useGMStorage'
+
 const ignoreSessionKey = 'GM_hook_winex.storageCopy'
 
 interface StorageItem {
@@ -11,11 +12,7 @@ interface StorageItem {
   }
 }
 
-const storageList = ref<StorageItem[]>(GM_getValue(storageKey, []) || [])
-
-function persist() {
-  GM_setValue(storageKey, storageList.value)
-}
+const { data: storageList, save } = useGMStorage<StorageItem[]>('winex.storageCopy', [], { autoSave: false })
 
 function copy() {
   const host = location.host
@@ -27,7 +24,7 @@ function copy() {
     session: getStorage(sessionStorage, ignoreSessionKey),
   }
   storageList.value.unshift({ key: host, value })
-  persist()
+  save()
 }
 
 function paste(item: StorageItem) {
@@ -71,13 +68,13 @@ function deleteItem(item: StorageItem) {
   const index = storageList.value.findIndex(({ key }) => key === item.key)
   if (index === -1) return
   storageList.value.splice(index, 1)
-  persist()
+  save()
 }
 
 function deleteAll() {
   if (!storageList.value.length) return
   storageList.value.splice(0, storageList.value.length)
-  persist()
+  save()
 }
 </script>
 

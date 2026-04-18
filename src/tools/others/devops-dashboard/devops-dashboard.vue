@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { storageKey, url } from './devops-dashboard'
+import { useGMStorageWithEnable } from '~/composables/useGMStorage'
+import { urls } from '~/constants'
+import { storageKey } from './devops-dashboard'
 
-const storage: any = reactive(
-  GM_getValue(storageKey, {
-    enable: false,
-  }),
-)
-
-const enable = ref(storage.enable)
+const { enable } = useGMStorageWithEnable(storageKey, { enable: false })
 
 watch(enable, (val) => {
-  storage.enable = val
-  GM_setValue(storageKey, storage)
-  if (location.href.includes(url)) {
+  if (val && location.href.includes(urls.devopsDashboard)) {
     location.reload()
   }
 })

@@ -1,18 +1,12 @@
 <script setup lang="ts">
+import type { EventData } from '~/types'
 import { Delete, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { onMounted, ref } from 'vue'
-import JsonEditor from '../../components/jsonEditor.vue'
+import JsonEditor from '~/components/jsonEditor.vue'
 import { storageKey } from './event-mock'
 import EventMock from './handle'
 
-interface AccordionItem {
-  id: string
-  title: string
-  data: object | undefined
-  isBuiltIn?: boolean
-  template?: string
-}
+type AccordionItem = EventData
 
 const eventTemplates = [
   { label: '点击事件', value: 'click', data: { type: 'click', target: '#button', timestamp: Date.now() } },

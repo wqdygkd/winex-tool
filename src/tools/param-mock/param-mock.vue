@@ -1,48 +1,25 @@
 <script setup lang="ts">
-import type { ParamMockRule, StorageData } from './param-mock'
+import type { ParamMockRule, ParamMockStorage } from '~/types'
+import { useGMStorage } from '~/composables/useGMStorage'
 import { storageKey } from './param-mock'
 
-const enableMock = ref(false)
-const rules = ref<ParamMockRule[]>([])
+const { data: storage, save } = useGMStorage<ParamMockStorage>(storageKey, {
+  enable: false,
+  rules: [],
+}, { autoSave: false })
+
+const enableMock = computed(() => storage.value.enable)
+const rules = computed(() => storage.value.rules)
 const saving = ref(false)
 const selectedRules = ref<string[]>([])
 
-function loadData() {
-  try {
-    const storage = GM_getValue<StorageData>(storageKey, {
-      enable: false,
-      rules: [],
-    })
-    enableMock.value = storage.enable
-    rules.value = storage.rules
-  } catch (error) {
-    console.error('Failed to load param mock data:', error)
-  }
-}
-
-function saveData() {
-  saving.value = true
-  try {
-    const data: StorageData = {
-      enable: enableMock.value,
-      rules: rules.value,
-    }
-    GM_setValue(storageKey, data)
-  } catch (error) {
-    console.error('Failed to save param mock data:', error)
-  } finally {
-    saving.value = false
-  }
-}
-
-// 批量操作函数
 function batchEnable() {
   rules.value.forEach((rule) => {
     if (selectedRules.value.includes(rule.id)) {
       rule.enabled = true
     }
   })
-  saveData()
+  save()
 }
 
 function batchDisable() {
@@ -51,13 +28,13 @@ function batchDisable() {
       rule.enabled = false
     }
   })
-  saveData()
+  save()
 }
 
 function batchDelete() {
-  rules.value = rules.value.filter(rule => !selectedRules.value.includes(rule.id))
+  storage.value.rules = rules.value.filter(rule => !selectedRules.value.includes(rule.id))
   selectedRules.value = []
-  saveData()
+  save()
 }
 
 function addRule() {
@@ -69,21 +46,16 @@ function addRule() {
     remark: '',
   }
   rules.value.push(newRule)
-  saveData()
+  save()
 }
 
 function deleteRule(id: string) {
-  rules.value = rules.value.filter(rule => rule.id !== id)
-  saveData()
+  storage.value.rules = rules.value.filter(rule => rule.id !== id)
+  save()
 }
 
-onMounted(() => {
-  loadData()
-})
-
-// 监听 enableMock 变化，自动保存
 watch(enableMock, () => {
-  saveData()
+  save()
 })
 </script>
 
@@ -133,7 +105,7 @@ watch(enableMock, () => {
 
         <el-table-column label="参数名称" width="150">
           <template #default="{ row }">
-            <el-input v-model="row.paramNo" placeholder="输入参数名称" @change="saveData" />
+            <el-input v-model="row.paramNo" placeholder="输入参数名称" @change="save" />
           </template>
         </el-table-column>
         <el-table-column label="模拟值" width="300">
@@ -148,7 +120,7 @@ watch(enableMock, () => {
               style="width: 100%"
               clearable
               no-data-text="直接输入值并按回车创建"
-              @change="saveData"
+              @change="save"
             >
               <el-option v-for="option in row.mockValue" :key="option" :label="option" :value="option" />
             </el-select>
@@ -156,12 +128,12 @@ watch(enableMock, () => {
         </el-table-column>
         <el-table-column label="备注">
           <template #default="{ row }">
-            <el-input v-model="row.remark" placeholder="输入备注" @change="saveData" />
+            <el-input v-model="row.remark" placeholder="输入备注" @change="save" />
           </template>
         </el-table-column>
         <el-table-column prop="enabled" label="启用" width="80">
           <template #default="{ row }">
-            <el-switch v-model="row.enabled" @change="saveData" />
+            <el-switch v-model="row.enabled" @change="save" />
           </template>
         </el-table-column>
         <el-table-column label="操作" width="80">
