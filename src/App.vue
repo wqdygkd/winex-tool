@@ -32,6 +32,10 @@ GM_registerMenuCommand('设置', () => {
 
 <style scoped lang="scss">
 .floating-icon {
-  font-size: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+  text-align: center;
 }
 </style>

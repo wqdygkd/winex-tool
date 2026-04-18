@@ -119,50 +119,85 @@ function deleteAll() {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .storage-copy {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+  padding: 0;
 }
+
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
-::v-deep .card {
-  border-radius: 8px;
-  .wqdy-card__body {
-    padding: 3px 10px;
+
+.card {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  transition: all 0.2s ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  }
+
+  :deep(.wqdy-card__body) {
+    padding: 16px 20px;
   }
 }
+
 .card__row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
+
 .card__info {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
 }
+
 .host {
   flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
   word-break: break-all;
 }
+
 .counts {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  color: #666;
-  font-size: 12px;
 }
+
 .count {
-  padding: 2px 6px;
-  border-radius: 10px;
-  background: #f5f7fa;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
 }
+
 .card__buttons {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+}
+
+:deep(.wqdy-empty) {
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 </style>

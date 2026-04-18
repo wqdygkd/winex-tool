@@ -142,39 +142,52 @@ defineExpose({
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .json-editor-container {
   display: flex;
   flex-direction: column;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   overflow: hidden;
+  background: #fff;
 }
 
 .editor-toolbar {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #dcdfe6;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
   gap: 8px;
 }
 
 .code-editor {
   flex: 1;
+  min-height: 200px;
 }
 
 :deep(.cm-editor) {
   height: 100%;
   outline: none;
+  // background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
 :deep(.cm-scroller) {
-  font-family: inherit;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', Consolas, monospace;
 }
+
+// :deep(.cm-content) {
+//   color: #e2e8f0;
+//   font-size: 13px;
+// }
 
 :deep(.cm-focused) {
   outline: none;
-  border: 1px solid #409eff;
+}
+
+:deep(.cm-gutters) {
+  background: transparent;
+  border-color: #475569;
+  color: #94a3b8;
 }
 </style>

@@ -5,3 +5,348 @@
 );
 
 @use 'element-plus/theme-chalk/src/message.scss' as *;
+
+// 全局按钮样式优化
+.wqdy-button {
+  --wqdy-button-border-radius: 8px;
+  border-radius: var(--wqdy-button-border-radius);
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Primary 按钮 - 渐变效果
+  &.wqdy-button--primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, #4f5fc2 0%, #5e3780 100%);
+      transform: translateY(0);
+    }
+
+    &.is-disabled,
+    &.is-disabled:hover {
+      background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%);
+      box-shadow: none;
+      transform: none;
+    }
+  }
+
+  // Success 按钮 - 绿色渐变
+  &.wqdy-button--success {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #0d9668 0%, #2cc48c 100%);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, #0a8458 0%, #28b57d 100%);
+      transform: translateY(0);
+    }
+  }
+
+  // Warning 按钮 - 橙色渐变
+  &.wqdy-button--warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+      transform: translateY(0);
+    }
+  }
+
+  // Danger 按钮 - 红色渐变
+  &.wqdy-button--danger {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+      transform: translateY(0);
+    }
+  }
+
+  // Info 按钮 - 灰蓝色渐变
+  &.wqdy-button--info {
+    background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
+
+    &:hover,
+    &:focus {
+      background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+      box-shadow: 0 6px 16px rgba(100, 116, 139, 0.3);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      background: linear-gradient(135deg, #334155 0%, #475569 100%);
+      transform: translateY(0);
+    }
+  }
+
+  // Default 按钮 - 简洁风格
+  &.wqdy-button--default {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    &:hover,
+    &:focus {
+      background: #f8fafc;
+      border-color: #667eea;
+      color: #667eea;
+      box-shadow: 0 2px 6px rgba(102, 126, 234, 0.1);
+    }
+
+    &:active {
+      background: #f1f5f9;
+      border-color: #5a6fd6;
+    }
+  }
+
+  // Plain 按钮 - 轻量风格
+  &.is-plain {
+    background: transparent;
+    border: 1px solid currentcolor;
+
+    &.wqdy-button--primary {
+      color: #667eea;
+      border-color: rgba(102, 126, 234, 0.4);
+
+      &:hover,
+      &:focus {
+        background: rgba(102, 126, 234, 0.1);
+        color: #5a6fd6;
+        border-color: #667eea;
+      }
+    }
+
+    &.wqdy-button--success {
+      color: #10b981;
+      border-color: rgba(16, 185, 129, 0.4);
+
+      &:hover,
+      &:focus {
+        background: rgba(16, 185, 129, 0.1);
+        color: #0d9668;
+        border-color: #10b981;
+      }
+    }
+
+    &.wqdy-button--danger {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
+
+      &:hover,
+      &:focus {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border-color: #ef4444;
+      }
+    }
+
+    &.wqdy-button--warning {
+      color: #f59e0b;
+      border-color: rgba(245, 158, 11, 0.4);
+
+      &:hover,
+      &:focus {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        border-color: #f59e0b;
+      }
+    }
+
+    &.wqdy-button--info {
+      color: #64748b;
+      border-color: rgba(100, 116, 139, 0.4);
+
+      &:hover,
+      &:focus {
+        background: rgba(100, 116, 139, 0.1);
+        color: #475569;
+        border-color: #64748b;
+      }
+    }
+  }
+
+  // Small 尺寸
+  &.wqdy-button--small {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  // Large 尺寸
+  &.wqdy-button--large {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+
+  // 加载状态
+  &.is-loading {
+    opacity: 0.85;
+    cursor: not-allowed;
+  }
+
+  // 图标按钮
+  .wqdy-icon {
+    transition: transform 0.25s ease;
+  }
+
+  &:hover .wqdy-icon {
+    transform: scale(1.1);
+  }
+}
+
+// 按钮组样式
+.wqdy-button-group {
+  .wqdy-button {
+    &:first-child {
+      border-radius: 8px 0 0 8px;
+    }
+
+    &:last-child {
+      border-radius: 0 8px 8px 0;
+    }
+
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+  }
+}
+
+// Switch 样式优化
+.wqdy-switch {
+  --wqdy-switch-border-radius: 6px;
+  border-radius: var(--wqdy-switch-border-radius);
+
+  &.is-checked {
+    .wqdy-switch__core {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+    }
+  }
+
+  .wqdy-switch__core {
+    border-radius: 6px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Small 尺寸
+  &.wqdy-switch--small {
+    .wqdy-switch__core {
+      border-radius: 4px;
+    }
+  }
+}
+
+// Input 样式优化
+.wqdy-input {
+  .wqdy-input__wrapper {
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    &.is-focus {
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2), 0 2px 6px rgba(102, 126, 234, 0.1);
+    }
+  }
+}
+
+// Select 样式优化
+.wqdy-select {
+  .wqdy-input__wrapper {
+    border-radius: 8px;
+  }
+
+  .wqdy-select__wrapper {
+    border-radius: 8px;
+  }
+}
+
+// Checkbox 样式优化
+.wqdy-checkbox {
+  .wqdy-checkbox__inner {
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  &.is-checked {
+    .wqdy-checkbox__inner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+    }
+  }
+}
+
+// Tag 样式优化
+.wqdy-tag {
+  border-radius: 6px;
+  font-weight: 500;
+
+  &.wqdy-tag--primary {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    border-color: rgba(102, 126, 234, 0.3);
+    color: #667eea;
+  }
+
+  &.wqdy-tag--success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  &.wqdy-tag--warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+  }
+
+  &.wqdy-tag--danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(248, 113, 113, 0.15) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+
+  &.wqdy-tag--info {
+    background: linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(148, 163, 184, 0.15) 100%);
+    border-color: rgba(100, 116, 139, 0.3);
+    color: #64748b;
+  }
+}

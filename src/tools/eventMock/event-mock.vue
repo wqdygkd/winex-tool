@@ -329,39 +329,72 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .event-mock-container {
-  padding: 20px;
-  overflow-y: auto;
+  padding: 0;
 }
 
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
 }
 
 .event-accordion {
-  margin-top: 20px;
+  border: none;
+
+  :deep(.wqdy-collapse-item__header) {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    height: auto;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    }
+
+    &.is-active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+      color: #fff;
+    }
+  }
+
+  :deep(.wqdy-collapse-item__wrap) {
+    border: none;
+    background: transparent;
+  }
+
+  :deep(.wqdy-collapse-item__content) {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
 }
 
 .collapse-item-title {
   display: flex;
   align-items: center;
-  width: 100%;
-}
-
-.collapse-item-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 16px;
   width: 100%;
   cursor: pointer;
 }
 
 .input-group {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   flex: 1;
 }
 
@@ -369,31 +402,56 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-}
 
-.input-row label {
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-}
+  label {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #64748b;
+  }
 
-.input-row .el-input {
-  width: 180px;
-}
+  :deep(.wqdy-input) {
+    width: 160px;
 
-.collapse-item-title:hover {
-  background-color: #f5f7fa;
+    .wqdy-input__wrapper {
+      border-radius: 6px;
+    }
+  }
 }
 
 .event-template-section {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
+
+  :deep(.wqdy-select) {
+    flex: 1;
+    min-width: 200px;
+
+    .wqdy-input__wrapper {
+      border-radius: 6px;
+    }
+  }
 }
 
-.event-template-section .el-select {
-  flex: 1;
-  min-width: 200px;
+// Dialog styling
+:deep(.wqdy-dialog) {
+  border-radius: 12px;
+
+  .wqdy-dialog__header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+
+    .wqdy-dialog__title {
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+
+  .wqdy-dialog__body {
+    padding: 20px;
+  }
 }
 </style>
