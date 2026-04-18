@@ -19,45 +19,214 @@ const dialogVisible = computed({
     emit('update:modelValue', val)
   },
 })
+
+const tabs = [
+  { name: EventMock.name, component: EventMock, icon: '⚡' },
+  { name: StorageCopy.name, component: StorageCopy, icon: '📦' },
+  { name: ParamMock.name, component: ParamMock, icon: '🔧' },
+  { name: Others.name, component: Others, icon: '🎨' },
+  { name: HotkeyPatch.name, component: HotkeyPatch, icon: '⌨️' },
+]
+
+const activeTab = ref(0)
 </script>
 
 <template>
-  <el-dialog v-model="dialogVisible" title="设置" width="80%" draggable :modal="false" :close-on-click-modal="false" modal-class="wqdy-custom-dialog">
-    <el-container style="height: 600px">
-      <el-tabs tab-position="left">
-        <el-tab-pane :label="EventMock.name">
-          <EventMock />
-        </el-tab-pane>
-        <el-tab-pane :label="StorageCopy.name">
-          <StorageCopy />
-        </el-tab-pane>
-        <el-tab-pane :label="ParamMock.name">
-          <ParamMock />
-        </el-tab-pane>
-        <el-tab-pane :label="Others.name">
-          <Others />
-        </el-tab-pane>
-        <el-tab-pane :label="HotkeyPatch.name">
-          <HotkeyPatch />
-        </el-tab-pane>
-      </el-tabs>
-    </el-container>
+  <el-dialog
+    v-model="dialogVisible"
+    width="80%"
+    draggable
+    :modal="false"
+    :close-on-click-modal="false"
+    modal-class="wqdy-custom-dialog"
+    class="modern-dialog"
+  >
+    <template #header>
+      <div class="dialog-header">
+        <h2 class="dialog-title">
+          <span class="title-icon">⚙️</span>
+          Winex Tool 设置
+        </h2>
+        <p class="dialog-subtitle">
+          开发辅助工具集
+        </p>
+      </div>
+    </template>
+
+    <div class="dialog-body">
+      <div class="tabs-nav">
+        <button
+          v-for="(tab, index) in tabs"
+          :key="tab.name"
+          class="tab-item"
+          :class="{ active: activeTab === index }"
+          @click="activeTab = index"
+        >
+          <span class="tab-icon">{{ tab.icon }}</span>
+          <span class="tab-label">{{ tab.name }}</span>
+        </button>
+      </div>
+
+      <div class="tab-content">
+        <Transition name="tab-fade" mode="out-in">
+          <component :is="tabs[activeTab].component" :key="activeTab" />
+        </Transition>
+      </div>
+    </div>
   </el-dialog>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.title-icon {
+  font-size: 22px;
+}
+
+.dialog-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dialog-body {
+  display: flex;
+  min-height: 480px;
+  background: #f8fafc;
+}
+
+.tabs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  background: #fff;
+  border-right: 1px solid #e2e8f0;
+  min-width: 140px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: #64748b;
+  text-align: left;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #334155;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  }
+}
+
+.tab-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.tab-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.tab-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 480px;
+}
+
+// Tab transition
+.tab-fade-enter-active,
+.tab-fade-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.tab-fade-enter-from {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.tab-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+</style>
 
 <style lang="scss">
 .wqdy-custom-dialog {
   pointer-events: none;
+
   .wqdy-overlay-dialog {
     pointer-events: none;
   }
+
   .wqdy-dialog {
     pointer-events: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    padding: 0;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
   }
-  .wqdy-tabs--left {
-    width: 100%;
+
+  .wqdy-dialog__header {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px 12px 0 0;
+    margin: 0;
+  }
+
+  .wqdy-dialog__body {
+    padding: 0;
+  }
+
+  .wqdy-dialog__headerbtn {
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .wqdy-dialog__close {
+      color: #fff;
+      font-size: 16px;
+    }
   }
 }
 </style>
