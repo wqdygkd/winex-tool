@@ -1,20 +1,19 @@
 import { createApp } from 'vue'
-// import './inject.ts'
 
 import App from './App.vue'
-import { EventMockInit } from './tools/eventMock'
-// import produceBuild from './hooks/winex-devops/produceBuild'
-// import products from './hooks/winex-devops/products'
-// import productManager from './hooks/winex-devops/productManager'
-// import 运营平台登录, { url as 运营平台登录url } from './hooks/winex-devops/运营平台登录'
-import { OthersInit } from './tools/others'
-import { ParamMockInit } from './tools/param-mock'
+import { initAllTools } from './tools/registry'
 
 import './utils/GM'
+// 导入并注册所有工具模块
+import './tools/eventMock'
+import './tools/others'
+import './tools/param-mock'
+import './tools/storage-copy'
 
-EventMockInit()
-OthersInit()
-ParamMockInit()
+import './tools/hotkey-patch'
+
+// 初始化所有工具
+initAllTools()
 
 const app = createApp(App)
 

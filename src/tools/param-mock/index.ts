@@ -1,8 +1,21 @@
-import { init } from './param-mock'
-import ParamMockComponent from './param-mock.vue'
+/**
+ * 参数模拟工具模块
+ */
 
-export const ParamMockInit = init
+import { registerTool } from '../registry'
+import { init, storageKey } from './param-mock'
+import ParamMock from './param-mock.vue'
 
-ParamMockComponent.name = '参数模拟'
+const name = '参数模拟'
 
-export default ParamMockComponent
+registerTool({
+  name,
+  storageKey,
+  init,
+  component: ParamMock,
+})
+
+ParamMock.name = name
+
+export { init as ParamMockInit }
+export default ParamMock
