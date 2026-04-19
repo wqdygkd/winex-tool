@@ -29,27 +29,128 @@ const tabs = [
 ]
 
 const activeTab = ref(0)
+
+// 自定义拖拽逻辑 - 允许拖拽到屏幕外
+const isDragging = ref(false)
+const dragOffset = ref({ x: 0, y: 0 })
+
+function getDialogEl(): HTMLElement | null {
+  return document.querySelector('.wqdy-custom-dialog .wqdy-dialog') as HTMLElement | null
+}
+
+function startDrag(event: MouseEvent) {
+  const dialogEl = getDialogEl()
+  if (!dialogEl) return
+  if (event.target instanceof Element && event.target.closest('.wqdy-dialog__headerbtn')) return
+  if (event.target instanceof Element && event.target.closest('.reset-btn')) return
+
+  isDragging.value = true
+
+  const rect = dialogEl.getBoundingClientRect()
+  dragOffset.value = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  }
+
+  document.body.style.userSelect = 'none'
+
+  const cleanupMove = useEventListener(document, 'mousemove', handleDrag)
+  const cleanupUp = useEventListener(document, 'mouseup', () => {
+    isDragging.value = false
+    document.body.style.userSelect = ''
+    cleanupMove()
+    cleanupUp()
+  })
+
+  event.preventDefault()
+}
+
+function handleDrag(event: MouseEvent) {
+  if (!isDragging.value) return
+
+  const dialogEl = getDialogEl()
+  if (!dialogEl) return
+
+  const x = event.clientX - dragOffset.value.x
+  const y = event.clientY - dragOffset.value.y
+
+  dialogEl.style.position = 'fixed'
+  dialogEl.style.left = `${x}px`
+  dialogEl.style.top = `${y}px`
+  dialogEl.style.margin = '0'
+  dialogEl.style.transform = 'none'
+}
+
+// 重置位置
+function resetPosition() {
+  const dialogEl = getDialogEl()
+  if (!dialogEl) return
+  dialogEl.style.position = ''
+  dialogEl.style.left = ''
+  dialogEl.style.top = ''
+  dialogEl.style.margin = ''
+  dialogEl.style.transform = ''
+}
+
+// 处理双击事件 - 直接绑定到dialog元素
+function setupDoubleClick() {
+  const dialogEl = getDialogEl()
+  if (!dialogEl) return
+
+  dialogEl.addEventListener('dblclick', resetPosition)
+}
+
+function removeDoubleClick() {
+  const dialogEl = getDialogEl()
+  if (!dialogEl) return
+
+  dialogEl.removeEventListener('dblclick', resetPosition)
+}
+
+// 打开时重置位置并添加双击监听
+watch(dialogVisible, (val) => {
+  if (val) {
+    setTimeout(() => {
+      resetPosition()
+      setupDoubleClick()
+    }, 100)
+  } else {
+    removeDoubleClick()
+  }
+})
 </script>
 
 <template>
   <el-dialog
     v-model="dialogVisible"
     width="80%"
-    draggable
     :modal="false"
     :close-on-click-modal="false"
     modal-class="wqdy-custom-dialog"
     class="modern-dialog"
   >
     <template #header>
-      <div class="dialog-header">
-        <h2 class="dialog-title">
-          <span class="title-icon">⚙️</span>
-          Winex Tool 设置
-        </h2>
-        <p class="dialog-subtitle">
-          开发辅助工具集
-        </p>
+      <div
+        class="dialog-header"
+        :class="{ isDragging }"
+        @mousedown="startDrag"
+      >
+        <div class="header-content">
+          <h2 class="dialog-title">
+            <span class="title-icon">⚙️</span>
+            Winex Tool 设置
+          </h2>
+          <p class="dialog-subtitle">
+            开发辅助工具集
+          </p>
+        </div>
+        <button
+          class="reset-btn"
+          title="重置位置"
+          @click="resetPosition"
+        >
+          ↺
+        </button>
       </div>
     </template>
 
@@ -79,6 +180,19 @@ const activeTab = ref(0)
 <style scoped lang="scss">
 .dialog-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  padding-right: 60px;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.header-content {
+  display: flex;
   flex-direction: column;
   gap: 4px;
 }
@@ -91,16 +205,35 @@ const activeTab = ref(0)
   font-size: 18px;
   font-weight: 600;
   color: #fff;
+  cursor: grab;
 }
 
 .title-icon {
   font-size: 22px;
+  cursor: grab;
 }
 
 .dialog-subtitle {
   margin: 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.7);
+  cursor: grab;
+}
+
+.reset-btn {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 28px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
 }
 
 .dialog-body {
