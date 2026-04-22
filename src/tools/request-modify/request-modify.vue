@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { HeaderGroup, HeaderModifyStorage, HeaderOperation, HeaderRule } from '~/types'
+import type { RequestModifyGroup, RequestModifyStorage, HeaderOperation, RequestModifyRule, ResponseOp, ResponseModify } from '~/types'
 import { useGMStorage } from '~/composables/useGMStorage'
-import { storageKey } from './header-modify'
+import { storageKey } from './request-modify'
 
-const { data: storage, save } = useGMStorage<HeaderModifyStorage>(storageKey, {
+const { data: storage, save } = useGMStorage<RequestModifyStorage>(storageKey, {
   enable: false,
   groups: [],
 }, { autoSave: false })
@@ -19,7 +19,7 @@ const groups = computed(() => storage.value.groups)
 
 const dialogVisible = ref(false)
 const editingGroupId = ref<string>('')
-const editingRule = ref<HeaderRule | null>(null)
+const editingRule = ref<RequestModifyRule | null>(null)
 
 const urlMatchTypeOptions = [
   { label: '包含', value: 'contains' },
@@ -27,16 +27,27 @@ const urlMatchTypeOptions = [
   { label: '精确', value: 'exact' },
 ]
 
-const opTypeOptions = [
+const headerOpTypeOptions = [
   { label: '设置', value: 'set' },
   { label: '追加', value: 'append' },
   { label: '删除', value: 'delete' },
 ]
 
+const responseOpTypeOptions = [
+  { label: '替换字段', value: 'replace' },
+  { label: '合并数据', value: 'merge' },
+  { label: '整体替换', value: 'full' },
+]
+
+const modifyTypeOptions = [
+  { label: '静态修改', value: 'static' },
+  { label: '动态脚本', value: 'script' },
+]
+
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
 
 function addGroup() {
-  const newGroup: HeaderGroup = {
+  const newGroup: RequestModifyGroup = {
     id: Date.now().toString(),
     name: `分组 ${groups.value.length + 1}`,
     enabled: true,
@@ -55,13 +66,14 @@ function addRule(groupId: string) {
   const group = groups.value.find(g => g.id === groupId)
   if (!group) return
 
-  const newRule: HeaderRule = {
+  const newRule: RequestModifyRule = {
     id: Date.now().toString(),
     enabled: true,
     urlPattern: '',
     urlMatchType: 'contains',
     methods: [],
     headerOps: [],
+    responseModify: undefined,
     remark: '',
   }
   group.rules.push(newRule)
@@ -76,7 +88,7 @@ function deleteRule(groupId: string, ruleId: string) {
   save()
 }
 
-function editRule(groupId: string, rule: HeaderRule) {
+function editRule(groupId: string, rule: RequestModifyRule) {
   editingGroupId.value = groupId
   editingRule.value = JSON.parse(JSON.stringify(rule))
   dialogVisible.value = true
@@ -98,6 +110,35 @@ function deleteHeaderOp(index: number) {
   editingRule.value.headerOps.splice(index, 1)
 }
 
+function enableResponseModify() {
+  if (!editingRule.value) return
+  editingRule.value.responseModify = {
+    modifyType: 'static',
+    responseOps: [],
+    statusCode: undefined,
+    delayMs: undefined,
+  }
+}
+
+function disableResponseModify() {
+  if (!editingRule.value) return
+  editingRule.value.responseModify = undefined
+}
+
+function addResponseOp() {
+  if (!editingRule.value?.responseModify) return
+  editingRule.value.responseModify.responseOps?.push({
+    key: '',
+    value: '',
+    opType: 'replace',
+  })
+}
+
+function deleteResponseOp(index: number) {
+  if (!editingRule.value?.responseModify?.responseOps) return
+  editingRule.value.responseModify.responseOps.splice(index, 1)
+}
+
 function saveRule() {
   if (!editingRule.value) return
 
@@ -114,7 +155,7 @@ function saveRule() {
   editingRule.value = null
 }
 
-function getMethodDisplay(methods: HeaderRule['methods']): string {
+function getMethodDisplay(methods: RequestModifyRule['methods']): string {
   if (!methods || methods.length === 0) return '全部'
   return methods.join(', ')
 }
@@ -124,17 +165,26 @@ function getHeaderOpsCount(headerOps: HeaderOperation[]): string {
   return `${headerOps.length}个`
 }
 
-function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
+function getUrlMatchTypeLabel(type: RequestModifyRule['urlMatchType']): string {
   const option = urlMatchTypeOptions.find(o => o.value === type)
   return option?.label ?? type
+}
+
+function getResponseModifyInfo(responseModify?: ResponseModify): string {
+  if (!responseModify) return ''
+  const parts: string[] = []
+  if (responseModify.statusCode) parts.push(`状态码:${responseModify.statusCode}`)
+  if (responseModify.delayMs) parts.push(`延迟:${responseModify.delayMs}ms`)
+  if (responseModify.responseOps?.length) parts.push(`${responseModify.responseOps.length}个操作`)
+  return parts.join(', ')
 }
 </script>
 
 <template>
-  <div class="header-modify-container">
+  <div class="request-modify-container">
     <div class="header">
       <div class="header-left">
-        <h3>请求头修改</h3>
+        <h3>请求修改</h3>
         <el-button type="primary" size="small" @click="addGroup">
           添加分组
         </el-button>
@@ -200,16 +250,20 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
           </div>
           <div class="rule-info">
             <span class="info-item">
-              <span class="info-label">匹配方式:</span>
+              <span class="info-label">匹配:</span>
               {{ getUrlMatchTypeLabel(rule.urlMatchType) }}
             </span>
             <span class="info-item">
-              <span class="info-label">请求方法:</span>
+              <span class="info-label">方法:</span>
               {{ getMethodDisplay(rule.methods) }}
             </span>
             <span class="info-item">
-              <span class="info-label">Header数:</span>
+              <span class="info-label">Headers:</span>
               {{ getHeaderOpsCount(rule.headerOps) }}
+            </span>
+            <span v-if="rule.responseModify" class="info-item response-info">
+              <span class="info-label">响应:</span>
+              {{ getResponseModifyInfo(rule.responseModify) }}
             </span>
             <span v-if="rule.remark" class="info-item">
               <span class="info-label">备注:</span>
@@ -223,8 +277,9 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
     <el-dialog
       v-model="dialogVisible"
       title="编辑规则"
-      width="700px"
+      width="750px"
       :close-on-click-modal="false"
+      :lock-scroll="false"
     >
       <div v-if="editingRule" class="edit-form">
         <div class="form-row">
@@ -266,9 +321,10 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
           />
         </div>
 
-        <div class="header-ops-section">
-          <div class="header-ops-header">
-            <span class="form-label">Header操作</span>
+        <!-- Header 操作区域 -->
+        <div class="ops-section">
+          <div class="ops-header">
+            <span class="form-label">请求头操作</span>
             <el-button type="primary" size="small" @click="addHeaderOp">
               添加Header
             </el-button>
@@ -284,7 +340,7 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
               <template #default="{ row }">
                 <el-select v-model="row.opType">
                   <el-option
-                    v-for="item in opTypeOptions"
+                    v-for="item in headerOpTypeOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -310,9 +366,122 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
             </el-table-column>
           </el-table>
 
-          <div v-if="editingRule.headerOps.length === 0" class="empty-header-ops">
+          <div v-if="editingRule.headerOps.length === 0" class="empty-ops">
             暂无Header操作，点击"添加Header"开始配置
           </div>
+        </div>
+
+        <!-- 响应修改区域 -->
+        <div class="ops-section response-section">
+          <div class="ops-header">
+            <span class="form-label">响应修改</span>
+            <el-switch
+              :model-value="editingRule.responseModify !== undefined"
+              active-text="启用"
+              inactive-text="禁用"
+              @change="(val: boolean) => val ? enableResponseModify() : disableResponseModify()"
+            />
+          </div>
+
+          <template v-if="editingRule.responseModify">
+            <div class="response-basic">
+              <div class="form-row">
+                <label class="form-label">响应状态码</label>
+                <el-input-number
+                  v-model="editingRule.responseModify.statusCode"
+                  :min="100"
+                  :max="599"
+                  placeholder="留空保持原状态"
+                  style="width: 120px"
+                  controls-position="right"
+                />
+                <span class="input-hint">留空保持原状态</span>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label">响应延迟</label>
+                <el-input-number
+                  v-model="editingRule.responseModify.delayMs"
+                  :min="0"
+                  :max="30000"
+                  placeholder="留空不延迟"
+                  style="width: 120px"
+                  controls-position="right"
+                />
+                <span class="input-hint">ms，留空不延迟</span>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label">修改类型</label>
+                <el-select v-model="editingRule.responseModify.modifyType" style="width: 120px">
+                  <el-option
+                    v-for="item in modifyTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </div>
+            </div>
+
+            <template v-if="editingRule.responseModify.modifyType === 'static'">
+              <div class="ops-header sub-header">
+                <span>响应体操作</span>
+                <el-button type="primary" size="small" @click="addResponseOp">
+                  添加操作
+                </el-button>
+              </div>
+
+              <el-table :data="editingRule.responseModify.responseOps" border size="small">
+                <el-table-column label="字段路径" width="180">
+                  <template #default="{ row }">
+                    <el-input v-model="row.key" placeholder="如 data.status" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作类型" width="120">
+                  <template #default="{ row }">
+                    <el-select v-model="row.opType">
+                      <el-option
+                        v-for="item in responseOpTypeOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="值">
+                  <template #default="{ row }">
+                    <el-input
+                      v-model="row.value"
+                      placeholder="JSON值，如 success 或对象"
+                      type="textarea"
+                      :rows="1"
+                    />
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="70">
+                  <template #default="{ $index }">
+                    <el-button type="danger" size="small" link @click="deleteResponseOp($index)">
+                      删除
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+              <div v-if="!editingRule.responseModify.responseOps?.length" class="empty-ops">
+                暂无响应体操作，点击"添加操作"开始配置
+              </div>
+            </template>
+
+            <template v-if="editingRule.responseModify.modifyType === 'script'">
+              <div class="script-placeholder">
+                <el-alert type="info" :closable="false">
+                  动态脚本功能将在后续版本实现
+                </el-alert>
+              </div>
+            </template>
+          </template>
         </div>
       </div>
 
@@ -329,7 +498,7 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
 </template>
 
 <style scoped lang="scss">
-.header-modify-container {
+.request-modify-container {
   padding: 0;
 }
 
@@ -464,6 +633,10 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
   color: #94a3b8;
 }
 
+.response-info {
+  color: #8b5cf6;
+}
+
 .edit-form {
   .form-row {
     display: flex;
@@ -477,23 +650,43 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
     flex-shrink: 0;
     font-size: 14px;
     color: #334155;
+    font-weight: 500;
+  }
+
+  .input-hint {
+    color: #94a3b8;
+    font-size: 12px;
   }
 }
 
-.header-ops-section {
+.ops-section {
   margin-top: 20px;
   border-top: 1px solid #e2e8f0;
   padding-top: 16px;
 }
 
-.header-ops-header {
+.ops-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+
+  .form-label {
+    width: auto;
+    font-size: 14px;
+    font-weight: 600;
+  }
 }
 
-.empty-header-ops {
+.sub-header {
+  margin-top: 16px;
+  span {
+    font-size: 13px;
+    color: #475569;
+  }
+}
+
+.empty-ops {
   text-align: center;
   padding: 20px;
   color: #94a3b8;
@@ -501,6 +694,22 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
   background: #f8fafc;
   border-radius: 8px;
   border: 1px dashed #e2e8f0;
+}
+
+.response-section {
+  background: #faf5ff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid #e9d5ff;
+}
+
+.response-basic {
+  margin-bottom: 16px;
+}
+
+.script-placeholder {
+  padding: 20px;
 }
 
 :deep(.wqdy-table) {
@@ -536,9 +745,6 @@ function getUrlMatchTypeLabel(type: HeaderRule['urlMatchType']): string {
 }
 
 :deep(.wqdy-dialog__body) {
-  padding: 20px 24px;
-}
-:deep(.wqdy-dialog__footer) {
   padding: 20px 24px;
 }
 </style>

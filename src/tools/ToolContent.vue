@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import EventMock from './eventMock'
-import HeaderModify from './header-modify'
+import RequestModify from './request-modify'
 import HotkeyPatch from './hotkey-patch'
 import Others from './others'
 import ParamMock from './param-mock'
@@ -25,7 +25,7 @@ const tabs = [
   { name: EventMock.name, component: EventMock, icon: '⚡' },
   { name: StorageCopy.name, component: StorageCopy, icon: '📦' },
   { name: ParamMock.name, component: ParamMock, icon: '🔧' },
-  { name: HeaderModify.name, component: HeaderModify, icon: '📝' },
+  { name: RequestModify.name, component: RequestModify, icon: '📝' },
   { name: Others.name, component: Others, icon: '🎨' },
   { name: HotkeyPatch.name, component: HotkeyPatch, icon: '⌨️' },
 ]

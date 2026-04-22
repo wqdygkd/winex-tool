@@ -7,8 +7,8 @@ export { EventMockInit } from './eventMock'
 
 // 导出工具组件
 export { default as EventMock } from './eventMock'
-export { HeaderModifyInit } from './header-modify'
-export { default as HeaderModify } from './header-modify'
+export { RequestModifyInit } from './request-modify'
+export { default as RequestModify } from './request-modify'
 export { default as HotkeyPatch } from './hotkey-patch'
 export { OthersInit } from './others'
 
