@@ -130,6 +130,7 @@ watch(dialogVisible, (val) => {
     width="80%"
     :modal="false"
     :close-on-click-modal="false"
+    :lock-scroll="false"
     modal-class="wqdy-custom-dialog"
     class="modern-dialog"
   >
