@@ -76,3 +76,34 @@ export interface ToolModule {
   storageKey: string
   routes?: string[]
 }
+
+/** 请求头修改 - Header操作 */
+export interface HeaderOperation {
+  key: string
+  value?: string
+  opType: 'set' | 'append' | 'delete'
+}
+
+/** 请求头修改 - 规则 */
+export interface HeaderRule {
+  id: string
+  enabled: boolean
+  urlPattern: string
+  urlMatchType: 'exact' | 'regex' | 'contains'
+  methods: ('GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH')[]
+  headerOps: HeaderOperation[]
+  remark: string
+}
+
+/** 请求头修改 - 分组 */
+export interface HeaderGroup {
+  id: string
+  name: string
+  enabled: boolean
+  rules: HeaderRule[]
+}
+
+/** 请求头修改 - 存储数据 */
+export interface HeaderModifyStorage extends BaseStorageData {
+  groups: HeaderGroup[]
+}
