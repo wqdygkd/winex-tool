@@ -11,6 +11,7 @@ import './tools/param-mock'
 import './tools/storage-copy'
 
 import './tools/hotkey-patch'
+import './tools/request-modify'
 
 // 初始化所有工具
 initAllTools()
