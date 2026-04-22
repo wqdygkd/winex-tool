@@ -35,6 +35,7 @@ const activeTab = ref(0)
 // 自定义拖拽逻辑 - 允许拖拽到屏幕外
 const isDragging = ref(false)
 const dragOffset = ref({ x: 0, y: 0 })
+let cachedDialogEl: HTMLElement | null = null
 
 function getDialogEl(): HTMLElement | null {
   return document.querySelector('.wqdy-custom-dialog .wqdy-dialog') as HTMLElement | null
@@ -46,6 +47,7 @@ function startDrag(event: MouseEvent) {
   if (event.target instanceof Element && event.target.closest('.wqdy-dialog__headerbtn')) return
   if (event.target instanceof Element && event.target.closest('.reset-btn')) return
 
+  cachedDialogEl = dialogEl
   isDragging.value = true
 
   const rect = dialogEl.getBoundingClientRect()
@@ -54,11 +56,17 @@ function startDrag(event: MouseEvent) {
     y: event.clientY - rect.top,
   }
 
+  // 一次性设置固定定位样式
+  dialogEl.style.position = 'fixed'
+  dialogEl.style.margin = '0'
+  dialogEl.style.transform = 'none'
+
   document.body.style.userSelect = 'none'
 
   const cleanupMove = useEventListener(document, 'mousemove', handleDrag)
   const cleanupUp = useEventListener(document, 'mouseup', () => {
     isDragging.value = false
+    cachedDialogEl = null
     document.body.style.userSelect = ''
     cleanupMove()
     cleanupUp()
@@ -68,19 +76,13 @@ function startDrag(event: MouseEvent) {
 }
 
 function handleDrag(event: MouseEvent) {
-  if (!isDragging.value) return
-
-  const dialogEl = getDialogEl()
-  if (!dialogEl) return
+  if (!isDragging.value || !cachedDialogEl) return
 
   const x = event.clientX - dragOffset.value.x
   const y = event.clientY - dragOffset.value.y
 
-  dialogEl.style.position = 'fixed'
-  dialogEl.style.left = `${x}px`
-  dialogEl.style.top = `${y}px`
-  dialogEl.style.margin = '0'
-  dialogEl.style.transform = 'none'
+  cachedDialogEl.style.left = `${x}px`
+  cachedDialogEl.style.top = `${y}px`
 }
 
 // 重置位置
