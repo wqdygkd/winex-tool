@@ -74,23 +74,39 @@ function matchMethod(method: string, methods: HeaderRule['methods']): boolean {
   return methods.includes(method.toUpperCase() as typeof httpMethods[number])
 }
 
+/** 查找已存在的Header key（忽略大小写） */
+function findExistingHeaderKey(headers: Record<string, string>, key: string): string | undefined {
+  const lowerKey = key.toLowerCase()
+  for (const existingKey in headers) {
+    if (existingKey.toLowerCase() === lowerKey) {
+      return existingKey
+    }
+  }
+  return undefined
+}
+
 /** 应用Header操作 */
 function applyHeaders(headers: Record<string, string>, ops: HeaderOperation[]): void {
   ops.forEach((op) => {
+    const existingKey = findExistingHeaderKey(headers, op.key)
+    const targetKey = existingKey || op.key
+
     switch (op.opType) {
       case 'set':
         if (op.value !== undefined) {
-          headers[op.key] = op.value
+          headers[targetKey] = op.value
         }
         break
       case 'append':
         if (op.value !== undefined) {
-          const existing = headers[op.key]
-          headers[op.key] = existing ? `${existing}, ${op.value}` : op.value
+          const existing = headers[targetKey]
+          headers[targetKey] = existing ? `${existing}, ${op.value}` : op.value
         }
         break
       case 'delete':
-        delete headers[op.key]
+        if (existingKey) {
+          delete headers[existingKey]
+        }
         break
     }
   })
