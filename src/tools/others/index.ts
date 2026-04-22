@@ -2,13 +2,14 @@
  * 其他辅助功能工具模块
  */
 
-import { registerTool } from '../registry'
+import type { ToolModule } from '../registry'
 import { DevopsDashboardInit } from './devops-dashboard'
 import { DevopsLoginInit } from './devops-login'
 import { DisableTraceidInit } from './disable-traceid'
 import Others from './others.vue'
 
 const name = '其他辅助功能'
+const storageKey = 'others'
 
 function init() {
   DevopsDashboardInit()
@@ -16,14 +17,11 @@ function init() {
   DisableTraceidInit()
 }
 
-registerTool({
-  name,
-  storageKey: 'others',
-  init,
-  component: Others,
-})
-
 Others.name = name
 
-export { init as OthersInit }
-export default Others
+export const OthersModule: ToolModule = {
+  name,
+  storageKey,
+  init,
+  component: Others,
+}

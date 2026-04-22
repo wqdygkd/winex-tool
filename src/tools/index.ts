@@ -1,19 +1,35 @@
 /**
  * 工具模块统一导出
+ * 集中注册所有工具模块
  */
 
-// 导出各工具模块
-export { EventMockInit } from './eventMock'
+import { EventMockModule } from './eventMock'
+import { HotkeyPatchModule } from './hotkey-patch'
+import { OthersModule } from './others'
+import { ParamMockModule } from './param-mock'
+import { registerTool } from './registry'
+import { RequestModifyModule } from './request-modify'
+import { StorageCopyModule } from './storage-copy'
 
-// 导出工具组件
-export { default as EventMock } from './eventMock'
-export { RequestModifyInit } from './request-modify'
-export { default as RequestModify } from './request-modify'
-export { default as HotkeyPatch } from './hotkey-patch'
-export { OthersInit } from './others'
+// 集中注册所有工具模块
+const toolModules = [
+  EventMockModule,
+  HotkeyPatchModule,
+  OthersModule,
+  ParamMockModule,
+  RequestModifyModule,
+  StorageCopyModule,
+]
 
-export { default as Others } from './others'
-export { ParamMockInit } from './param-mock'
-export { default as ParamMock } from './param-mock'
-export { getTools, initAllTools, registerTool } from './registry'
-export { default as StorageCopy } from './storage-copy'
+toolModules.forEach(registerTool)
+
+// 导出 Vue 组件（供 ToolContent.vue 使用）
+export const EventMock = EventMockModule.component!
+export const HotkeyPatch = HotkeyPatchModule.component!
+export const Others = OthersModule.component!
+export const ParamMock = ParamMockModule.component!
+export const RequestModify = RequestModifyModule.component!
+export const StorageCopy = StorageCopyModule.component!
+
+// 导出初始化函数（供 main.ts 使用）
+export { initAllTools } from './registry'
