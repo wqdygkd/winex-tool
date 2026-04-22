@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EventMock from './eventMock'
+import HeaderModify from './header-modify'
 import HotkeyPatch from './hotkey-patch'
 import Others from './others'
 import ParamMock from './param-mock'
@@ -24,6 +25,7 @@ const tabs = [
   { name: EventMock.name, component: EventMock, icon: '⚡' },
   { name: StorageCopy.name, component: StorageCopy, icon: '📦' },
   { name: ParamMock.name, component: ParamMock, icon: '🔧' },
+  { name: HeaderModify.name, component: HeaderModify, icon: '📝' },
   { name: Others.name, component: Others, icon: '🎨' },
   { name: HotkeyPatch.name, component: HotkeyPatch, icon: '⌨️' },
 ]
@@ -337,10 +339,6 @@ watch(dialogVisible, (val) => {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px 12px 0 0;
     margin: 0;
-  }
-
-  .wqdy-dialog__body {
-    padding: 0;
   }
 
   .wqdy-dialog__headerbtn {
