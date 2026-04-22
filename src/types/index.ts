@@ -84,26 +84,43 @@ export interface HeaderOperation {
   opType: 'set' | 'append' | 'delete'
 }
 
-/** 请求头修改 - 规则 */
-export interface HeaderRule {
+/** 响应操作 */
+export interface ResponseOp {
+  key: string
+  value?: string
+  opType: 'replace' | 'merge' | 'full'
+}
+
+/** 响应修改配置 */
+export interface ResponseModify {
+  modifyType: 'static' | 'script'
+  responseOps?: ResponseOp[]
+  script?: string
+  statusCode?: number
+  delayMs?: number
+}
+
+/** 请求修改规则 */
+export interface RequestModifyRule {
   id: string
   enabled: boolean
   urlPattern: string
   urlMatchType: 'exact' | 'regex' | 'contains'
   methods: ('GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH')[]
   headerOps: HeaderOperation[]
+  responseModify?: ResponseModify
   remark: string
 }
 
-/** 请求头修改 - 分组 */
-export interface HeaderGroup {
+/** 请求修改分组 */
+export interface RequestModifyGroup {
   id: string
   name: string
   enabled: boolean
-  rules: HeaderRule[]
+  rules: RequestModifyRule[]
 }
 
-/** 请求头修改 - 存储数据 */
-export interface HeaderModifyStorage extends BaseStorageData {
-  groups: HeaderGroup[]
+/** 请求修改存储 */
+export interface RequestModifyStorage extends BaseStorageData {
+  groups: RequestModifyGroup[]
 }
