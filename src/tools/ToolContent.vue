@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import EventMock from './eventMock'
-import RequestModify from './request-modify'
-import HotkeyPatch from './hotkey-patch'
-import Others from './others'
-import ParamMock from './param-mock'
-import StorageCopy from './storage-copy'
+import {
+  EventMock,
+  HotkeyPatch,
+  Others,
+  ParamMock,
+  RequestModify,
+  StorageCopy,
+} from '.'
 
 const props = defineProps<{
   modelValue: boolean

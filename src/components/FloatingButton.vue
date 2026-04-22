@@ -34,38 +34,29 @@ const buttonStartPos = ref<Position>({ x: 0, y: 0 })
 
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
+// 直接用 computed 生成 transform 样式
+const transformStyle = computed(() => `translate(${position.value.x}px, ${position.value.y}px)`)
+
 watch(
   [windowWidth, windowHeight],
   ([newWidth, newHeight]) => {
     if (!newWidth || !newHeight) return
-    if (buttonRef.value) {
-      const buttonRect = buttonRef.value.getBoundingClientRect()
-      position.value = {
-        x: Math.min(position.value.x, newWidth - buttonRect.width - padding.value),
-        y: Math.min(position.value.y, newHeight - buttonRect.height - padding.value),
-      }
-      updateDOMPosition()
+    const buttonSize = 56
+    position.value = {
+      x: Math.min(position.value.x, newWidth - buttonSize - padding.value),
+      y: Math.min(position.value.y, newHeight - buttonSize - padding.value),
     }
   },
   { immediate: true },
 )
 
-function updateDOMPosition() {
-  if (!buttonRef.value) return
-  buttonRef.value.style.setProperty('--x', `${position.value.x}px`)
-  buttonRef.value.style.setProperty('--y', `${position.value.y}px`)
-}
-
 function startDrag(event: MouseEvent) {
-  if (!buttonRef.value) return
-
   isDragging.value = true
   dragStartPos.value = { x: event.clientX, y: event.clientY }
   buttonStartPos.value = { ...position.value }
 
   emit('dragStart')
 
-  // 添加 pointer-events 防止选中文字
   document.body.style.userSelect = 'none'
 
   const cleanupMove = useEventListener(document, 'mousemove', handleDrag)
@@ -81,41 +72,22 @@ function startDrag(event: MouseEvent) {
 
 function handleDrag(event: MouseEvent) {
   if (!isDragging.value) return
-  if (!buttonRef.value) return
 
   const deltaX = event.clientX - dragStartPos.value.x
   const deltaY = event.clientY - dragStartPos.value.y
 
-  let newX = buttonStartPos.value.x + deltaX
-  let newY = buttonStartPos.value.y + deltaY
+  const buttonSize = 56
 
-  const buttonRect = { width: 56, height: 56 }
-
-  newX = Math.max(0, Math.min(newX, windowWidth.value - buttonRect.width))
-  newY = Math.max(0, Math.min(newY, windowHeight.value - buttonRect.height))
-
-  // 直接更新 CSS 变量，实现流畅拖动
-  buttonRef.value.style.setProperty('--x', `${newX}px`)
-  buttonRef.value.style.setProperty('--y', `${newY}px`)
+  position.value = {
+    x: Math.max(0, Math.min(buttonStartPos.value.x + deltaX, windowWidth.value - buttonSize)),
+    y: Math.max(0, Math.min(buttonStartPos.value.y + deltaY, windowHeight.value - buttonSize)),
+  }
 }
 
 function stopDrag() {
   if (!isDragging.value) return
 
   isDragging.value = false
-
-  // 从 DOM 读取最终位置，同步回 Vue 状态
-  if (buttonRef.value) {
-    const x = buttonRef.value.style.getPropertyValue('--x')
-    const y = buttonRef.value.style.getPropertyValue('--y')
-    if (x && y) {
-      position.value = {
-        x: Number.parseFloat(x),
-        y: Number.parseFloat(y),
-      }
-    }
-  }
-
   emit('dragEnd', position.value)
 }
 
@@ -128,8 +100,10 @@ function handleClick(event: MouseEvent) {
 }
 
 onMounted(() => {
-  visible.value = true
-  updateDOMPosition()
+  // 延迟显示，确保位置已正确
+  requestAnimationFrame(() => {
+    visible.value = true
+  })
 })
 </script>
 
@@ -141,6 +115,7 @@ onMounted(() => {
         ref="buttonRef"
         class="floating-button"
         :class="{ 'is-dragging': isDragging, 'is-active': modelValue }"
+        :style="{ transform: transformStyle }"
         @mousedown="startDrag"
         @click="handleClick"
         @mouseenter="isHovered = true"
@@ -159,12 +134,9 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .floating-button {
-  --x: 0px;
-  --y: 0px;
   position: fixed;
   top: 0;
   left: 0;
-  transform: translate(var(--x), var(--y));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -251,32 +223,20 @@ onMounted(() => {
   }
 }
 
-// Animations
+// Animations - 只动画 opacity，位置由 inline style 控制
 .float-button-enter-active {
-  animation: float-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.3s ease;
 }
 
 .float-button-leave-active {
-  animation: float-out 0.3s ease-out;
+  transition: opacity 0.2s ease;
 }
 
-@keyframes float-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translate(var(--x), var(--y));
-  }
+.float-button-enter-from {
+  opacity: 0;
 }
 
-@keyframes float-out {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+.float-button-leave-to {
+  opacity: 0;
 }
 </style>

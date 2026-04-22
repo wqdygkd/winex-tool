@@ -1,17 +1,8 @@
 import { createApp } from 'vue'
 
 import App from './App.vue'
-import { initAllTools } from './tools/registry'
-
+import { initAllTools } from './tools'
 import './utils/GM'
-// 导入并注册所有工具模块
-import './tools/eventMock'
-import './tools/others'
-import './tools/param-mock'
-import './tools/storage-copy'
-
-import './tools/hotkey-patch'
-import './tools/request-modify'
 
 // 初始化所有工具
 initAllTools()
