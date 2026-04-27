@@ -108,7 +108,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="html">
     <Transition name="float-button">
       <div
         v-show="visible"
