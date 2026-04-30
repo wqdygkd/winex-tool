@@ -33,27 +33,7 @@ export interface ParamMockRule {
 /** 参数模拟 - 存储数据 */
 export interface ParamMockStorage extends BaseStorageData {
   rules: ParamMockRule[]
-}
-
-/** 快捷键补丁 - 字段配置 */
-export interface FieldConfig {
-  id: string
-  fieldName: string
-  value: string
-  enabled: boolean
-}
-
-/** 快捷键补丁 - SQL配置 */
-export interface SqlConfig {
-  id: string
-  name: string
-  tableName: string
-  fields: FieldConfig[]
-}
-
-/** 快捷键补丁 - 存储数据 */
-export interface HotkeyPatchStorage {
-  configs: SqlConfig[]
+  deletedDefaultRules?: string[]
 }
 
 /** Storage 克隆 - 存储项 */

@@ -6,9 +6,13 @@ import { storageKey } from './param-mock'
 const { data: storage, save } = useGMStorage<ParamMockStorage>(storageKey, {
   enable: false,
   rules: [],
+  deletedDefaultRules: [],
 }, { autoSave: false })
 
-const enableMock = computed(() => storage.value.enable)
+const enableMock = computed({
+  get: () => storage.value.enable,
+  set: (val) => { storage.value.enable = val },
+})
 const rules = computed(() => storage.value.rules)
 const saving = ref(false)
 const selectedRules = ref<string[]>([])
@@ -31,10 +35,31 @@ function batchDisable() {
   save()
 }
 
-function batchDelete() {
-  storage.value.rules = rules.value.filter(rule => !selectedRules.value.includes(rule.id))
-  selectedRules.value = []
+const defaultParamNos = ['CON3282', 'CON3608']
+
+function deleteRules(ids: string[]) {
+  const deletedRules = rules.value.filter(rule => ids.includes(rule.id))
+  deletedRules.forEach((rule) => {
+    if (defaultParamNos.includes(rule.paramNo)) {
+      if (!storage.value.deletedDefaultRules) {
+        storage.value.deletedDefaultRules = []
+      }
+      if (!storage.value.deletedDefaultRules.includes(rule.paramNo)) {
+        storage.value.deletedDefaultRules.push(rule.paramNo)
+      }
+    }
+  })
+  storage.value.rules = rules.value.filter(rule => !ids.includes(rule.id))
   save()
+}
+
+function batchDelete() {
+  deleteRules(selectedRules.value)
+  selectedRules.value = []
+}
+
+function deleteRule(id: string) {
+  deleteRules([id])
 }
 
 function addRule() {
@@ -46,11 +71,6 @@ function addRule() {
     remark: '',
   }
   rules.value.push(newRule)
-  save()
-}
-
-function deleteRule(id: string) {
-  storage.value.rules = rules.value.filter(rule => rule.id !== id)
   save()
 }
 

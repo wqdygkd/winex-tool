@@ -1,5 +1,6 @@
 import type { EnableStorage } from '~/types'
 import { urls } from '~/constants'
+import { log } from '~/utils/log'
 
 export const storageKey = `${__namespace}devops-login`
 
@@ -9,6 +10,8 @@ export function init() {
   const storage = GM_getValue<EnableStorage>(storageKey, { enable: false })
 
   if (!allUrls.some(url => location.href.includes(url)) || !storage.enable) return
+
+  log('关闭SleepWell登录 - 已加载')
 
   function handleLoginPage() {
     // 运维平台

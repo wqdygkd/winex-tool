@@ -1,3 +1,5 @@
+import { log } from '~/utils/log'
+
 export const storageKey = `${__namespace}DisableTraceid`
 
 export function init() {
@@ -6,6 +8,8 @@ export function init() {
   })
 
   if (!storage.enable) return
+
+  log('禁用请求添加 traceid - 已加载')
 
   const searchParamsSetHookedKey = Symbol.for('url-search-params-set-hooked')
   const urlToStringHookedKey = Symbol.for('url-to-string-hooked')

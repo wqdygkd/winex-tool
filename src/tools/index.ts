@@ -4,7 +4,6 @@
  */
 
 import { EventMockModule } from './eventMock'
-import { HotkeyPatchModule } from './hotkey-patch'
 import { OthersModule } from './others'
 import { ParamMockModule } from './param-mock'
 import { registerTool } from './registry'
@@ -14,7 +13,6 @@ import { StorageCopyModule } from './storage-copy'
 // 集中注册所有工具模块
 const toolModules = [
   EventMockModule,
-  HotkeyPatchModule,
   OthersModule,
   ParamMockModule,
   RequestModifyModule,
@@ -25,7 +23,6 @@ toolModules.forEach(registerTool)
 
 // 导出 Vue 组件（供 ToolContent.vue 使用）
 export const EventMock = EventMockModule.component!
-export const HotkeyPatch = HotkeyPatchModule.component!
 export const Others = OthersModule.component!
 export const ParamMock = ParamMockModule.component!
 export const RequestModify = RequestModifyModule.component!

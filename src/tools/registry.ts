@@ -5,6 +5,7 @@
 
 import type { Component } from 'vue'
 import { isCurrentPage } from '~/constants'
+import { log } from '~/utils/log'
 
 export interface ToolModule {
   /** 工具名称 */
@@ -35,15 +36,18 @@ export function getTools(): ToolModule[] {
 
 /** 初始化所有工具 */
 export function initAllTools(): void {
+  log('开始初始化工具...')
   registry.forEach((tool) => {
     const shouldInit = tool.routes
       ? isCurrentPage(tool.routes)
       : true
 
     if (shouldInit || !tool.autoInitOnRoute) {
+      log(`初始化工具: ${tool.name}`)
       tool.init()
     }
   })
+  log('工具初始化完成')
 }
 
 /** 按名称获取工具 */

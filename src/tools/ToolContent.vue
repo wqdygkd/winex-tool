@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   EventMock,
-  HotkeyPatch,
   Others,
   ParamMock,
   RequestModify,
@@ -29,7 +28,6 @@ const tabs = [
   { name: ParamMock.name, component: ParamMock, icon: '🔧' },
   { name: RequestModify.name, component: RequestModify, icon: '📝' },
   { name: Others.name, component: Others, icon: '🎨' },
-  { name: HotkeyPatch.name, component: HotkeyPatch, icon: '⌨️' },
 ]
 
 const activeTab = ref(0)
@@ -58,11 +56,6 @@ function startDrag(event: MouseEvent) {
     y: event.clientY - rect.top,
   }
 
-  // 一次性设置固定定位样式
-  dialogEl.style.position = 'fixed'
-  dialogEl.style.margin = '0'
-  dialogEl.style.transform = 'none'
-
   document.body.style.userSelect = 'none'
 
   const cleanupMove = useEventListener(document, 'mousemove', handleDrag)
@@ -79,6 +72,13 @@ function startDrag(event: MouseEvent) {
 
 function handleDrag(event: MouseEvent) {
   if (!isDragging.value || !cachedDialogEl) return
+
+  // 只在第一次拖拽时设置固定定位样式
+  if (cachedDialogEl.style.position !== 'fixed') {
+    cachedDialogEl.style.position = 'fixed'
+    cachedDialogEl.style.margin = '0'
+    cachedDialogEl.style.transform = 'none'
+  }
 
   const x = event.clientX - dragOffset.value.x
   const y = event.clientY - dragOffset.value.y
