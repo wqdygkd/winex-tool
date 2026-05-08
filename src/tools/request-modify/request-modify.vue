@@ -189,7 +189,7 @@ function getResponseModifyInfo(responseModify?: ResponseModify): string {
           添加分组
         </el-button>
       </div>
-      <el-switch v-model="enableModify" active-text="启用" inactive-text="禁用" />
+      <el-switch v-model="enableModify" inline-prompt active-text="启用" inactive-text="禁用" />
     </div>
 
     <div v-if="groups.length === 0" class="empty-tip">
@@ -207,6 +207,7 @@ function getResponseModifyInfo(responseModify?: ResponseModify): string {
           />
           <el-switch
             v-model="group.enabled"
+            inline-prompt
             active-text="启用"
             inactive-text="禁用"
             @change="save"
@@ -233,7 +234,10 @@ function getResponseModifyInfo(responseModify?: ResponseModify): string {
           <div class="rule-header">
             <el-switch
               v-model="rule.enabled"
+              inline-prompt
               size="small"
+              active-text="开"
+              inactive-text="关"
               @change="save"
             />
             <span class="rule-url-pattern" :title="rule.urlPattern">
@@ -377,6 +381,7 @@ function getResponseModifyInfo(responseModify?: ResponseModify): string {
             <span class="form-label">响应修改</span>
             <el-switch
               :model-value="editingRule.responseModify !== undefined"
+              inline-prompt
               active-text="启用"
               inactive-text="禁用"
               @change="(val: boolean) => val ? enableResponseModify() : disableResponseModify()"

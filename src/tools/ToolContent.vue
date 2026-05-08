@@ -45,7 +45,6 @@ function startDrag(event: MouseEvent) {
   const dialogEl = getDialogEl()
   if (!dialogEl) return
   if (event.target instanceof Element && event.target.closest('.wqdy-dialog__headerbtn')) return
-  if (event.target instanceof Element && event.target.closest('.reset-btn')) return
 
   cachedDialogEl = dialogEl
   isDragging.value = true
@@ -146,18 +145,9 @@ watch(dialogVisible, (val) => {
           <h2 class="dialog-title">
             <span class="title-icon">⚙️</span>
             Winex Tool 设置
+            <span class="dialog-subtitle">开发辅助工具集</span>
           </h2>
-          <p class="dialog-subtitle">
-            开发辅助工具集
-          </p>
         </div>
-        <button
-          class="reset-btn"
-          title="重置位置"
-          @click="resetPosition"
-        >
-          ↺
-        </button>
       </div>
     </template>
 
@@ -221,26 +211,10 @@ watch(dialogVisible, (val) => {
 }
 
 .dialog-subtitle {
-  margin: 0;
   font-size: 13px;
+  font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
   cursor: grab;
-}
-
-.reset-btn {
-  padding: 4px 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 28px;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-  }
 }
 
 .dialog-body {

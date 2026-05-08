@@ -83,7 +83,7 @@ watch(enableMock, () => {
   <div class="param-mock-container">
     <div class="header">
       <h3>参数模拟</h3>
-      <el-switch v-model="enableMock" active-text="启用" inactive-text="禁用" />
+      <el-switch v-model="enableMock" inline-prompt active-text="启用" inactive-text="禁用" />
     </div>
 
     <div class="action-buttons">
@@ -119,7 +119,7 @@ watch(enableMock, () => {
       max-height="500px"
       @selection-change="selectedRules = $event.map((item: { id: any }) => item.id)"
     >
-      <el-table-column type="selection" width="35" />
+      <el-table-column type="selection" width="135" />
 
       <el-table-column label="参数名称" width="150">
         <template #default="{ row }">
@@ -151,7 +151,7 @@ watch(enableMock, () => {
       </el-table-column>
       <el-table-column prop="enabled" label="启用" width="80">
         <template #default="{ row }">
-          <el-switch v-model="row.enabled" @change="save" />
+          <el-switch v-model="row.enabled" inline-prompt size="small" active-text="开" inactive-text="关" @change="save" />
         </template>
       </el-table-column>
       <el-table-column label="操作" width="80">
