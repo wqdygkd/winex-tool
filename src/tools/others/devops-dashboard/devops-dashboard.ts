@@ -21,10 +21,12 @@ export function init() {
 
       if (response.config.url === '/api/v1/cop/portal/getAppMenuByUserAndCollect') {
         data = mockAppMenuByUserAndCollectResponse(data)
+        log('解锁权限: getAppMenuByUserAndCollect', response.config.url)
       }
 
       if (response.config.url === '/api/v1/cop/portal/getUserInfo') {
         data = mockUserInfoResponse(data)
+        log('解锁权限: getUserInfo', response.config.url)
       }
 
       responseObj.data = data
