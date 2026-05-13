@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { storageKey } from './index'
 import { useGMStorage } from '~/composables/useGMStorage'
 
-const ignoreSessionKey = 'GM_hook_winex.storageCopy'
+const ignoreSessionKey = `GM_hook_${storageKey}`
 
 interface StorageItem {
   key: string
@@ -12,7 +13,7 @@ interface StorageItem {
   }
 }
 
-const { data: storageList, save } = useGMStorage<StorageItem[]>('winex.storageCopy', [], { autoSave: false })
+const { data: storageList, save } = useGMStorage<StorageItem[]>(storageKey, [], { autoSave: false })
 
 function copy() {
   const host = location.host

@@ -1,8 +1,15 @@
 function GM_getValue(key: string, defaultValue: any) {
-  return JSON.parse(sessionStorage.getItem(`GM_hook_${key}`) as string) || defaultValue
+  const stored = localStorage.getItem(`GM_hook_${key}`)
+  if (stored === null) return defaultValue
+  try {
+    return JSON.parse(stored)
+  } catch {
+    return defaultValue
+  }
 }
+
 function GM_setValue(key: string, value: any) {
-  sessionStorage.setItem(`GM_hook_${key}`, JSON.stringify(value))
+  localStorage.setItem(`GM_hook_${key}`, JSON.stringify(value))
 }
 
 if (import.meta.env.MODE !== 'production') {

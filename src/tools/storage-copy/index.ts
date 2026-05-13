@@ -5,8 +5,8 @@
 import type { ToolModule } from '../registry'
 import StorageCopy from './storage-copy.vue'
 
-const name = 'Storage克隆'
-const storageKey = 'winex.storageCopy'
+export const name = 'Storage克隆'
+export const storageKey = 'winex.storageCopy'
 
 StorageCopy.name = name
 

@@ -12,11 +12,11 @@ import { StorageCopyModule } from './storage-copy'
 
 // 集中注册所有工具模块
 const toolModules = [
-  EventMockModule,
+  // EventMockModule,
+  StorageCopyModule,
   OthersModule,
   ParamMockModule,
   RequestModifyModule,
-  StorageCopyModule,
 ]
 
 toolModules.forEach(registerTool)
@@ -29,4 +29,4 @@ export const RequestModify = RequestModifyModule.component!
 export const StorageCopy = StorageCopyModule.component!
 
 // 导出初始化函数和工具列表（供 main.ts 和 ToolContent.vue 使用）
-export { initAllTools, getTools } from './registry'
+export { getTools, initAllTools } from './registry'
