@@ -15,4 +15,5 @@ export const ParamMockModule: ToolModule = {
   storageKey,
   init,
   component: ParamMock,
+  icon: '🔧',
 }

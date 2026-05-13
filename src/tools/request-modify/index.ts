@@ -15,4 +15,5 @@ export const RequestModifyModule: ToolModule = {
   storageKey,
   init,
   component: RequestModify,
+  icon: '📝',
 }

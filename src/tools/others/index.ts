@@ -24,4 +24,5 @@ export const OthersModule: ToolModule = {
   storageKey,
   init,
   component: Others,
+  icon: '🎨',
 }

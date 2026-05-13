@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  EventMock,
-  Others,
-  ParamMock,
-  RequestModify,
-  StorageCopy,
-} from '.'
+import { getTools } from '.'
 
 const props = defineProps<{
   modelValue: boolean
@@ -22,13 +16,16 @@ const dialogVisible = computed({
   },
 })
 
-const tabs = [
-  { name: EventMock.name, component: EventMock, icon: '⚡' },
-  { name: StorageCopy.name, component: StorageCopy, icon: '📦' },
-  { name: ParamMock.name, component: ParamMock, icon: '🔧' },
-  { name: RequestModify.name, component: RequestModify, icon: '📝' },
-  { name: Others.name, component: Others, icon: '🎨' },
-]
+// 从 registry 动态获取 tabs
+const tabs = computed(() =>
+  getTools()
+    .filter(tool => tool.component)
+    .map(tool => ({
+      name: tool.name,
+      component: tool.component,
+      icon: tool.icon || '⚙️',
+    })),
+)
 
 const activeTab = ref(0)
 

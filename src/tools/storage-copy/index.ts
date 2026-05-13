@@ -15,4 +15,5 @@ export const StorageCopyModule: ToolModule = {
   storageKey,
   init: () => {},
   component: StorageCopy,
+  icon: '📦',
 }

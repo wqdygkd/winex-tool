@@ -28,5 +28,5 @@ export const ParamMock = ParamMockModule.component!
 export const RequestModify = RequestModifyModule.component!
 export const StorageCopy = StorageCopyModule.component!
 
-// 导出初始化函数（供 main.ts 使用）
-export { initAllTools } from './registry'
+// 导出初始化函数和工具列表（供 main.ts 和 ToolContent.vue 使用）
+export { initAllTools, getTools } from './registry'

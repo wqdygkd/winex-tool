@@ -16,6 +16,8 @@ export interface ToolModule {
   init: () => void
   /** Vue 组件 */
   component?: Component
+  /** 菜单图标 */
+  icon?: string
   /** 匹配的 URL 模式，不设置则始终初始化 */
   routes?: string[]
   /** 是否在匹配 URL 时自动初始化 */
