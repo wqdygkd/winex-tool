@@ -8,10 +8,10 @@
 
 import type { Plugin, ResolvedConfig } from 'vite'
 import type { UserScriptMetadata } from './meta/types'
+import { spawn } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { spawn } from 'node:child_process'
-import { generateMetaString, calculateMetaHash } from './meta'
+import { calculateMetaHash, generateMetaString } from './meta'
 
 interface UserscriptPluginOptions {
   /** 元数据配置 */

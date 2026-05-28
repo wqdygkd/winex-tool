@@ -1,20 +1,20 @@
-import process from 'node:process'
 import type { UserScriptMetadata } from './types'
+import process from 'node:process'
 
 const version = process.env.npm_package_version || '0.0.0'
 
 const commonMeta: UserScriptMetadata = {
-  name: 'Winex助手',
-  namespace: 'Winex',
+  'name': 'Winex助手',
+  'namespace': 'Winex',
   version,
-  description: 'Winex助手：读卡模拟、参数模拟、请求修改等开发辅助工具集',
-  author: 'zhang333',
-  homepage: 'https://github.com/wqdygkd/winex-tool',
-  license: 'MIT',
-  icon: 'https://weberp.winning.com.cn/favicon.ico',
+  'description': 'Winex助手：读卡模拟、参数模拟、请求修改等开发辅助工具集',
+  'author': 'zhang333',
+  'homepage': 'https://github.com/wqdygkd/winex-tool',
+  'license': 'MIT',
+  'icon': 'https://weberp.winning.com.cn/favicon.ico',
   'run-at': 'document-start',
-  noframes: true,
-  grant: [
+  'noframes': true,
+  'grant': [
     'unsafeWindow',
     'GM_getValue',
     'GM_setValue',

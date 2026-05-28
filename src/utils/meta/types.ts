@@ -5,55 +5,55 @@
 
 export interface UserScriptMetadata {
   /** 脚本名称 */
-  name: string
+  'name': string
   /** 脚本命名空间 */
-  namespace?: string
+  'namespace'?: string
   /** 版本号 */
-  version?: string
+  'version'?: string
   /** 脚本描述 */
-  description?: string
+  'description'?: string
   /** 作者 */
-  author?: string
+  'author'?: string
   /** 主页 URL */
-  homepage?: string
-  homepageURL?: string
-  website?: string
-  source?: string
+  'homepage'?: string
+  'homepageURL'?: string
+  'website'?: string
+  'source'?: string
   /** 许可证 */
-  license?: string
+  'license'?: string
   /** 图标 */
-  icon?: string
-  iconURL?: string
-  defaulticon?: string
-  icon64?: string
-  icon64URL?: string
+  'icon'?: string
+  'iconURL'?: string
+  'defaulticon'?: string
+  'icon64'?: string
+  'icon64URL'?: string
   /** 更新 URL */
-  updateURL?: string
-  downloadURL?: string
-  installURL?: string
+  'updateURL'?: string
+  'downloadURL'?: string
+  'installURL'?: string
   /** 支持页面 */
-  supportURL?: string
+  'supportURL'?: string
   /** 捐赠链接 */
-  contributionURL?: string
+  'contributionURL'?: string
   /** 匹配 URL（数组） */
-  match?: string[]
+  'match'?: string[]
   /** 排除 URL（数组） */
-  exclude?: string[]
-  include?: string[]
+  'exclude'?: string[]
+  'include'?: string[]
   /** 外部依赖（数组） */
-  require?: string[]
+  'require'?: string[]
   /** 资源 */
-  resource?: Record<string, string>
+  'resource'?: Record<string, string>
   /** 允许连接的域名 */
-  connect?: string[]
+  'connect'?: string[]
   /** GM API 权限（数组） */
-  grant?: string[]
+  'grant'?: string[]
   /** 运行时机: document-start | document-body | document-end | document-idle */
   'run-at'?: 'document-start' | 'document-body' | 'document-end' | 'document-idle'
   /** 不在 iframe 中运行 */
-  noframes?: boolean
+  'noframes'?: boolean
   /** 不包裹脚本 */
-  unwrap?: boolean
+  'unwrap'?: boolean
   /** 其他自定义字段 */
   [key: string]: unknown
 }
