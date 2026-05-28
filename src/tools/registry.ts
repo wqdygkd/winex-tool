@@ -1,6 +1,5 @@
 /**
  * 工具模块注册机制
- * 支持插件式注册和按需初始化
  */
 
 import type { Component } from 'vue'

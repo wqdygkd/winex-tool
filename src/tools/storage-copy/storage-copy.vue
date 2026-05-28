@@ -1,17 +1,9 @@
 <script setup lang="ts">
+import type { StorageItem } from '~/types'
 import { storageKey } from './index'
 import { useGMStorage } from '~/composables/useGMStorage'
 
 const ignoreSessionKey = `GM_hook_${storageKey}`
-
-interface StorageItem {
-  key: string
-  value: {
-    cookie: string[]
-    local: Record<string, string | null>
-    session: Record<string, string | null>
-  }
-}
 
 const { data: storageList, save } = useGMStorage<StorageItem[]>(storageKey, [], { autoSave: false })
 

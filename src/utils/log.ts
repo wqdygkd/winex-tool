@@ -1,6 +1,5 @@
 /**
  * 控制台日志工具
- * 统一带样式的日志输出
  */
 
 const prefix = '[Winex Tool]'

@@ -5,7 +5,6 @@ import { log } from '~/utils/log'
 
 export const storageKey = `${__namespace}param-mock`
 
-/** 默认规则 */
 const defaultRules: ParamMockRule[] = [
   {
     id: 'default-con3282',
@@ -23,7 +22,6 @@ const defaultRules: ParamMockRule[] = [
   },
 ]
 
-/** 确保默认规则存在 */
 function ensureDefaultRules(storage: ParamMockStorage): ParamMockStorage {
   const deletedDefaultRules = storage.deletedDefaultRules || []
   const existingParamNos = storage.rules.map(r => r.paramNo)

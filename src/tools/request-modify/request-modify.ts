@@ -5,7 +5,6 @@ export const storageKey = `${__namespace}request-modify`
 
 const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
 
-/** 初始化请求修改工具 */
 export function init() {
   const storage = GM_getValue<RequestModifyStorage>(storageKey, {
     enable: false,
@@ -41,7 +40,6 @@ export function init() {
   }, unsafeWindow)
 }
 
-/** 收集匹配的规则 */
 function collectMatchedRules(request: { url?: string, method?: string }): RequestModifyRule[] {
   const rules: RequestModifyRule[] = []
   const latestStorage = GM_getValue<RequestModifyStorage>(storageKey, {
@@ -62,7 +60,6 @@ function collectMatchedRules(request: { url?: string, method?: string }): Reques
   return rules
 }
 
-/** 收集Header操作 */
 function collectHeaderOps(rules: RequestModifyRule[]): HeaderOperation[] {
   const ops: HeaderOperation[] = []
   rules.forEach(r => ops.push(...r.headerOps))
@@ -74,28 +71,20 @@ function matchUrl(url: string, rule: RequestModifyRule): boolean {
   if (!rule.urlPattern) return false
 
   try {
-    switch (rule.urlMatchType) {
-      case 'contains':
-        return url.includes(rule.urlPattern)
-      case 'regex':
-        return new RegExp(rule.urlPattern).test(url)
-      case 'exact':
-        return url === rule.urlPattern
-      default:
-        return false
-    }
+    if (rule.urlMatchType === 'contains') return url.includes(rule.urlPattern)
+    if (rule.urlMatchType === 'exact') return url === rule.urlPattern
+    if (rule.urlMatchType === 'regex') return new RegExp(rule.urlPattern).test(url)
+    return false
   } catch {
     return false
   }
 }
 
-/** 请求方法匹配 */
 function matchMethod(method: string, methods: RequestModifyRule['methods']): boolean {
   if (!methods || methods.length === 0) return true
   return methods.includes(method.toUpperCase() as typeof httpMethods[number])
 }
 
-/** 查找已存在的Header key（忽略大小写） */
 function findExistingHeaderKey(headers: Record<string, string>, key: string): string | undefined {
   const lowerKey = key.toLowerCase()
   for (const existingKey in headers) {
@@ -106,7 +95,6 @@ function findExistingHeaderKey(headers: Record<string, string>, key: string): st
   return undefined
 }
 
-/** 应用Header操作 */
 function applyHeaders(headers: Record<string, string>, ops: HeaderOperation[]): void {
   ops.forEach((op) => {
     const existingKey = findExistingHeaderKey(headers, op.key)
@@ -133,7 +121,6 @@ function applyHeaders(headers: Record<string, string>, ops: HeaderOperation[]): 
   })
 }
 
-/** 获取最大延迟时间 */
 function getMaxDelay(rules: RequestModifyRule[]): number {
   let maxDelay = 0
   rules.forEach(rule => {
@@ -144,12 +131,10 @@ function getMaxDelay(rules: RequestModifyRule[]): number {
   return maxDelay
 }
 
-/** 延迟函数 */
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-/** 应用响应修改 */
 function applyResponseModify(response: any, rules: RequestModifyRule[]): void {
   rules.forEach(rule => {
     if (!rule.responseModify) return
@@ -188,7 +173,6 @@ function applyResponseModify(response: any, rules: RequestModifyRule[]): void {
   })
 }
 
-/** JSON path 获取 */
 function getByPath(obj: any, path: string): any {
   if (!path) return obj
   return path.split('.').reduce((acc, key) => {
@@ -204,7 +188,6 @@ function getByPath(obj: any, path: string): any {
   }, obj)
 }
 
-/** JSON path 设置 */
 function setByPath(obj: any, path: string, value: any): void {
   if (!path) return
   const keys = path.split('.')
@@ -233,7 +216,6 @@ function setByPath(obj: any, path: string, value: any): void {
   }
 }
 
-/** 深度合并 */
 function mergeDeep(target: any, source: any): any {
   if (typeof target !== 'object' || target === null) return source
   if (typeof source !== 'object' || source === null) return target

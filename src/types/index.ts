@@ -1,27 +1,23 @@
 /**
- * 工具模块通用类型定义
+ * 工具模块类型定义
  */
 
-/** 存储数据基础接口 */
 export interface BaseStorageData {
   enable: boolean
 }
 
-/** 事件模拟 - 事件数据 */
 export interface EventData {
   id: string
   title: string
-  data: any
+  data: Record<string, unknown>
   isBuiltIn?: boolean
   template?: string
 }
 
-/** 事件模拟 - 存储数据 */
 export interface EventMockStorage extends BaseStorageData {
   events?: EventData[]
 }
 
-/** 参数模拟 - 规则 */
 export interface ParamMockRule {
   id: string
   enabled: boolean
@@ -30,13 +26,11 @@ export interface ParamMockRule {
   remark: string
 }
 
-/** 参数模拟 - 存储数据 */
 export interface ParamMockStorage extends BaseStorageData {
   rules: ParamMockRule[]
   deletedDefaultRules?: string[]
 }
 
-/** Storage 克隆 - 存储项 */
 export interface StorageItem {
   key: string
   value: {
@@ -46,10 +40,8 @@ export interface StorageItem {
   }
 }
 
-/** 通用启用开关存储 */
 export interface EnableStorage extends BaseStorageData {}
 
-/** 工具模块接口 */
 export interface ToolModule {
   name: string
   init: () => void
@@ -57,21 +49,18 @@ export interface ToolModule {
   routes?: string[]
 }
 
-/** 请求头修改 - Header操作 */
 export interface HeaderOperation {
   key: string
   value?: string
   opType: 'set' | 'append' | 'delete'
 }
 
-/** 响应操作 */
 export interface ResponseOp {
   key: string
   value?: string
   opType: 'replace' | 'merge' | 'full'
 }
 
-/** 响应修改配置 */
 export interface ResponseModify {
   modifyType: 'static' | 'script'
   responseOps?: ResponseOp[]
@@ -80,7 +69,6 @@ export interface ResponseModify {
   delayMs?: number
 }
 
-/** 请求修改规则 */
 export interface RequestModifyRule {
   id: string
   enabled: boolean
@@ -92,7 +80,6 @@ export interface RequestModifyRule {
   remark: string
 }
 
-/** 请求修改分组 */
 export interface RequestModifyGroup {
   id: string
   name: string
@@ -100,7 +87,51 @@ export interface RequestModifyGroup {
   rules: RequestModifyRule[]
 }
 
-/** 请求修改存储 */
 export interface RequestModifyStorage extends BaseStorageData {
   groups: RequestModifyGroup[]
+}
+
+// API 响应类型
+export interface ParamQueryResponse {
+  success: boolean
+  data: ParamQueryItem[]
+}
+
+export interface ParamQueryItem {
+  paramNo: string
+  paramConfigs: ParamConfig[]
+}
+
+export interface ParamConfig {
+  value: string
+  endValue: string | null
+}
+
+// Winning SDK 类型
+export interface WinningSDK {
+  dispatchEvent?: (eventId: string, params: string, cb: (result: string) => void) => void
+  getMacadress?: () => string
+  getPcName?: () => string
+  getIP?: () => string
+  deltaResult?: () => boolean
+  showMsg?: () => void
+  postMessage?: () => void
+}
+
+// 请求修改拦截器类型
+export interface ProxyRequest {
+  url?: string
+  method?: string
+  headers?: Record<string, string>
+}
+
+export interface ProxyResponse {
+  status?: number
+  statusCode?: number
+  response?: string
+  config?: ProxyRequest
+}
+
+export interface ProxyHandler {
+  next: (request: ProxyRequest | ProxyResponse) => void
 }
