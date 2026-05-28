@@ -1,5 +1,14 @@
 declare const __namespace: string
 declare const __PLAIN_SCRIPT__: boolean
+declare const __BUILD_MODE__: 'userscript' | 'plain'
+declare const __SCRIPT_VERSION__: string
+
+// 功能启用标志（用于 tree-shaking）
+declare const __FEATURE_EVENT_MOCK__: boolean
+declare const __FEATURE_OTHERS__: boolean
+declare const __FEATURE_PARAM_MOCK__: boolean
+declare const __FEATURE_REQUEST_MODIFY__: boolean
+declare const __FEATURE_STORAGE_COPY__: boolean
 
 declare function GM_getValue<T>(key: string, defaultValue: T): T
 declare function GM_setValue(key: string, value: unknown): void
