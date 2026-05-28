@@ -78,16 +78,5 @@ export function getEnabledFeatures(mode: 'userscript' | 'plain'): string[] {
 
 /** 检查功能在指定模式下是否启用 */
 export function isFeatureEnabled(featureName: string, mode: 'userscript' | 'plain'): boolean {
-  const feature = FEATURES.find(f => f.name === featureName)
-  return feature ? feature[mode] : false
-}
-
-/** 获取指定父功能的子功能列表 */
-export function getSubFeatures(parentName: string): FeatureConfig[] {
-  return FEATURES.filter(f => f.parent === parentName)
-}
-
-/** 获取顶级功能列表（没有 parent 的功能） */
-export function getTopLevelFeatures(): FeatureConfig[] {
-  return FEATURES.filter(f => !f.parent)
+  return FEATURES.find(f => f.name === featureName)?.[mode] ?? false
 }
