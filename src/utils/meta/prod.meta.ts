@@ -1,5 +1,6 @@
-export default {
-  name: 'Winex助手',
+import type { UserScriptMetadata } from './types'
+
+const prodMeta: Partial<UserScriptMetadata> = {
   match: [
     'http://localhost:*/*',
     'http://127.0.0.1:*/*',
@@ -14,3 +15,5 @@ export default {
     'http://wxp.cpp.iwincloud.com:8089/*',
   ],
 }
+
+export default prodMeta

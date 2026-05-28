@@ -1,6 +1,15 @@
-import common from './common.meta'
+import type { UserScriptMetadata } from './types'
 
-export default Object.assign(common, {
-  name: 'Winex助手(dev mode)',
-  grant: ['GM_addElement'],
-})
+const devMeta: Partial<UserScriptMetadata> = {
+  name: 'Winex助手 (开发版)',
+  match: [
+    'http://*/*',
+    'https://*/*',
+  ],
+  grant: [
+    'GM_addElement',
+    'GM_notification',
+  ],
+}
+
+export default devMeta

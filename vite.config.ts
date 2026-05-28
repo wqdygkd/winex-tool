@@ -7,15 +7,18 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
-import getMetaString from './src/utils/meta/'
-import prodMeta from './src/utils/meta/prod.meta'
-import injectMeta from './src/utils/vite-plugin-inject-meta'
+import { getMeta } from './src/utils/meta'
+import userscriptPlugin from './src/utils/vite-plugin-userscript'
 
 const pathSrc = resolve(__dirname, 'src')
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const isPlainScript = env.PLAIN_SCRIPT === 'true'
+  const isProduction = mode === 'production' || mode === 'plain'
+
+  // 获取元数据配置
+  const meta = getMeta(isProduction ? 'production' : 'development')
 
   return {
     define: {
@@ -23,6 +26,7 @@ export default defineConfig(({ mode }) => {
       '__namespace': '"GM_wqdy_"',
       'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
       '__PLAIN_SCRIPT__': JSON.stringify(isPlainScript),
+      '__SCRIPT_VERSION__': JSON.stringify(meta.version),
     },
     resolve: {
       alias: {
@@ -45,8 +49,13 @@ export default defineConfig(({ mode }) => {
         ],
       }),
       cssInjectedByJsPlugin(),
-      // 普通脚本模式跳过元数据注入
-      !isPlainScript && injectMeta(getMetaString(prodMeta)),
+      // 油猴脚本插件（仅非 plain 模式）
+      !isPlainScript && userscriptPlugin({
+        meta,
+        outputFile: 'index.user.js',
+        autoInstall: isProduction,
+        hashFile: '.userscript-meta.hash',
+      }),
     ].filter(Boolean),
     hmr: {
       protocol: 'ws',
@@ -60,22 +69,13 @@ export default defineConfig(({ mode }) => {
         fileName: () => isPlainScript ? 'index.js' : 'index.user.js',
       },
       rollupOptions: {
-        // external: ['vue'],
         output: {
-          globals: {
-            // vue: 'Vue',
-            // GM_addStyle: 'GM_addStyle', // 油猴脚本API，用于添加样式到页面
-          },
-          inlineDynamicImports: true, // 库构建模式下不能进行代码分割，开启此功能可将本应分割的代码整合在一起避免报错（代码分割可能由其他插件引起）
+          inlineDynamicImports: true,
         },
       },
       minify: false,
-      terserOptions: {
-        // mangle: false, // 关闭名称混淆，遵守Greasefork规则
-        // format: {
-        //   beautify: true // 美化代码开启缩进，遵守Greasefork规则
-        // }
-      },
+      outDir: 'dist',
+      emptyOutDir: true,
     },
     css: {
       preprocessorOptions: {
