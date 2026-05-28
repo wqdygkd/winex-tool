@@ -10,6 +10,11 @@ declare const __FEATURE_PARAM_MOCK__: boolean
 declare const __FEATURE_REQUEST_MODIFY__: boolean
 declare const __FEATURE_STORAGE_COPY__: boolean
 
+// others 子功能启用标志
+declare const __FEATURE_DEVOPS_DASHBOARD__: boolean
+declare const __FEATURE_DEVOPS_LOGIN__: boolean
+declare const __FEATURE_DISABLE_TRACEID__: boolean
+
 declare function GM_getValue<T>(key: string, defaultValue: T): T
 declare function GM_setValue(key: string, value: unknown): void
 declare function GM_registerMenuCommand(name: string, callback: () => void): void

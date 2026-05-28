@@ -12,6 +12,8 @@ export interface FeatureConfig {
   plain: boolean
   /** 功能描述 */
   description?: string
+  /** 父级功能名称（用于子功能分组） */
+  parent?: string
 }
 
 export const FEATURES: FeatureConfig[] = [
@@ -32,6 +34,28 @@ export const FEATURES: FeatureConfig[] = [
     userscript: true,
     plain: true,
     description: '其他辅助功能 - 运维平台相关',
+  },
+  // others 子功能
+  {
+    name: 'devops-dashboard',
+    userscript: true,
+    plain: true,
+    description: '运维平台仪表盘',
+    parent: 'others',
+  },
+  {
+    name: 'devops-login',
+    userscript: true,
+    plain: true,
+    description: '运维平台登录',
+    parent: 'others',
+  },
+  {
+    name: 'disable-traceid',
+    userscript: true,
+    plain: true,
+    description: '禁用 traceid',
+    parent: 'others',
   },
   {
     name: 'param-mock',
@@ -56,4 +80,14 @@ export function getEnabledFeatures(mode: 'userscript' | 'plain'): string[] {
 export function isFeatureEnabled(featureName: string, mode: 'userscript' | 'plain'): boolean {
   const feature = FEATURES.find(f => f.name === featureName)
   return feature ? feature[mode] : false
+}
+
+/** 获取指定父功能的子功能列表 */
+export function getSubFeatures(parentName: string): FeatureConfig[] {
+  return FEATURES.filter(f => f.parent === parentName)
+}
+
+/** 获取顶级功能列表（没有 parent 的功能） */
+export function getTopLevelFeatures(): FeatureConfig[] {
+  return FEATURES.filter(f => !f.parent)
 }
