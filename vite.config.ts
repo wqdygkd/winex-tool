@@ -15,11 +15,14 @@ const pathSrc = resolve(__dirname, 'src')
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const isPlainScript = env.PLAIN_SCRIPT === 'true'
+
   return {
     define: {
       '__APP_ENV__': JSON.stringify(env.APP_ENV),
       '__namespace': '"GM_wqdy_"',
       'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
+      '__PLAIN_SCRIPT__': JSON.stringify(isPlainScript),
     },
     resolve: {
       alias: {
@@ -42,8 +45,9 @@ export default defineConfig(({ mode }) => {
         ],
       }),
       cssInjectedByJsPlugin(),
-      injectMeta(getMetaString(prodMeta)),
-    ],
+      // 普通脚本模式跳过元数据注入
+      !isPlainScript && injectMeta(getMetaString(prodMeta)),
+    ].filter(Boolean),
     hmr: {
       protocol: 'ws',
       host: 'localhost',
@@ -53,7 +57,7 @@ export default defineConfig(({ mode }) => {
         entry: resolve(__dirname, 'src/main.ts'),
         name: 'userscript',
         formats: ['iife'],
-        fileName: () => `index.user.js`,
+        fileName: () => isPlainScript ? 'index.js' : 'index.user.js',
       },
       rollupOptions: {
         // external: ['vue'],

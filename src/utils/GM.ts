@@ -12,7 +12,8 @@ function GM_setValue(key: string, value: any) {
   localStorage.setItem(`GM_hook_${key}`, JSON.stringify(value))
 }
 
-if (import.meta.env.MODE !== 'production') {
+// 开发环境 或 普通脚本模式 下模拟 GM API
+if (import.meta.env.MODE !== 'production' || __PLAIN_SCRIPT__) {
   window.unsafeWindow = window as typeof unsafeWindow
   window.GM_getValue = GM_getValue
   window.GM_setValue = GM_setValue

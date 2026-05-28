@@ -13,6 +13,7 @@
     "vite": "vite",
     "dev": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite",
     "build": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build",
+    "build:plain": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build --mode plain",
     "build:watch": "vite build --watch",
     "clean": "pnpx rimraf node_modules",
     "up": "pnpm update -i -r --latest"
