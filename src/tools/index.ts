@@ -2,7 +2,7 @@
  * 工具模块统一导出
  */
 
-import { EventMockModule } from './eventMock'
+import { EventMockModule } from './event-mock'
 import { OthersModule } from './others'
 import { ParamMockModule } from './param-mock'
 import { registerTool } from './registry'
