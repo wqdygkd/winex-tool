@@ -1,12 +1,6 @@
-import type { ConfigData, ParamsCondition, WinningSDK } from '../types'
 import { computed, reactive } from 'vue'
+import type { ConfigData, ParamsCondition, WinningSDK } from '../types'
 
-/**
- * 事件模拟核心上下文
- * - 响应式配置管理
- * - 事件执行
- * - winning 挂载/卸载（零侵入）
- */
 class EventMockContext {
   private config = reactive<ConfigData>({
     enable: false,
@@ -15,20 +9,21 @@ class EventMockContext {
 
   private eventMap = computed(() => {
     const map = new Map<string, any>()
-    this.config.events.forEach((event) => {
-      map.set(event.id, event.data)
-    })
+    this.config.events.forEach(event => map.set(event.id, event.data))
     return map
   })
 
   private originalWinning: WinningSDK | null = null
   private mounted = false
 
+  private logStyle = 'color: #409eff; font-weight: bold;'
+  private logPrefix = '%c[Winex Tool]%c [EventMock]'
+
   getConfig(): ConfigData {
     return this.config
   }
 
-  updateConfig(newConfig: ConfigData) {
+  updateConfig(newConfig: ConfigData): void {
     const wasEnabled = this.config.enable
     this.config.enable = newConfig.enable
     this.config.events = [...newConfig.events]
@@ -40,14 +35,12 @@ class EventMockContext {
     }
   }
 
-  mount() {
+  mount(): void {
     if (this.mounted) return
     this.originalWinning = unsafeWindow.winning
     unsafeWindow.winning = {
       ...(unsafeWindow.winning || {}),
-      dispatchEvent: (eventId: string, params: string, cb: (result: string) => void) => {
-        return this.execute(eventId, params, cb)
-      },
+      dispatchEvent: (eventId, params, cb) => this.execute(eventId, params, cb),
       getMacadress: () => '00:00:00:00:00:00',
       getPcName: () => '-',
       getIP: () => '0.0.0.0',
@@ -58,12 +51,11 @@ class EventMockContext {
     this.mounted = true
   }
 
-  unmount() {
+  unmount(): void {
     if (!this.mounted) return
     if (this.originalWinning) {
       unsafeWindow.winning = this.originalWinning
     } else {
-      // SDK didn't exist before, delete the properties we added
       delete unsafeWindow.winning
     }
     this.mounted = false
@@ -74,101 +66,45 @@ class EventMockContext {
   }
 
   execute(eventId: string, params: string, cb: (result: string) => void): string {
-    const logStyle = 'color: #409eff; font-weight: bold;'
-    const logPrefix = '%c[Winex Tool]%c [EventMock]'
-
-    // 1. 按 eventId 筛选候选事件
     const candidates = this.config.events.filter(e => e.id === eventId)
+
     if (candidates.length === 0) {
-      console.log(logPrefix + ' 未匹配到 eventId: ' + eventId, logStyle, '')
-      try {
-        cb('{}')
-      } catch (cbError) {
-        console.error('EventMock callback error:', cbError)
-      }
+      this.log('未匹配到 eventId: ' + eventId)
+      this.safeCallback(cb, '{}')
       return '{}'
     }
 
-    // 2. 解析 params JSON
-    let paramsObj: any = {}
-    try {
-      paramsObj = JSON.parse(params)
-    } catch (e) {
-      console.warn(logPrefix + ' params 解析失败:', logStyle, '', params)
-    }
+    const paramsObj = this.parseParams(params)
 
-    // 3. 按 paramsConditions 匹配
     for (const event of candidates) {
       if (this.matchParams(paramsObj, event.paramsConditions)) {
-        console.log(
-          logPrefix + ' 匹配成功',
-          logStyle, '',
-          `\neventId: ${eventId}`,
-          `\ntitle: ${event.title}`,
-          `\nparams:`, paramsObj,
-          `\nconditions:`, event.paramsConditions || [],
-          `\ndata:`, event.data
-        )
-        try {
-          const result = JSON.stringify(event.data)
-          try {
-            cb(result)
-          } catch (cbError) {
-            console.error('EventMock callback error:', cbError)
-          }
-          return result
-        } catch (e) {
-          console.error('EventMock JSON.stringify error:', e)
-          try {
-            cb('{}')
-          } catch (cbError) {
-            console.error('EventMock callback error:', cbError)
-          }
-          return '{}'
-        }
+        this.logMatch(eventId, event, paramsObj)
+        return this.executeAndCallback(event.data, cb)
       }
     }
 
-    // 4. 无匹配，返回 fallback（无 paramsConditions 的事件）
     const fallback = candidates.find(e => !e.paramsConditions) || candidates[0]
-    console.log(
-      logPrefix + ' 使用 fallback',
-      logStyle, '',
-      `\neventId: ${eventId}`,
-      `\ntitle: ${fallback?.title}`,
-      `\nparams:`, paramsObj,
-      `\ndata:`, fallback?.data
-    )
+    this.logFallback(eventId, fallback, paramsObj)
+    return this.executeAndCallback(fallback?.data, cb)
+  }
+
+  private parseParams(params: string): any {
     try {
-      const result = JSON.stringify(fallback?.data || {})
-      try {
-        cb(result)
-      } catch (cbError) {
-        console.error('EventMock callback error:', cbError)
-      }
-      return result
-    } catch (e) {
-      console.error('EventMock JSON.stringify error:', e)
-      try {
-        cb('{}')
-      } catch (cbError) {
-        console.error('EventMock callback error:', cbError)
-      }
-      return '{}'
+      return JSON.parse(params)
+    } catch {
+      console.warn(this.logPrefix + ' params 解析失败:', this.logStyle, '', params)
+      return {}
     }
   }
 
-  // JSON Path 匹配：所有条件需满足
   private matchParams(paramsObj: any, conditions?: ParamsCondition[]): boolean {
     if (!conditions || conditions.length === 0) return true
     return conditions.every(cond => {
       const actualValue = this.getValueByPath(paramsObj, cond.path)
-      // 支持字符串和数字比较
       return String(actualValue) === String(cond.value) || actualValue === cond.value
     })
   }
 
-  // 按 JSON Path 获取值
   private getValueByPath(obj: any, path: string): any {
     if (!path) return undefined
     const keys = path.split('.')
@@ -178,6 +114,53 @@ class EventMockContext {
       current = current[key]
     }
     return current
+  }
+
+  private executeAndCallback(data: any, cb: (result: string) => void): string {
+    try {
+      const result = JSON.stringify(data)
+      this.safeCallback(cb, result)
+      return result
+    } catch (e) {
+      console.error('EventMock JSON.stringify error:', e)
+      this.safeCallback(cb, '{}')
+      return '{}'
+    }
+  }
+
+  private safeCallback(cb: (result: string) => void, result: string): void {
+    try {
+      cb(result)
+    } catch (e) {
+      console.error('EventMock callback error:', e)
+    }
+  }
+
+  private log(message: string): void {
+    console.log(this.logPrefix + ' ' + message, this.logStyle, '')
+  }
+
+  private logMatch(eventId: string, event: any, paramsObj: any): void {
+    console.log(
+      this.logPrefix + ' 匹配成功',
+      this.logStyle, '',
+      `\neventId: ${eventId}`,
+      `\ntitle: ${event.title}`,
+      `\nparams:`, paramsObj,
+      `\nconditions:`, event.paramsConditions || [],
+      `\ndata:`, event.data
+    )
+  }
+
+  private logFallback(eventId: string, fallback: any, paramsObj: any): void {
+    console.log(
+      this.logPrefix + ' 使用 fallback',
+      this.logStyle, '',
+      `\neventId: ${eventId}`,
+      `\ntitle: ${fallback?.title}`,
+      `\nparams:`, paramsObj,
+      `\ndata:`, fallback?.data
+    )
   }
 }
 

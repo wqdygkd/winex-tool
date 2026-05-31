@@ -1,14 +1,17 @@
-import type { ConfigData } from '../types'
 import { context } from '../core/context'
+import type { ConfigData, EventItem } from '../types'
 
 const STORAGE_KEY = `${__namespace}event-mock-config`
 
-/**
- * 配置存储
- * - 管理 GM 存储
- * - 加载/保存配置
- * - 同步到 Context（触发 mount/unmount）
- */
+function mapEvents(events: EventItem[]) {
+  return events.map(e => ({
+    id: e.id,
+    title: e.title,
+    data: e.data,
+    paramsConditions: e.paramsConditions,
+  }))
+}
+
 export class ConfigStorage {
   load(): ConfigData {
     const config = GM_getValue(STORAGE_KEY, { enable: false, events: [] })
@@ -16,15 +19,10 @@ export class ConfigStorage {
     return config
   }
 
-  save(config: ConfigData) {
+  save(config: ConfigData): void {
     GM_setValue(STORAGE_KEY, {
       enable: config.enable,
-      events: config.events.map(e => ({
-        id: e.id,
-        title: e.title,
-        data: e.data,
-        paramsConditions: e.paramsConditions,
-      })),
+      events: mapEvents(config.events),
     })
     context.updateConfig(config)
   }
