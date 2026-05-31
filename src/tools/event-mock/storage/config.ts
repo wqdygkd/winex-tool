@@ -1,5 +1,5 @@
-import { context } from '../core/context'
 import type { ConfigData } from '../types'
+import { context } from '../core/context'
 
 const STORAGE_KEY = `${__namespace}event-mock-config`
 
@@ -22,8 +22,8 @@ export class ConfigStorage {
       events: config.events.map(e => ({
         id: e.id,
         title: e.title,
-        data: e.data
-      }))
+        data: e.data,
+      })),
     })
     context.updateConfig(config)
   }
@@ -32,7 +32,7 @@ export class ConfigStorage {
     const config = context.getConfig()
     return {
       enable: config.enable,
-      events: [...config.events]
+      events: [...config.events],
     }
   }
 }

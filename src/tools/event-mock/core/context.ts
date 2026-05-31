@@ -1,5 +1,5 @@
-import { computed, reactive } from 'vue'
 import type { ConfigData, WinningSDK } from '../types'
+import { computed, reactive } from 'vue'
 
 /**
  * 事件模拟核心上下文
@@ -10,12 +10,12 @@ import type { ConfigData, WinningSDK } from '../types'
 class EventMockContext {
   private config = reactive<ConfigData>({
     enable: false,
-    events: []
+    events: [],
   })
 
   private eventMap = computed(() => {
     const map = new Map<string, any>()
-    this.config.events.forEach(event => {
+    this.config.events.forEach((event) => {
       map.set(event.id, event.data)
     })
     return map
@@ -46,6 +46,7 @@ class EventMockContext {
     unsafeWindow.winning = {
       ...(unsafeWindow.winning || {}),
       dispatchEvent: (eventId: string, params: string, cb: (result: string) => void) => {
+        debugger
         return this.execute(eventId, params, cb)
       },
       getMacadress: () => '00:00:00:00:00:00',
