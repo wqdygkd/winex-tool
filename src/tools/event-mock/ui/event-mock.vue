@@ -18,6 +18,7 @@ const saving = ref(false)
 const templateDialogVisible = ref(false)
 const templateName = ref('')
 const currentEventIndex = ref(-1)
+const selectedTemplateId = ref<string | null>(null)
 
 // Storage instances created in setup
 const configStorage = new ConfigStorage()
@@ -108,6 +109,14 @@ function confirmSaveTemplate() {
   ElMessage.success('模板保存成功')
 }
 
+function deleteTemplate(templateId: string) {
+  if (!templateId) return
+  templateStorage.remove(templateId)
+  templates.value = templateStorage.getAll()
+  selectedTemplateId.value = null
+  ElMessage.success('模板删除成功')
+}
+
 function getEventIdOptions(eventId: string) {
   return templates.value.filter(t => t.eventId === eventId)
 }
@@ -180,17 +189,30 @@ function getEventIdOptions(eventId: string) {
           <div class="config-row">
             <label>模板:</label>
             <el-select
+              v-model="selectedTemplateId"
               placeholder="选择模板"
               size="small"
               clearable
               @change="(val: string) => applyTemplate(index, val)"
+              @clear="selectedTemplateId = null"
             >
               <el-option
                 v-for="t in getEventIdOptions(event.id)"
                 :key="t.id"
                 :label="t.name"
                 :value="t.id"
-              />
+              >
+                <span>{{ t.name }}</span>
+                <el-button
+                  type="danger"
+                  size="small"
+                  link
+                  @click.stop="deleteTemplate(t.id)"
+                  style="float: right"
+                >
+                  删除
+                </el-button>
+              </el-option>
             </el-select>
             <el-button size="small" @click="openTemplateDialog(index)">保存模板</el-button>
           </div>
