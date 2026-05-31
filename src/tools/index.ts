@@ -5,6 +5,7 @@
 
 // 静态导入所有模块（rollup 会根据 __FEATURE_*__ 条件进行 tree-shaking）
 import { EventMockModule } from './event-mock'
+import { EventMockModule as EventMockModule1 } from './event-mock1'
 import { OthersModule } from './others'
 import { ParamMockModule } from './param-mock'
 import { registerTool } from './registry'
@@ -14,6 +15,10 @@ import { StorageCopyModule } from './storage-copy'
 // 根据功能标志注册启用的模块
 if (__FEATURE_EVENT_MOCK__) {
   registerTool(EventMockModule)
+}
+
+if (__FEATURE_EVENT_MOCK__) {
+  registerTool(EventMockModule1)
 }
 
 if (__FEATURE_STORAGE_COPY__) {
@@ -34,6 +39,7 @@ if (__FEATURE_REQUEST_MODIFY__) {
 
 // 导出 Vue 组件
 export const EventMock = __FEATURE_EVENT_MOCK__ ? EventMockModule.component! : null
+export const EventMock1 = __FEATURE_EVENT_MOCK__ ? EventMockModule1.component! : null
 export const Others = __FEATURE_OTHERS__ ? OthersModule.component! : null
 export const ParamMock = __FEATURE_PARAM_MOCK__ ? ParamMockModule.component! : null
 export const RequestModify = __FEATURE_REQUEST_MODIFY__ ? RequestModifyModule.component! : null
