@@ -6,10 +6,14 @@ import { TemplateStorage } from '../storage/template'
 import type { TemplateItem } from '../types'
 import JsonEditor from '~/components/jsonEditor.vue'
 
+// Get reactive config from context (already reactive, no ref() needed)
+const config = context.getConfig()
+
+// Storage instances created during component setup
 const configStorage = new ConfigStorage()
 const templateStorage = new TemplateStorage()
 
-const config = context.getConfig()
+// Template data
 const templates = ref<TemplateItem[]>([])
 
 onMounted(() => {
