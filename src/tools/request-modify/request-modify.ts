@@ -42,29 +42,22 @@ export function init() {
 }
 
 function collectMatchedRules(request: { url?: string, method?: string }): RequestModifyRule[] {
-  const rules: RequestModifyRule[] = []
-  const latestStorage = GM_getValue<RequestModifyStorage>(storageKey, {
+  const storage = GM_getValue<RequestModifyStorage>(storageKey, {
     enable: false,
     groups: [],
   })
 
-  latestStorage.groups
+  return storage.groups
     .filter(g => g.enabled)
-    .forEach((group) => {
-      group.rules
-        .filter(r => r.enabled)
-        .filter(r => matchUrl(request.url || '', r))
-        .filter(r => matchMethod(request.method || '', r.methods))
-        .forEach(r => rules.push(r))
-    })
-
-  return rules
+    .flatMap(group => group.rules
+      .filter(r => r.enabled)
+      .filter(r => matchUrl(request.url || '', r))
+      .filter(r => matchMethod(request.method || '', r.methods)),
+    )
 }
 
 function collectHeaderOps(rules: RequestModifyRule[]): HeaderOperation[] {
-  const ops: HeaderOperation[] = []
-  rules.forEach(r => ops.push(...r.headerOps))
-  return ops
+  return rules.flatMap(r => r.headerOps)
 }
 
 /** URL匹配 */
@@ -123,13 +116,10 @@ function applyHeaders(headers: Record<string, string>, ops: HeaderOperation[]): 
 }
 
 function getMaxDelay(rules: RequestModifyRule[]): number {
-  let maxDelay = 0
-  rules.forEach((rule) => {
-    if (rule.responseModify?.delayMs && rule.responseModify.delayMs > maxDelay) {
-      maxDelay = rule.responseModify.delayMs
-    }
-  })
-  return maxDelay
+  return rules.reduce((max, rule) => {
+    const delay = rule.responseModify?.delayMs || 0
+    return delay > max ? delay : max
+  }, 0)
 }
 
 function sleep(ms: number): Promise<void> {

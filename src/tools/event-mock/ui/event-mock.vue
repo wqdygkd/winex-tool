@@ -88,11 +88,8 @@ function removeEvent(index: number) {
 }
 
 function addCondition(eventIndex: number) {
-  const conditions = config.events[eventIndex].paramsConditions
-  if (!conditions) {
-    config.events[eventIndex].paramsConditions = []
-  }
-  config.events[eventIndex].paramsConditions!.push({ path: '', value: '' })
+  const conditions = config.events[eventIndex].paramsConditions || []
+  config.events[eventIndex].paramsConditions = [...conditions, { path: '', value: '' }]
 }
 
 function removeCondition(eventIndex: number, condIndex: number) {
