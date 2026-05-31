@@ -4,8 +4,8 @@ import { ElMessage } from 'element-plus'
 import { context } from '../core/context'
 import { ConfigStorage } from '../storage/config'
 import { TemplateStorage } from '../storage/template'
-import { eventIdPresets } from '../presets'
-import type { TemplateItem } from '../types'
+import { eventIdPresets, getPresetEvents } from '../presets'
+import type { TemplateItem, EventItem } from '../types'
 import JsonEditor from '~/components/jsonEditor.vue'
 
 // Get reactive config from context (already reactive, no ref() needed)
@@ -29,6 +29,16 @@ let saveTimer: ReturnType<typeof setTimeout> | null = null
 onMounted(() => {
   configStorage.load()
   templates.value = templateStorage.getAll()
+
+  // 加载预制事件规则（添加到配置开头，标记为 isPreset）
+  const presetEvents = getPresetEvents()
+  const existingPresetIds = config.events.filter(e => e.isPreset).map(e => `${e.id}_${e.title}`)
+  for (const preset of presetEvents) {
+    const presetKey = `${preset.id}_${preset.title}`
+    if (!existingPresetIds.includes(presetKey)) {
+      config.events.unshift({ ...preset, isPreset: true })
+    }
+  }
 })
 
 // 监听配置变化，自动保存（延迟 500ms）
@@ -96,6 +106,11 @@ function addEvent() {
 }
 
 function removeEvent(index: number) {
+  const event = config.events[index]
+  if (event.isPreset) {
+    ElMessage.warning('预制规则不可删除')
+    return
+  }
   config.events.splice(index, 1)
   // 更新展开状态
   activeNames.value = activeNames.value.filter(n => n !== index)
@@ -184,7 +199,15 @@ function getEventIdOptions(eventId: string) {
           <div class="collapse-title">
             <span class="event-title">{{ event.title }}</span>
             <span class="event-id">{{ event.id || '未设置' }}</span>
-            <el-button type="danger" size="small" @click.stop="removeEvent(index)">删除</el-button>
+            <span v-if="event.isPreset" class="preset-tag">预制</span>
+            <el-button
+              v-if="!event.isPreset"
+              type="danger"
+              size="small"
+              @click.stop="removeEvent(index)"
+            >
+              删除
+            </el-button>
           </div>
         </template>
 
@@ -332,6 +355,14 @@ function getEventIdOptions(eventId: string) {
   gap: 12px;
   align-items: center;
   width: 100%;
+}
+
+.preset-tag {
+  background: #e6a23c;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .event-id {

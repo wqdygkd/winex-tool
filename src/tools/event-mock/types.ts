@@ -12,7 +12,8 @@ export interface EventItem {
   id: string        // eventId
   title: string     // 显示名称
   data: any         // 返回的静态数据
-  paramsConditions?: ParamsCondition[]  // 新增：可选 params 匹配条件
+  paramsConditions?: ParamsCondition[]  // 可选：params 匹配条件
+  isPreset?: boolean  // 可选：是否为预制规则（预制规则不可删除）
 }
 
 export interface TemplateItem {

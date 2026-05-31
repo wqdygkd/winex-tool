@@ -1,7 +1,20 @@
-import type { TemplateItem } from '../types'
+import type { TemplateItem, EventItem } from '../types'
 import { eventIdPresets } from './eventIds'
 
 export { eventIdPresets }
+
+/**
+ * 预制事件规则（不可删除）
+ */
+export const presetEvents: EventItem[] = [
+  // 示例预制规则，可根据实际需求修改
+  // {
+  //   id: '399563027',
+  //   title: '打印机列表',
+  //   data: { success: true, data: ['Microsoft Print to PDF'] },
+  //   isPreset: true
+  // },
+]
 
 /**
  * 预制数据文件配置
@@ -16,6 +29,13 @@ const presetDataFiles: PresetDataFile[] = [
   { filename: 'gcp成功.json', eventId: '399297247' },
   { filename: 'gcp失败.json', eventId: '399297247' },
 ]
+
+/**
+ * 获取预制事件规则
+ */
+export function getPresetEvents(): EventItem[] {
+  return presetEvents
+}
 
 /**
  * 导入预制数据到 TemplateStorage
