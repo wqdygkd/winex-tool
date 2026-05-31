@@ -14,10 +14,9 @@ const templates = ref<TemplateItem[]>([])
 const activeNames = ref<number[]>([])
 const saving = ref(false)
 
-// 模板保存对话框状态
-const templateDialogVisible = ref(false)
+// 模板保存行内输入状态
+const savingTemplateIndex = ref<number | null>(null)
 const templateName = ref('')
-const currentEventIndex = ref(-1)
 const selectedTemplateId = ref<string | null>(null)
 
 // Storage instances created in setup
@@ -80,24 +79,28 @@ function applyTemplate(eventIndex: number, templateId: string) {
   }
 }
 
-function openTemplateDialog(eventIndex: number) {
+function startSaveTemplate(eventIndex: number) {
   const event = config.events[eventIndex]
   if (!event.id) {
     ElMessage.warning('请先设置 eventId')
     return
   }
-  currentEventIndex.value = eventIndex
+  savingTemplateIndex.value = eventIndex
   templateName.value = `${event.title}_模板`
-  templateDialogVisible.value = true
 }
 
-function confirmSaveTemplate() {
+function cancelSaveTemplate() {
+  savingTemplateIndex.value = null
+  templateName.value = ''
+}
+
+function confirmSaveTemplate(eventIndex: number) {
   if (!templateName.value.trim()) {
     ElMessage.warning('请输入模板名称')
     return
   }
 
-  const event = config.events[currentEventIndex.value]
+  const event = config.events[eventIndex]
   templateStorage.add({
     id: `tpl_${Date.now()}`,
     eventId: event.id,
@@ -105,7 +108,8 @@ function confirmSaveTemplate() {
     data: JSON.parse(JSON.stringify(event.data))
   })
   templates.value = templateStorage.getAll()
-  templateDialogVisible.value = false
+  savingTemplateIndex.value = null
+  templateName.value = ''
   ElMessage.success('模板保存成功')
 }
 
@@ -214,7 +218,20 @@ function getEventIdOptions(eventId: string) {
                 </el-button>
               </el-option>
             </el-select>
-            <el-button size="small" @click="openTemplateDialog(index)">保存模板</el-button>
+            <!-- 保存模板：点击后显示输入框 -->
+            <template v-if="savingTemplateIndex === index">
+              <el-input
+                v-model="templateName"
+                placeholder="模板名称"
+                size="small"
+                class="template-name-input"
+              />
+              <el-button size="small" @click="cancelSaveTemplate">取消</el-button>
+              <el-button type="primary" size="small" @click="confirmSaveTemplate(index)">保存</el-button>
+            </template>
+            <template v-else>
+              <el-button size="small" @click="startSaveTemplate(index)">保存模板</el-button>
+            </template>
           </div>
 
           <div class="config-section">
@@ -228,23 +245,6 @@ function getEventIdOptions(eventId: string) {
     <div v-if="config.events.length === 0" class="empty-tip">
       点击 "+ 添加事件" 开始配置
     </div>
-
-    <!-- 保存模板对话框 -->
-    <el-dialog
-      v-model="templateDialogVisible"
-      title="保存模板"
-      width="400px"
-    >
-      <el-form label-width="80px">
-        <el-form-item label="模板名称">
-          <el-input v-model="templateName" placeholder="请输入模板名称" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="templateDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmSaveTemplate">保存</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -328,6 +328,10 @@ function getEventIdOptions(eventId: string) {
 
 .config-row .event-id-select {
   width: 200px;
+}
+
+.config-row .template-name-input {
+  width: 150px;
 }
 
 .config-section {
