@@ -46,7 +46,6 @@ class EventMockContext {
     unsafeWindow.winning = {
       ...(unsafeWindow.winning || {}),
       dispatchEvent: (eventId: string, params: string, cb: (result: string) => void) => {
-        debugger
         return this.execute(eventId, params, cb)
       },
       getMacadress: () => '00:00:00:00:00:00',
