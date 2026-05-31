@@ -190,6 +190,7 @@ function getEventIdOptions(eventId: string) {
 <style scoped>
 .event-mock {
   padding: 16px;
+  background-color: #fff;
 }
 
 .header {
