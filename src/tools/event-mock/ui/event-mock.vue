@@ -107,8 +107,8 @@ function getEventIdOptions(eventId: string) {
       >
         <template #title>
           <div class="collapse-title">
-            <span class="event-id">{{ event.id || '未设置' }}</span>
             <span class="event-title">{{ event.title }}</span>
+            <span class="event-id">{{ event.id || '未设置' }}</span>
             <el-button type="danger" size="small" @click.stop="removeEvent(index)">删除</el-button>
           </div>
         </template>
