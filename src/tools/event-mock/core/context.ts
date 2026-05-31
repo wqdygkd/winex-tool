@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import type { ConfigData, ParamsCondition, WinningSDK } from '../types'
+import type { ConfigData, ParamsCondition } from '../types'
+import type { WinningSDK } from '~/types'
 import { computed, reactive } from 'vue'
 
 class EventMockContext {

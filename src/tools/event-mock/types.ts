@@ -28,13 +28,3 @@ export interface EventIdPreset {
   name: string
   description?: string
 }
-
-export interface WinningSDK {
-  dispatchEvent?: (eventId: string, params: string, cb: (result: string) => void) => void
-  getMacadress?: () => string
-  getPcName?: () => string
-  getIP?: () => string
-  deltaResult?: () => boolean
-  showMsg?: () => void
-  postMessage?: () => void
-}

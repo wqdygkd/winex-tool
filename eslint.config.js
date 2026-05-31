@@ -18,5 +18,6 @@ export default antfu({
   },
   globals: {
     GM_addElement: true,
+    GM_getValue: true,
   },
 })
