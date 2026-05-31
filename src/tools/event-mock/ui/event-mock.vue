@@ -115,14 +115,17 @@ function getEventIdOptions(eventId: string) {
 
         <div class="event-config">
           <div class="config-row">
+            <label>标题:</label>
+            <el-input v-model="event.title" placeholder="事件标题" size="small" class="title-input" />
             <label>eventId:</label>
             <el-select
               v-model="event.id"
-              placeholder="选择或输入 eventId"
+              placeholder="选择或输入"
               size="small"
               filterable
               allow-create
               clearable
+              class="event-id-select"
             >
               <el-option
                 v-for="preset in eventIdPresets"
@@ -131,8 +134,6 @@ function getEventIdOptions(eventId: string) {
                 :value="preset.id"
               />
             </el-select>
-            <label>标题:</label>
-            <el-input v-model="event.title" placeholder="事件标题" size="small" />
           </div>
 
           <div class="config-section">
@@ -250,17 +251,21 @@ function getEventIdOptions(eventId: string) {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: nowrap;
 }
 
 .config-row label {
-  width: 60px;
   font-size: 14px;
   color: #606266;
+  white-space: nowrap;
 }
 
-.config-row .el-select,
-.config-row .el-input {
-  flex: 1;
+.config-row .title-input {
+  width: 120px;
+}
+
+.config-row .event-id-select {
+  width: 200px;
 }
 
 .config-section {
