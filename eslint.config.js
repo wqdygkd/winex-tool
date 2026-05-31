@@ -7,6 +7,8 @@ export default antfu({
   jsonc: true,
   ignores: [
     'node_modules',
+    'dist',
+    '*.user.js',
   ],
   rules: {
     'pnpm/json-enforce-catalog': 0,
