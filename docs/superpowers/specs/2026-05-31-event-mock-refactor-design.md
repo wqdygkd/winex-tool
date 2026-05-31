@@ -85,32 +85,79 @@ export interface ConfigData {
 - 维护响应式配置（enable + events）
 - 提供 execute 方法供 winning.dispatchEvent 调用
 - 通过 Vue computed 自动维护 eventId → data 映射
-- 根据 config.enable 决定是否返回配置数据
+- 提供 mount/unmount 方法实现动态挂载/卸载（零侵入）
 
 **关键设计**：
 - `config` 使用 Vue reactive，UI 直接绑定
 - `eventMap` 使用 computed，配置变化时自动重建映射
-- `execute` 先检查 enable，未启用时返回 '{}'
-- 启用时从 eventMap 读取数据，返回 JSON 字符串
+- `mount()` 挂载 winning 对象到 unsafeWindow
+- `unmount()` 恢复原始 winning 对象（零侵入）
+- `execute` 从 eventMap 读取数据，返回 JSON 字符串
 
 **接口**：
 ```typescript
 class EventMockContext {
   getConfig(): ConfigData           // 获取响应式配置
-  updateConfig(config: ConfigData)  // 更新配置（存储层调用）
-  execute(eventId, params, cb)      // 执行事件分发，内部检查 enable
-  isEnabled(): boolean              // 是否启用
+  updateConfig(config: ConfigData)  // 更新配置，自动处理挂载/卸载
+  execute(eventId, params, cb)      // 执行事件分发
+  mount()                           // 挂载 winning 对象
+  unmount()                         // 卸载 winning 对象（恢复原始）
+  isMounted(): boolean              // 是否已挂载
+}
+```
+
+**updateConfig 实现**：
+```typescript
+updateConfig(newConfig: ConfigData) {
+  const wasEnabled = this.config.enable
+  this.config.enable = newConfig.enable
+  this.config.events = newConfig.events
+
+  // 动态挂载/卸载（零侵入）
+  if (newConfig.enable && !wasEnabled) {
+    this.mount()
+  } else if (!newConfig.enable && wasEnabled) {
+    this.unmount()
+  }
+}
+```
+
+**mount/unmount 实现**：
+```typescript
+private originalWinning: WinningSDK | null = null
+private mounted = false
+
+mount() {
+  if (this.mounted) return
+  this.originalWinning = unsafeWindow.winning  // 保存原始对象
+  unsafeWindow.winning = {
+    ...unsafeWindow.winning,
+    dispatchEvent(eventId, params, cb) {
+      return this.execute(eventId, params, cb)
+    },
+    getMacadress() { return '00:00:00:00:00:00' },
+    getPcName() { return '-' },
+    getIP() { return '0.0.0.0' },
+    deltaResult() { return true },
+    showMsg() {},
+    postMessage() {},
+  }
+  this.mounted = true
+}
+
+unmount() {
+  if (!this.mounted) return
+  // 恢复原始 winning 对象（零侵入）
+  if (this.originalWinning) {
+    unsafeWindow.winning = this.originalWinning
+  }
+  this.mounted = false
 }
 ```
 
 **execute 实现**：
 ```typescript
 execute(eventId: string, params: string, cb: (result: string) => void): string {
-  // 未启用时返回空对象
-  if (!this.config.enable) {
-    cb('{}')
-    return '{}'
-  }
   const data = this.eventMap.value.get(eventId)
   try {
     const result = data ? JSON.stringify(data) : '{}'
@@ -128,16 +175,21 @@ execute(eventId: string, params: string, cb: (result: string) => void): string {
 
 **职责**：
 - 管理 GM 存储（key: `${__namespace}event-mock-config`）
-- 加载配置并同步到 Context
+- 加载配置并同步到 Context（自动触发 mount/unmount）
 - 保存配置到 GM 存储 + 同步到 Context
 
 **接口**：
 ```typescript
 class ConfigStorage {
-  load(): ConfigData                // 加载存储并同步到 Context
-  save(config: ConfigData)          // 保存到存储 + 同步到 Context
+  load(): ConfigData                // 加载存储并同步到 Context（触发 mount/unmount）
+  save(config: ConfigData)          // 保存到存储 + 同步到 Context（触发 mount/unmount）
   get(): ConfigData                 // 获取当前配置
 }
+```
+
+**零侵入保证**：
+- load() 时如果 config.enable 为 false，不会挂载 winning
+- save() 时 enable 变化会自动触发 mount/unmount
 ```
 
 ### storage/template.ts - 模板存储
@@ -180,35 +232,31 @@ class TemplateStorage {
 
 **职责**：
 - 注册模块到 ToolRegistry
-- 初始化：加载配置、始终挂载 winning 对象
+- 初始化：加载配置，仅启用时挂载 winning（零侵入）
 
-**挂载逻辑**：
-mountWinning 在 init() 时始终挂载，dispatchEvent 始终调用 context.execute。是否返回配置数据由 context 内部根据 config.enable 决定。
-
+**初始化逻辑**：
 ```typescript
 function init() {
   const configStorage = new ConfigStorage()
-  configStorage.load()
-  mountWinning()  // 始终挂载
-}
-
-function mountWinning() {
-  unsafeWindow.winning = {
-    ...unsafeWindow.winning,
-    dispatchEvent(eventId, params, cb) {
-      return context.execute(eventId, params, cb)
-    },
-    getMacadress() { return '00:00:00:00:00:00' },
-    getPcName() { return '-' },
-    getIP() { return '0.0.0.0' },
-    deltaResult() { return true },
-    showMsg() {},
-    postMessage() {},
-  }
+  const config = configStorage.load()  // load 会自动触发 mount（如果 enable）
 }
 ```
 
+**零侵入原则**：
+- init() 时如果 config.enable 为 false，不挂载任何对象
+- 用户在 UI 中切换 enable 时，通过 context.updateConfig() 自动处理挂载/卸载
+
 ## 数据流
+
+### 初始化流
+
+```
+init() → ConfigStorage.load()
+       → GM_getValue 读取配置
+       → context.updateConfig(config)
+       → if enable: context.mount()（挂载 winning）
+       → else: 不挂载（零侵入）
+```
 
 ### 配置编辑流
 
@@ -218,7 +266,8 @@ function mountWinning() {
          → execute 自动使用新数据
 用户点击保存 → ConfigStorage.save()
              → GM_setValue 存储
-             → context.updateConfig() 同步
+             → context.updateConfig()
+             → enable 变化时自动 mount/unmount
 ```
 
 ### 模板操作流
@@ -274,3 +323,4 @@ winning.dispatchEvent('399563027', params, cb)
 3. **存储层独立** - ConfigStorage/TemplateStorage 只负责 GM 读写
 4. **Dispatcher 内联** - 执行逻辑在 Context 内部，不需要独立的类
 5. **UI 简洁** - 直接绑定响应式配置，代码量大幅减少
+6. **零侵入设计** - 未启用时不挂载 winning，启用时动态挂载，禁用时恢复原始对象
