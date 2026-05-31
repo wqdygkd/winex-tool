@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { context } from '../core/context'
 import { ConfigStorage } from '../storage/config'
 import { TemplateStorage } from '../storage/template'
@@ -13,6 +13,11 @@ const config = context.getConfig()
 const templates = ref<TemplateItem[]>([])
 const activeNames = ref<number[]>([])
 const saving = ref(false)
+
+// 模板保存对话框状态
+const templateDialogVisible = ref(false)
+const templateName = ref('')
+const currentEventIndex = ref(-1)
 
 // Storage instances created in setup
 const configStorage = new ConfigStorage()
@@ -74,38 +79,33 @@ function applyTemplate(eventIndex: number, templateId: string) {
   }
 }
 
-async function saveAsTemplate(eventIndex: number) {
+function openTemplateDialog(eventIndex: number) {
   const event = config.events[eventIndex]
   if (!event.id) {
     ElMessage.warning('请先设置 eventId')
     return
   }
+  currentEventIndex.value = eventIndex
+  templateName.value = `${event.title}_模板`
+  templateDialogVisible.value = true
+}
 
-  // 获取正确的挂载容器
-  const appRoot = document.getElementById('winex-tool-appRoot') || document.body
-
-  try {
-    const { value } = await ElMessageBox.prompt('请输入模板名称', '保存模板', {
-      confirmButtonText: '保存',
-      cancelButtonText: '取消',
-      inputValue: `${event.title}_模板`,
-      inputPlaceholder: '模板名称',
-      appendTo: appRoot
-    })
-
-    if (value) {
-      templateStorage.add({
-        id: `tpl_${Date.now()}`,
-        eventId: event.id,
-        name: value,
-        data: JSON.parse(JSON.stringify(event.data))
-      })
-      templates.value = templateStorage.getAll()
-      ElMessage.success('模板保存成功')
-    }
-  } catch {
-    // 用户取消
+function confirmSaveTemplate() {
+  if (!templateName.value.trim()) {
+    ElMessage.warning('请输入模板名称')
+    return
   }
+
+  const event = config.events[currentEventIndex.value]
+  templateStorage.add({
+    id: `tpl_${Date.now()}`,
+    eventId: event.id,
+    name: templateName.value.trim(),
+    data: JSON.parse(JSON.stringify(event.data))
+  })
+  templates.value = templateStorage.getAll()
+  templateDialogVisible.value = false
+  ElMessage.success('模板保存成功')
 }
 
 function getEventIdOptions(eventId: string) {
@@ -192,7 +192,7 @@ function getEventIdOptions(eventId: string) {
                 :value="t.id"
               />
             </el-select>
-            <el-button size="small" @click="saveAsTemplate(index)">保存模板</el-button>
+            <el-button size="small" @click="openTemplateDialog(index)">保存模板</el-button>
           </div>
 
           <div class="config-section">
@@ -206,6 +206,23 @@ function getEventIdOptions(eventId: string) {
     <div v-if="config.events.length === 0" class="empty-tip">
       点击 "+ 添加事件" 开始配置
     </div>
+
+    <!-- 保存模板对话框 -->
+    <el-dialog
+      v-model="templateDialogVisible"
+      title="保存模板"
+      width="400px"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="模板名称">
+          <el-input v-model="templateName" placeholder="请输入模板名称" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="templateDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmSaveTemplate">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
