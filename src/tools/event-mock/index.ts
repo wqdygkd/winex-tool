@@ -6,7 +6,7 @@ import { importPresetData } from './presets'
 import EventMockUI from './ui/event-mock.vue'
 
 const name = '事件模拟(New)'
-const storageKey = `${__namespace}event-mock1`
+const storageKey = `${__namespace}event-mock`
 
 function init() {
   const configStorage = new ConfigStorage()
