@@ -332,7 +332,7 @@ function getEventIdOptions(eventId: string) {
 }
 
 .config-row .template-select {
-  width: 120px;
+  width: 300px;
 }
 
 .config-row .template-name-input {
