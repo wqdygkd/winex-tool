@@ -23,6 +23,7 @@ export class ConfigStorage {
         id: e.id,
         title: e.title,
         data: e.data,
+        paramsConditions: e.paramsConditions,
       })),
     })
     context.updateConfig(config)
