@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { context } from '../core/context'
 import { ConfigStorage } from '../storage/config'
@@ -23,10 +23,49 @@ const selectedTemplateId = ref<string | null>(null)
 const configStorage = new ConfigStorage()
 const templateStorage = new TemplateStorage()
 
+// 自动保存计时器
+let saveTimer: ReturnType<typeof setTimeout> | null = null
+
 onMounted(() => {
   configStorage.load()
   templates.value = templateStorage.getAll()
 })
+
+// 监听配置变化，自动保存（延迟 500ms）
+watch(
+  () => ({
+    enable: config.enable,
+    events: config.events.map(e => ({
+      id: e.id,
+      title: e.title,
+      data: e.data,
+      paramsConditions: e.paramsConditions
+    }))
+  }),
+  () => {
+    if (saveTimer) clearTimeout(saveTimer)
+    saveTimer = setTimeout(() => {
+      autoSave()
+    }, 500)
+  },
+  { deep: true }
+)
+
+function autoSave() {
+  try {
+    configStorage.save({
+      enable: config.enable,
+      events: config.events.map(e => ({
+        id: e.id,
+        title: e.title,
+        data: e.data,
+        paramsConditions: e.paramsConditions
+      }))
+    })
+  } catch (e) {
+    console.error('Auto save failed:', e)
+  }
+}
 
 function save() {
   saving.value = true
@@ -40,6 +79,7 @@ function save() {
         paramsConditions: e.paramsConditions
       }))
     })
+    ElMessage.success('配置已保存')
   } finally {
     saving.value = false
   }
