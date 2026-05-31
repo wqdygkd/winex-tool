@@ -74,10 +74,13 @@ class EventMockContext {
   }
 
   execute(eventId: string, params: string, cb: (result: string) => void): string {
+    const logStyle = 'color: #409eff; font-weight: bold;'
+    const logPrefix = '%c[Winex Tool]%c [EventMock]'
+
     // 1. 按 eventId 筛选候选事件
     const candidates = this.config.events.filter(e => e.id === eventId)
     if (candidates.length === 0) {
-      console.log(`[EventMock] 未匹配到 eventId: ${eventId}`)
+      console.log(logPrefix + ' 未匹配到 eventId: ' + eventId, logStyle, '')
       try {
         cb('{}')
       } catch (cbError) {
@@ -91,17 +94,21 @@ class EventMockContext {
     try {
       paramsObj = JSON.parse(params)
     } catch (e) {
-      console.warn('[EventMock] params 解析失败:', params)
+      console.warn(logPrefix + ' params 解析失败:', logStyle, '', params)
     }
 
     // 3. 按 paramsConditions 匹配
     for (const event of candidates) {
       if (this.matchParams(paramsObj, event.paramsConditions)) {
-        console.log(`[EventMock] 匹配成功: eventId=${eventId}, title=${event.title}`, {
-          params: paramsObj,
-          conditions: event.paramsConditions,
-          data: event.data
-        })
+        console.log(
+          logPrefix + ' 匹配成功',
+          logStyle, '',
+          `\neventId: ${eventId}`,
+          `\ntitle: ${event.title}`,
+          `\nparams:`, paramsObj,
+          `\nconditions:`, event.paramsConditions || [],
+          `\ndata:`, event.data
+        )
         try {
           const result = JSON.stringify(event.data)
           try {
@@ -124,10 +131,14 @@ class EventMockContext {
 
     // 4. 无匹配，返回 fallback（无 paramsConditions 的事件）
     const fallback = candidates.find(e => !e.paramsConditions) || candidates[0]
-    console.log(`[EventMock] 使用 fallback: eventId=${eventId}, title=${fallback?.title}`, {
-      params: paramsObj,
-      data: fallback?.data
-    })
+    console.log(
+      logPrefix + ' 使用 fallback',
+      logStyle, '',
+      `\neventId: ${eventId}`,
+      `\ntitle: ${fallback?.title}`,
+      `\nparams:`, paramsObj,
+      `\ndata:`, fallback?.data
+    )
     try {
       const result = JSON.stringify(fallback?.data || {})
       try {
