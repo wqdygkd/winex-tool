@@ -131,9 +131,6 @@ function getEventIdOptions(eventId: string) {
                 :value="preset.id"
               />
             </el-select>
-          </div>
-
-          <div class="config-row">
             <label>标题:</label>
             <el-input v-model="event.title" placeholder="事件标题" size="small" />
           </div>
