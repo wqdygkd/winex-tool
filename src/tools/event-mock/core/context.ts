@@ -44,7 +44,7 @@ class EventMockContext {
     if (this.mounted) return
     this.originalWinning = unsafeWindow.winning
     unsafeWindow.winning = {
-      ...unsafeWindow.winning,
+      ...(unsafeWindow.winning || {}),
       dispatchEvent: (eventId: string, params: string, cb: (result: string) => void) => {
         return this.execute(eventId, params, cb)
       },
@@ -62,6 +62,9 @@ class EventMockContext {
     if (!this.mounted) return
     if (this.originalWinning) {
       unsafeWindow.winning = this.originalWinning
+    } else {
+      // SDK didn't exist before, delete the properties we added
+      delete unsafeWindow.winning
     }
     this.mounted = false
   }
@@ -74,7 +77,11 @@ class EventMockContext {
     const data = this.eventMap.value.get(eventId)
     try {
       const result = data ? JSON.stringify(data) : '{}'
-      cb(result)
+      try {
+        cb(result)
+      } catch (cbError) {
+        console.error('EventMock callback error:', cbError)
+      }
       return result
     } catch (e) {
       console.error('EventMock execute error:', e)
