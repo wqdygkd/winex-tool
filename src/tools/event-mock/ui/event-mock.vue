@@ -8,116 +8,88 @@ import { eventIdPresets, getPresetEvents } from '../presets'
 import type { TemplateItem, EventItem } from '../types'
 import JsonEditor from '~/components/jsonEditor.vue'
 
-// Get reactive config from context (already reactive, no ref() needed)
 const config = context.getConfig()
 const templates = ref<TemplateItem[]>([])
 const activeNames = ref<number[]>([])
 const saving = ref(false)
-
-// 模板保存行内输入状态
 const savingTemplateIndex = ref<number | null>(null)
 const templateName = ref('')
 const selectedTemplateId = ref<string | null>(null)
 
-// Storage instances created in setup
 const configStorage = new ConfigStorage()
 const templateStorage = new TemplateStorage()
 
-// 自动保存计时器
 let saveTimer: ReturnType<typeof setTimeout> | null = null
+
+// 提取事件映射逻辑
+function getEventsData(): EventItem[] {
+  return config.events.map(e => ({
+    id: e.id,
+    title: e.title,
+    data: e.data,
+    paramsConditions: e.paramsConditions
+  }))
+}
+
+// 提取 deep clone
+function cloneData(data: any): any {
+  return JSON.parse(JSON.stringify(data))
+}
 
 onMounted(() => {
   configStorage.load()
   templates.value = templateStorage.getAll()
 
-  // 加载预制事件规则（添加到配置开头，标记为 isPreset）
   const presetEvents = getPresetEvents()
-  const existingPresetIds = config.events.filter(e => e.isPreset).map(e => `${e.id}_${e.title}`)
-  for (const preset of presetEvents) {
-    const presetKey = `${preset.id}_${preset.title}`
-    if (!existingPresetIds.includes(presetKey)) {
+  const existingPresetKeys = config.events
+    .filter(e => e.isPreset)
+    .map(e => `${e.id}_${e.title}`)
+
+  presetEvents.forEach(preset => {
+    const key = `${preset.id}_${preset.title}`
+    if (!existingPresetKeys.includes(key)) {
       config.events.unshift({ ...preset, isPreset: true })
     }
-  }
+  })
 })
 
-// 监听配置变化，自动保存（延迟 500ms）
 watch(
-  () => ({
-    enable: config.enable,
-    events: config.events.map(e => ({
-      id: e.id,
-      title: e.title,
-      data: e.data,
-      paramsConditions: e.paramsConditions
-    }))
-  }),
+  () => ({ enable: config.enable, events: getEventsData() }),
   () => {
     if (saveTimer) clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-      autoSave()
-    }, 500)
+    saveTimer = setTimeout(autoSave, 500)
   },
   { deep: true }
 )
 
 function autoSave() {
-  try {
-    configStorage.save({
-      enable: config.enable,
-      events: config.events.map(e => ({
-        id: e.id,
-        title: e.title,
-        data: e.data,
-        paramsConditions: e.paramsConditions
-      }))
-    })
-  } catch (e) {
-    console.error('Auto save failed:', e)
-  }
+  configStorage.save({ enable: config.enable, events: getEventsData() })
 }
 
 function save() {
   saving.value = true
-  try {
-    configStorage.save({
-      enable: config.enable,
-      events: config.events.map(e => ({
-        id: e.id,
-        title: e.title,
-        data: e.data,
-        paramsConditions: e.paramsConditions
-      }))
-    })
-    ElMessage.success('配置已保存')
-  } finally {
-    saving.value = false
-  }
+  configStorage.save({ enable: config.enable, events: getEventsData() })
+  ElMessage.success('配置已保存')
+  saving.value = false
 }
 
 function addEvent() {
-  config.events.push({
-    id: '',
-    title: '新事件',
-    data: {}
-  })
-  // 自动展开新增的事件
+  config.events.push({ id: '', title: '新事件', data: {} })
   activeNames.value.push(config.events.length - 1)
 }
 
 function removeEvent(index: number) {
-  const event = config.events[index]
-  if (event.isPreset) {
+  if (config.events[index].isPreset) {
     ElMessage.warning('预制规则不可删除')
     return
   }
   config.events.splice(index, 1)
-  // 更新展开状态
   activeNames.value = activeNames.value.filter(n => n !== index)
 }
 
 function addCondition(eventIndex: number) {
-  if (!config.events[eventIndex].paramsConditions) {
+  const conditions = config.events[eventIndex].paramsConditions
+  if (!conditions) {
     config.events[eventIndex].paramsConditions = []
   }
   config.events[eventIndex].paramsConditions!.push({ path: '', value: '' })
@@ -130,18 +102,17 @@ function removeCondition(eventIndex: number, condIndex: number) {
 function applyTemplate(eventIndex: number, templateId: string) {
   const template = templates.value.find(t => t.id === templateId)
   if (template) {
-    config.events[eventIndex].data = JSON.parse(JSON.stringify(template.data))
+    config.events[eventIndex].data = cloneData(template.data)
   }
 }
 
 function startSaveTemplate(eventIndex: number) {
-  const event = config.events[eventIndex]
-  if (!event.id) {
+  if (!config.events[eventIndex].id) {
     ElMessage.warning('请先设置 eventId')
     return
   }
   savingTemplateIndex.value = eventIndex
-  templateName.value = `${event.title}_模板`
+  templateName.value = `${config.events[eventIndex].title}_模板`
 }
 
 function cancelSaveTemplate() {
@@ -160,7 +131,7 @@ function confirmSaveTemplate(eventIndex: number) {
     id: `tpl_${Date.now()}`,
     eventId: event.id,
     name: templateName.value.trim(),
-    data: JSON.parse(JSON.stringify(event.data))
+    data: cloneData(event.data)
   })
   templates.value = templateStorage.getAll()
   savingTemplateIndex.value = null
@@ -169,7 +140,6 @@ function confirmSaveTemplate(eventIndex: number) {
 }
 
 function deleteTemplate(templateId: string) {
-  if (!templateId) return
   templateStorage.remove(templateId)
   templates.value = templateStorage.getAll()
   selectedTemplateId.value = null
@@ -275,8 +245,8 @@ function getEventIdOptions(eventId: string) {
                   type="danger"
                   size="small"
                   link
+                  class="template-delete-btn"
                   @click.stop="deleteTemplate(t.id)"
-                  style="float: right"
                 >
                   删除
                 </el-button>
@@ -439,6 +409,10 @@ function getEventIdOptions(eventId: string) {
 
 .condition-row .el-input {
   flex: 1;
+}
+
+.template-delete-btn {
+  float: right;
 }
 
 .condition-empty {
