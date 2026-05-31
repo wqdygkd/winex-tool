@@ -1,4 +1,4 @@
-import type { ConfigData, WinningSDK } from '../types'
+import type { ConfigData, ParamsCondition, WinningSDK } from '../types'
 import { computed, reactive } from 'vue'
 
 /**
@@ -75,9 +75,52 @@ class EventMockContext {
   }
 
   execute(eventId: string, params: string, cb: (result: string) => void): string {
-    const data = this.eventMap.value.get(eventId)
+    // 1. 按 eventId 筛选候选事件
+    const candidates = this.config.events.filter(e => e.id === eventId)
+    if (candidates.length === 0) {
+      try {
+        cb('{}')
+      } catch (cbError) {
+        console.error('EventMock callback error:', cbError)
+      }
+      return '{}'
+    }
+
+    // 2. 解析 params JSON
+    let paramsObj: any = {}
     try {
-      const result = data ? JSON.stringify(data) : '{}'
+      paramsObj = JSON.parse(params)
+    } catch (e) {
+      // params 解析失败，使用 fallback
+    }
+
+    // 3. 按 paramsConditions 匹配
+    for (const event of candidates) {
+      if (this.matchParams(paramsObj, event.paramsConditions)) {
+        try {
+          const result = JSON.stringify(event.data)
+          try {
+            cb(result)
+          } catch (cbError) {
+            console.error('EventMock callback error:', cbError)
+          }
+          return result
+        } catch (e) {
+          console.error('EventMock JSON.stringify error:', e)
+          try {
+            cb('{}')
+          } catch (cbError) {
+            console.error('EventMock callback error:', cbError)
+          }
+          return '{}'
+        }
+      }
+    }
+
+    // 4. 无匹配，返回 fallback（无 paramsConditions 的事件）
+    const fallback = candidates.find(e => !e.paramsConditions) || candidates[0]
+    try {
+      const result = JSON.stringify(fallback?.data || {})
       try {
         cb(result)
       } catch (cbError) {
@@ -85,10 +128,36 @@ class EventMockContext {
       }
       return result
     } catch (e) {
-      console.error('EventMock execute error:', e)
-      cb('{}')
+      console.error('EventMock JSON.stringify error:', e)
+      try {
+        cb('{}')
+      } catch (cbError) {
+        console.error('EventMock callback error:', cbError)
+      }
       return '{}'
     }
+  }
+
+  // JSON Path 匹配：所有条件需满足
+  private matchParams(paramsObj: any, conditions?: ParamsCondition[]): boolean {
+    if (!conditions || conditions.length === 0) return true
+    return conditions.every(cond => {
+      const actualValue = this.getValueByPath(paramsObj, cond.path)
+      // 支持字符串和数字比较
+      return String(actualValue) === String(cond.value) || actualValue === cond.value
+    })
+  }
+
+  // 按 JSON Path 获取值
+  private getValueByPath(obj: any, path: string): any {
+    if (!path) return undefined
+    const keys = path.split('.')
+    let current = obj
+    for (const key of keys) {
+      if (current == null) return undefined
+      current = current[key]
+    }
+    return current
   }
 }
 
