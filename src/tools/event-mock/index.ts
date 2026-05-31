@@ -3,7 +3,7 @@ import { context } from './core/context'
 import { ConfigStorage } from './storage/config'
 import EventMockUI from './ui/event-mock.vue'
 
-const name = '事件模拟'
+const name = '事件模拟(New)'
 const storageKey = `${__namespace}event-mock1`
 
 function init() {
