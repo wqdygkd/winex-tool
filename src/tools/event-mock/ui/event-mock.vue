@@ -272,6 +272,11 @@ function getEventIdOptions(eventId: string) {
   padding: 12px;
 }
 
+/* 返回数据区域的 JsonEditor 固定高度 */
+.config-section:last-child :deep(.json-editor-container) {
+  height: 300px;
+}
+
 .section-header {
   display: flex;
   justify-content: space-between;
