@@ -197,6 +197,7 @@ function getEventIdOptions(eventId: string) {
               placeholder="选择模板"
               size="small"
               clearable
+              class="template-select"
               @change="(val: string) => applyTemplate(index, val)"
               @clear="selectedTemplateId = null"
             >
@@ -328,6 +329,10 @@ function getEventIdOptions(eventId: string) {
 
 .config-row .event-id-select {
   width: 200px;
+}
+
+.config-row .template-select {
+  width: 120px;
 }
 
 .config-row .template-name-input {
