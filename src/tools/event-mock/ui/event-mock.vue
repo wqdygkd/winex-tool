@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import { context } from '../core/context'
 import { ConfigStorage } from '../storage/config'
 import { TemplateStorage } from '../storage/template'
@@ -73,17 +74,34 @@ function applyTemplate(eventIndex: number, templateId: string) {
   }
 }
 
-function saveAsTemplate(eventIndex: number) {
+async function saveAsTemplate(eventIndex: number) {
   const event = config.events[eventIndex]
-  if (!event.id) return
+  if (!event.id) {
+    ElMessage.warning('请先设置 eventId')
+    return
+  }
 
-  templateStorage.add({
-    id: `tpl_${Date.now()}`,
-    eventId: event.id,
-    name: `${event.title}_模板`,
-    data: JSON.parse(JSON.stringify(event.data))
-  })
-  templates.value = templateStorage.getAll()
+  try {
+    const { value } = await ElMessageBox.prompt('请输入模板名称', '保存模板', {
+      confirmButtonText: '保存',
+      cancelButtonText: '取消',
+      inputValue: `${event.title}_模板`,
+      inputPlaceholder: '模板名称'
+    })
+
+    if (value) {
+      templateStorage.add({
+        id: `tpl_${Date.now()}`,
+        eventId: event.id,
+        name: value,
+        data: JSON.parse(JSON.stringify(event.data))
+      })
+      templates.value = templateStorage.getAll()
+      ElMessage.success('模板保存成功')
+    }
+  } catch {
+    // 用户取消
+  }
 }
 
 function getEventIdOptions(eventId: string) {
