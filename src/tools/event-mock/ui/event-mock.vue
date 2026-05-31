@@ -81,12 +81,16 @@ async function saveAsTemplate(eventIndex: number) {
     return
   }
 
+  // 获取正确的挂载容器
+  const appRoot = document.getElementById('winex-tool-appRoot') || document.body
+
   try {
     const { value } = await ElMessageBox.prompt('请输入模板名称', '保存模板', {
       confirmButtonText: '保存',
       cancelButtonText: '取消',
       inputValue: `${event.title}_模板`,
-      inputPlaceholder: '模板名称'
+      inputPlaceholder: '模板名称',
+      appendTo: appRoot
     })
 
     if (value) {
