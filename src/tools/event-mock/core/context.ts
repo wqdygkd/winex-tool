@@ -1,5 +1,6 @@
-import { computed, reactive } from 'vue'
+/* eslint-disable no-console */
 import type { ConfigData, ParamsCondition, WinningSDK } from '../types'
+import { computed, reactive } from 'vue'
 
 class EventMockContext {
   private config = reactive<ConfigData>({
@@ -69,7 +70,7 @@ class EventMockContext {
     const candidates = this.config.events.filter(e => e.id === eventId)
 
     if (candidates.length === 0) {
-      this.log('未匹配到 eventId: ' + eventId)
+      this.log(`未匹配到 eventId: ${eventId}`)
       this.safeCallback(cb, '{}')
       return '{}'
     }
@@ -92,14 +93,14 @@ class EventMockContext {
     try {
       return JSON.parse(params)
     } catch {
-      console.warn(this.logPrefix + ' params 解析失败:', this.logStyle, '', params)
+      console.warn(`${this.logPrefix} params 解析失败:`, this.logStyle, '', params)
       return {}
     }
   }
 
   private matchParams(paramsObj: any, conditions?: ParamsCondition[]): boolean {
     if (!conditions || conditions.length === 0) return true
-    return conditions.every(cond => {
+    return conditions.every((cond) => {
       const actualValue = this.getValueByPath(paramsObj, cond.path)
       return String(actualValue) === String(cond.value) || actualValue === cond.value
     })
@@ -137,29 +138,36 @@ class EventMockContext {
   }
 
   private log(message: string): void {
-    console.log(this.logPrefix + ' ' + message, this.logStyle, '')
+    console.log(`${this.logPrefix} ${message}`, this.logStyle, '')
   }
 
   private logMatch(eventId: string, event: any, paramsObj: any): void {
     console.log(
-      this.logPrefix + ' 匹配成功',
-      this.logStyle, '',
+      `${this.logPrefix} 匹配成功`,
+      this.logStyle,
+      '',
       `\neventId: ${eventId}`,
       `\ntitle: ${event.title}`,
-      `\nparams:`, paramsObj,
-      `\nconditions:`, event.paramsConditions || [],
-      `\ndata:`, event.data
+      `\nparams:`,
+      paramsObj,
+      `\nconditions:`,
+      event.paramsConditions || [],
+      `\ndata:`,
+      event.data,
     )
   }
 
   private logFallback(eventId: string, fallback: any, paramsObj: any): void {
     console.log(
-      this.logPrefix + ' 使用 fallback',
-      this.logStyle, '',
+      `${this.logPrefix} 使用 fallback`,
+      this.logStyle,
+      '',
       `\neventId: ${eventId}`,
       `\ntitle: ${fallback?.title}`,
-      `\nparams:`, paramsObj,
-      `\ndata:`, fallback?.data
+      `\nparams:`,
+      paramsObj,
+      `\ndata:`,
+      fallback?.data,
     )
   }
 }

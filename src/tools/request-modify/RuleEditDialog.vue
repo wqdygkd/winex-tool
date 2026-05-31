@@ -11,17 +11,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  save: []
-  addHeaderOp: []
-  deleteHeaderOp: [index: number]
+  'save': []
+  'addHeaderOp': []
+  'deleteHeaderOp': [index: number]
   'update:responseModify': [value: any]
-  addResponseOp: []
-  deleteResponseOp: [index: number]
+  'addResponseOp': []
+  'deleteResponseOp': [index: number]
 }>()
 
 const dialogVisible = computed({
   get: () => props.visible,
-  set: (val) => emit('update:visible', val),
+  set: val => emit('update:visible', val),
 })
 </script>
 
@@ -33,6 +33,7 @@ const dialogVisible = computed({
     :close-on-click-modal="false"
     :lock-scroll="false"
   >
+    <!-- eslint-disable vue/no-mutating-props -->
     <div v-if="rule" class="edit-form">
       <div class="form-row">
         <label class="form-label">URL匹配方式</label>
@@ -72,6 +73,7 @@ const dialogVisible = computed({
           style="flex: 1"
         />
       </div>
+      <!-- eslint-enable vue/no-mutating-props -->
 
       <HeaderOpsTable
         :header-ops="rule.headerOps"

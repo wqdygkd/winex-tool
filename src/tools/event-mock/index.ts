@@ -1,8 +1,7 @@
 import type { ToolModule } from '../registry'
-import { context } from './core/context'
+import { importPresetData } from './presets'
 import { ConfigStorage } from './storage/config'
 import { TemplateStorage } from './storage/template'
-import { importPresetData } from './presets'
 import EventMockUI from './ui/event-mock.vue'
 
 const name = '事件模拟(New)'

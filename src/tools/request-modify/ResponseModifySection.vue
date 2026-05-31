@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ResponseModify, ResponseOp } from '~/types'
+import type { ResponseModify } from '~/types'
 import { MODIFY_TYPE_OPTIONS, RESPONSE_OP_TYPE_OPTIONS } from '~/composables/useRequestModify'
 
 const props = defineProps<{
@@ -8,8 +8,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:responseModify': [value: ResponseModify | undefined]
-  addOp: []
-  deleteOp: [index: number]
+  'addOp': []
+  'deleteOp': [index: number]
 }>()
 
 const enabled = computed({
@@ -43,6 +43,7 @@ const responseOps = computed(() => props.responseModify?.responseOps ?? [])
       />
     </div>
 
+    <!-- eslint-disable vue/no-mutating-props -->
     <template v-if="responseModify">
       <div class="response-basic">
         <div class="form-row">
@@ -83,6 +84,7 @@ const responseOps = computed(() => props.responseModify?.responseOps ?? [])
           </el-select>
         </div>
       </div>
+      <!-- eslint-enable vue/no-mutating-props -->
 
       <template v-if="responseModify.modifyType === 'static'">
         <div class="ops-header sub-header">

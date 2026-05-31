@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useGMStorageWithEnable } from '~/composables/useGMStorage'
 import FeatureCard from '~/components/FeatureCard.vue'
+import { useGMStorageWithEnable } from '~/composables/useGMStorage'
 import { storageKey } from './disable-traceid'
 
 const { enable } = useGMStorageWithEnable(storageKey, { enable: false })

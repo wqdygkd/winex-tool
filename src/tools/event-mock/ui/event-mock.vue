@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import type { EventItem, TemplateItem } from '../types'
 import { ElMessage } from 'element-plus'
+import { onMounted, ref, watch } from 'vue'
+import JsonEditor from '~/components/jsonEditor.vue'
 import { context } from '../core/context'
+import { eventIdPresets, getPresetEvents } from '../presets'
 import { ConfigStorage } from '../storage/config'
 import { TemplateStorage } from '../storage/template'
-import { eventIdPresets, getPresetEvents } from '../presets'
-import type { TemplateItem, EventItem } from '../types'
-import JsonEditor from '~/components/jsonEditor.vue'
 
 const config = context.getConfig()
 const templates = ref<TemplateItem[]>([])
@@ -27,7 +27,7 @@ function getEventsData(): EventItem[] {
     id: e.id,
     title: e.title,
     data: e.data,
-    paramsConditions: e.paramsConditions
+    paramsConditions: e.paramsConditions,
   }))
 }
 
@@ -45,7 +45,7 @@ onMounted(() => {
     .filter(e => e.isPreset)
     .map(e => `${e.id}_${e.title}`)
 
-  presetEvents.forEach(preset => {
+  presetEvents.forEach((preset) => {
     const key = `${preset.id}_${preset.title}`
     if (!existingPresetKeys.includes(key)) {
       config.events.unshift({ ...preset, isPreset: true })
@@ -59,7 +59,7 @@ watch(
     if (saveTimer) clearTimeout(saveTimer)
     saveTimer = setTimeout(autoSave, 500)
   },
-  { deep: true }
+  { deep: true },
 )
 
 function autoSave() {
@@ -131,7 +131,7 @@ function confirmSaveTemplate(eventIndex: number) {
     id: `tpl_${Date.now()}`,
     eventId: event.id,
     name: templateName.value.trim(),
-    data: cloneData(event.data)
+    data: cloneData(event.data),
   })
   templates.value = templateStorage.getAll()
   savingTemplateIndex.value = null
@@ -155,8 +155,12 @@ function getEventIdOptions(eventId: string) {
   <div class="event-mock">
     <div class="header">
       <el-switch v-model="config.enable" active-text="启用" inactive-text="禁用" />
-      <el-button type="primary" size="small" :loading="saving" @click="save">保存配置</el-button>
-      <el-button size="small" @click="addEvent">+ 添加事件</el-button>
+      <el-button type="primary" size="small" :loading="saving" @click="save">
+        保存配置
+      </el-button>
+      <el-button size="small" @click="addEvent">
+        + 添加事件
+      </el-button>
     </div>
 
     <el-collapse v-model="activeNames" class="events-collapse">
@@ -207,7 +211,9 @@ function getEventIdOptions(eventId: string) {
           <div class="config-section">
             <div class="section-header">
               <span>params 匹配条件（可选）</span>
-              <el-button size="small" @click="addCondition(index)">+ 添加条件</el-button>
+              <el-button size="small" @click="addCondition(index)">
+                + 添加条件
+              </el-button>
             </div>
             <div
               v-for="(cond, condIndex) in event.paramsConditions"
@@ -216,7 +222,9 @@ function getEventIdOptions(eventId: string) {
             >
               <el-input v-model="cond.path" placeholder="JSON路径 (如 body.identityEntryId)" size="small" />
               <el-input v-model="cond.value" placeholder="匹配值" size="small" />
-              <el-button size="small" @click="removeCondition(index, condIndex)">删除</el-button>
+              <el-button size="small" @click="removeCondition(index, condIndex)">
+                删除
+              </el-button>
             </div>
             <div v-if="!event.paramsConditions?.length" class="condition-empty">
               无 params 条件时，该事件作为默认返回
@@ -260,16 +268,24 @@ function getEventIdOptions(eventId: string) {
                 size="small"
                 class="template-name-input"
               />
-              <el-button size="small" @click="cancelSaveTemplate">取消</el-button>
-              <el-button type="primary" size="small" @click="confirmSaveTemplate(index)">保存</el-button>
+              <el-button size="small" @click="cancelSaveTemplate">
+                取消
+              </el-button>
+              <el-button type="primary" size="small" @click="confirmSaveTemplate(index)">
+                保存
+              </el-button>
             </template>
             <template v-else>
-              <el-button size="small" @click="startSaveTemplate(index)">保存模板</el-button>
+              <el-button size="small" @click="startSaveTemplate(index)">
+                保存模板
+              </el-button>
             </template>
           </div>
 
           <div class="config-section">
-            <div class="section-header">返回数据</div>
+            <div class="section-header">
+              返回数据
+            </div>
             <JsonEditor v-model="event.data" />
           </div>
         </div>

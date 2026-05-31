@@ -2,7 +2,7 @@
 import type { HeaderOperation } from '~/types'
 import { HEADER_OP_TYPE_OPTIONS } from '~/composables/useRequestModify'
 
-const props = defineProps<{
+defineProps<{
   headerOps: HeaderOperation[]
 }>()
 

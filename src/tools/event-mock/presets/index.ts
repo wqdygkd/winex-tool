@@ -16,13 +16,13 @@ export function getPresetEvents(): EventItem[] {
 }
 
 export function importPresetData(templateStorage: {
-  getAll(): TemplateItem[]
-  add(template: TemplateItem): void
+  getAll: () => TemplateItem[]
+  add: (template: TemplateItem) => void
 }): void {
   const rawData = import.meta.glob('./data/*.json', { eager: true })
   const existing = templateStorage.getAll()
 
-  presetDataFiles.forEach(file => {
+  presetDataFiles.forEach((file) => {
     const dataKey = `./data/${file.filename}`
     const loaded = rawData[dataKey]
 
@@ -37,7 +37,7 @@ export function importPresetData(templateStorage: {
         data: typeof jsonContent === 'string' ? JSON.parse(jsonContent) : jsonContent,
       }
 
-      if (!existing.find(t => t.id === template.id)) {
+      if (!existing.some(t => t.id === template.id)) {
         templateStorage.add(template)
       }
     } catch (e) {

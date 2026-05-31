@@ -1,9 +1,10 @@
-import type { RequestModifyStorage, HeaderOperation, RequestModifyRule, ResponseModify } from '~/types'
+import type { HeaderOperation, RequestModifyRule, RequestModifyStorage } from '~/types'
 import { proxy } from 'ajax-hook'
 
 export const storageKey = `${__namespace}request-modify`
 
-const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
+const _httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const
+const ARRAY_INDEX_REGEX = /^(\w+)\[(\d+)\]$/
 
 export function init() {
   const storage = GM_getValue<RequestModifyStorage>(storageKey, {
@@ -82,7 +83,7 @@ function matchUrl(url: string, rule: RequestModifyRule): boolean {
 
 function matchMethod(method: string, methods: RequestModifyRule['methods']): boolean {
   if (!methods || methods.length === 0) return true
-  return methods.includes(method.toUpperCase() as typeof httpMethods[number])
+  return methods.includes(method.toUpperCase() as typeof _httpMethods[number])
 }
 
 function findExistingHeaderKey(headers: Record<string, string>, key: string): string | undefined {
@@ -123,7 +124,7 @@ function applyHeaders(headers: Record<string, string>, ops: HeaderOperation[]): 
 
 function getMaxDelay(rules: RequestModifyRule[]): number {
   let maxDelay = 0
-  rules.forEach(rule => {
+  rules.forEach((rule) => {
     if (rule.responseModify?.delayMs && rule.responseModify.delayMs > maxDelay) {
       maxDelay = rule.responseModify.delayMs
     }
@@ -136,7 +137,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 function applyResponseModify(response: any, rules: RequestModifyRule[]): void {
-  rules.forEach(rule => {
+  rules.forEach((rule) => {
     if (!rule.responseModify) return
     const config = rule.responseModify
 
@@ -148,7 +149,7 @@ function applyResponseModify(response: any, rules: RequestModifyRule[]): void {
 
     // 静态响应体修改
     if (config.modifyType === 'static' && config.responseOps) {
-      config.responseOps.forEach(op => {
+      config.responseOps.forEach((op) => {
         try {
           if (op.opType === 'full') {
             response.response = op.value || ''
@@ -178,10 +179,10 @@ function getByPath(obj: any, path: string): any {
   return path.split('.').reduce((acc, key) => {
     if (acc === null || acc === undefined) return undefined
     // 处理数组索引，如 items[0]
-    const arrayMatch = key.match(/^(\w+)\[(\d+)\]$/)
+    const arrayMatch = ARRAY_INDEX_REGEX.exec(key)
     if (arrayMatch) {
       const arrKey = arrayMatch[1]
-      const idx = parseInt(arrayMatch[2])
+      const idx = Number.parseInt(arrayMatch[2])
       return acc[arrKey]?.[idx]
     }
     return acc[key]
@@ -195,20 +196,20 @@ function setByPath(obj: any, path: string, value: any): void {
   const target = keys.reduce((acc, key) => {
     if (acc[key] === undefined) acc[key] = {}
     // 处理数组索引
-    const arrayMatch = key.match(/^(\w+)\[(\d+)\]$/)
+    const arrayMatch = ARRAY_INDEX_REGEX.exec(key)
     if (arrayMatch) {
       const arrKey = arrayMatch[1]
-      const idx = parseInt(arrayMatch[2])
+      const idx = Number.parseInt(arrayMatch[2])
       if (acc[arrKey] === undefined) acc[arrKey] = []
       return acc[arrKey][idx] || (acc[arrKey][idx] = {})
     }
     return acc[key]
   }, obj)
   // 处理最后一个 key 的数组索引
-  const lastArrayMatch = lastKey.match(/^(\w+)\[(\d+)\]$/)
+  const lastArrayMatch = ARRAY_INDEX_REGEX.exec(lastKey)
   if (lastArrayMatch) {
     const arrKey = lastArrayMatch[1]
-    const idx = parseInt(lastArrayMatch[2])
+    const idx = Number.parseInt(lastArrayMatch[2])
     if (target[arrKey] === undefined) target[arrKey] = []
     target[arrKey][idx] = value
   } else {

@@ -1,5 +1,5 @@
-import { context } from '../core/context'
 import type { ConfigData, EventItem } from '../types'
+import { context } from '../core/context'
 
 const STORAGE_KEY = `${__namespace}event-mock-config`
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StorageItem } from '~/types'
-import { storageKey } from './index'
 import { useGMStorage } from '~/composables/useGMStorage'
+import { storageKey } from './index'
 
 const ignoreSessionKey = `GM_hook_${storageKey}`
 
