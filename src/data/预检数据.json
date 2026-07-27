@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "errorDetail": null,
+  "data": {
+    "triageQueryOutputDTOS": [
+      {
+        "triageIndex": "464920",
+        "triageDeptId": [
+          "258490534388041740",
+          "303760982189176832"
+        ],
+        "triageDeptName": null,
+        "triageItems": [
+          {
+            "triageDeptId": "258490534388041740",
+            "triageDeptCode": "20012003",
+            "triageDeptName": "急诊外科"
+          },
+          {
+            "triageDeptId": "303760982189176832",
+            "triageDeptCode": "20014003",
+            "triageDeptName": "动物致伤门诊"
+          }
+        ],
+        "greenChannelCode": null,
+        "greenChannelText": "",
+        "greenChannelStartTime": null,
+        "greenChannelEndTime": null,
+        "greenAccountId": null,
+        "greenAccountNo": null,
+        "greenAccountName": null,
+        "triageLevelNo": "4",
+        "triageLevelName": "IV级",
+        "triageDirectionCode": "999631521",
+        "triageDirectionName": null,
+        "personId": "505274751011575809"
+      }
+    ]
+  },
+  "appid": "9140",
+  "traceid": "34de94eeb3b04c71ab0db76989c8695e",
+  "hostip": "10.81.57.241",
+  "hostport": "9140",
+  "warnCode": null,
+  "warnMsg": null,
+  "blockInWarn": false
+}

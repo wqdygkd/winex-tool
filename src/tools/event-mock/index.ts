@@ -1,20 +1,19 @@
 import type { ToolModule } from '../registry'
-import { importPresetData } from './presets'
+import { runtime } from './core/singleton'
+import { getPresetTemplates } from './presets'
 import { ConfigStorage } from './storage/config'
 import { TemplateStorage } from './storage/template'
 import EventMockUI from './ui/event-mock.vue'
 
-const name = '事件模拟(New)'
+const name = '事件模拟'
 const storageKey = `${__namespace}event-mock`
 
 function init() {
   const configStorage = new ConfigStorage()
   const templateStorage = new TemplateStorage()
 
-  configStorage.load()
-
-  // 自动导入预制数据
-  importPresetData(templateStorage)
+  runtime.update(configStorage.load())
+  templateStorage.importPresets(getPresetTemplates())
 }
 
 EventMockUI.name = name

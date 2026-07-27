@@ -1,20 +1,16 @@
 <script setup lang="ts">
 import { json } from '@codemirror/lang-json'
-import { Compartment, StateEffect } from '@codemirror/state'
 import { basicSetup, EditorView } from 'codemirror'
 
 const props = defineProps<{
   modelValue: object | undefined
-  mode?: string
 }>()
 
-const emit = defineEmits(['change', 'error', 'update:modelValue', 'validationError'])
+const emit = defineEmits(['change', 'error', 'update:modelValue'])
 
 const editorRef = ref<HTMLElement>()
 let editorView: EditorView
 let internalChange = false
-
-const languageConf = new Compartment()
 
 onMounted(() => {
   if (!editorRef.value) return
@@ -25,7 +21,7 @@ onMounted(() => {
     doc: jsonString,
     extensions: [
       basicSetup,
-      languageConf.of(json()),
+      json(),
       EditorView.theme({
         '&': {
           height: '400px',
@@ -120,8 +116,6 @@ function formatJson() {
 }
 
 defineExpose({
-  expandAll: () => {
-  },
   focus: () => {
     if (editorView) {
       editorView.focus()

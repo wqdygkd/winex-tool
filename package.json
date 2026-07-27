@@ -14,37 +14,36 @@
     "dev": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite",
     "build": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build",
     "build:plain": "set NODE_OPTIONS=--loader=ts-node/esm --no-warnings=ExperimentalWarning && vite build --mode plain",
+    "test:event-mock": "node --loader ts-node/esm --test src/tools/event-mock/core/*.test.ts src/tools/event-mock/presets/*.test.ts src/tools/event-mock/storage/*.test.ts",
     "build:watch": "vite build --watch",
     "clean": "pnpx rimraf node_modules",
     "up": "pnpm update -i -r --latest"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.2",
-    "@codemirror/state": "^6.5.4",
-    "@codemirror/view": "^6.39.11",
-    "@element-plus/icons-vue": "^2.3.2",
-    "@vueuse/core": "^14.1.0",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.6",
+    "@vueuse/core": "^14.3.0",
     "ajax-hook": "^3.0.3",
     "codemirror": "^6.0.2",
-    "dayjs": "^1.11.19",
-    "element-plus": "^2.13.1",
-    "sass": "^1.97.3",
-    "terser": "^5.46.0",
-    "vue": "^3.5.27"
+    "element-plus": "^2.14.3",
+    "sass": "^1.102.0",
+    "terser": "^5.49.0",
+    "vue": "^3.5.40"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.2.0",
-    "@types/node": "^22.19.7",
+    "@antfu/eslint-config": "^9.2.0",
+    "@types/node": "^22.20.1",
     "@types/tampermonkey": "^5.0.5",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "eslint": "^9.39.2",
-    "eslint-plugin-import-x": "^4.16.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "eslint": "^10.8.0",
+    "eslint-plugin-import-x": "^4.17.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^21.0.0",
-    "unplugin-vue-components": "^31.0.0",
-    "vite": "^5.4.21",
+    "unplugin-vue-components": "^31.1.0",
+    "vite": "^7.3.6",
     "vite-plugin-css-injected-by-js": "^3.5.2",
-    "vue-tsc": "^3.2.3"
+    "vue-tsc": "^3.3.8"
   }
 }

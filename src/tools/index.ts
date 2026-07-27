@@ -32,11 +32,4 @@ if (__FEATURE_REQUEST_MODIFY__) {
   registerTool(RequestModifyModule)
 }
 
-// 导出 Vue 组件
-export const EventMock = __FEATURE_EVENT_MOCK__ ? EventMockModule.component! : null
-export const Others = __FEATURE_OTHERS__ ? OthersModule.component! : null
-export const ParamMock = __FEATURE_PARAM_MOCK__ ? ParamMockModule.component! : null
-export const RequestModify = __FEATURE_REQUEST_MODIFY__ ? RequestModifyModule.component! : null
-export const StorageCopy = __FEATURE_STORAGE_COPY__ ? StorageCopyModule.component! : null
-
 export { getTools, initAllTools } from './registry'

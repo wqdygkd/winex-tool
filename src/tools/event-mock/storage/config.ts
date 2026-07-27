@@ -1,37 +1,56 @@
-import type { ConfigData, EventItem } from '../types'
-import { context } from '../core/context'
+import type { EventMockConfig } from '../types'
+import { normalizeConditions } from '../core/rules.ts'
 
-const STORAGE_KEY = `${__namespace}event-mock-config`
+const STORAGE_KEY = 'GM_wqdy_event-mock-config'
 
-function mapEvents(events: EventItem[]) {
-  return events.map(e => ({
-    id: e.id,
-    title: e.title,
-    data: e.data,
-    paramsConditions: e.paramsConditions,
-  }))
+export function createDefaultConfig(): EventMockConfig {
+  return {
+    enabled: false,
+    rules: [],
+  }
 }
 
 export class ConfigStorage {
-  load(): ConfigData {
-    const config = GM_getValue(STORAGE_KEY, { enable: false, events: [] })
-    context.updateConfig(config)
-    return config
-  }
-
-  save(config: ConfigData): void {
-    GM_setValue(STORAGE_KEY, {
-      enable: config.enable,
-      events: mapEvents(config.events),
-    })
-    context.updateConfig(config)
-  }
-
-  get(): ConfigData {
-    const config = context.getConfig()
-    return {
-      enable: config.enable,
-      events: [...config.events],
+  load(): EventMockConfig {
+    const storedConfig = GM_getValue<unknown>(STORAGE_KEY, createDefaultConfig())
+    if (!isEventMockConfig(storedConfig)) {
+      return createDefaultConfig()
     }
+
+    return cloneConfig(storedConfig)
   }
+
+  save(config: EventMockConfig): void {
+    GM_setValue(STORAGE_KEY, cloneConfig(config))
+  }
+}
+
+function cloneConfig(config: EventMockConfig): EventMockConfig {
+  return {
+    enabled: config.enabled,
+    rules: config.rules.map(rule => ({
+      ...rule,
+      conditions: normalizeConditions(rule.conditions),
+    })),
+  }
+}
+
+function isEventMockConfig(value: unknown): value is EventMockConfig {
+  if (!isRecord(value)) return false
+  if (typeof value.enabled !== 'boolean') return false
+  if (!Array.isArray(value.rules)) return false
+
+  return value.rules.every(rule =>
+    isRecord(rule)
+    && typeof rule.id === 'string'
+    && typeof rule.enabled === 'boolean'
+    && typeof rule.eventId === 'string'
+    && typeof rule.title === 'string'
+    && Array.isArray(rule.conditions)
+    && isRecord(rule.response),
+  )
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }

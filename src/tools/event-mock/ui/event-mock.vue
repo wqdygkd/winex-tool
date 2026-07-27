@@ -1,200 +1,235 @@
 <script setup lang="ts">
-import type { EventItem, TemplateItem } from '../types'
+import type { EventMockConfig, MockRule, MockTemplate } from '../types'
 import { ElMessage } from 'element-plus'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import JsonEditor from '~/components/jsonEditor.vue'
-import { context } from '../core/context'
-import { eventIdPresets, getPresetEvents } from '../presets'
-import { ConfigStorage } from '../storage/config'
+import { applyTemplateResponse, cloneJsonObject, normalizeConditions } from '../core/rules'
+import { runtime } from '../core/singleton'
+import { eventIdPresets, getPresetTemplates } from '../presets'
+import { ConfigStorage, createDefaultConfig } from '../storage/config'
 import { TemplateStorage } from '../storage/template'
-
-const config = context.getConfig()
-const templates = ref<TemplateItem[]>([])
-const activeNames = ref<number[]>([])
-const saving = ref(false)
-const savingTemplateIndex = ref<number | null>(null)
-const templateName = ref('')
-const selectedTemplateId = ref<string | null>(null)
 
 const configStorage = new ConfigStorage()
 const templateStorage = new TemplateStorage()
 
+const config = ref<EventMockConfig>(createDefaultConfig())
+const templates = ref<MockTemplate[]>([])
+const activeRuleIds = ref<string[]>([])
+const selectedTemplateByRule = reactive<Record<string, string>>({})
+const templateNameByRule = reactive<Record<string, string>>({})
+const saveState = ref<'idle' | 'saving' | 'saved'>('idle')
+const loaded = ref(false)
+
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 
-// 提取事件映射逻辑
-function getEventsData(): EventItem[] {
-  return config.events.map(e => ({
-    id: e.id,
-    title: e.title,
-    data: e.data,
-    paramsConditions: e.paramsConditions,
-  }))
-}
-
-// 提取 deep clone
-function cloneData(data: any): any {
-  return JSON.parse(JSON.stringify(data))
-}
+const enabledRulesCount = computed(() => config.value.rules.filter(rule => rule.enabled).length)
 
 onMounted(() => {
-  configStorage.load()
+  templateStorage.importPresets(getPresetTemplates())
   templates.value = templateStorage.getAll()
-
-  const presetEvents = getPresetEvents()
-  const existingPresetKeys = config.events
-    .filter(e => e.isPreset)
-    .map(e => `${e.id}_${e.title}`)
-
-  presetEvents.forEach((preset) => {
-    const key = `${preset.id}_${preset.title}`
-    if (!existingPresetKeys.includes(key)) {
-      config.events.unshift({ ...preset, isPreset: true })
-    }
-  })
+  config.value = configStorage.load()
+  runtime.update(config.value)
+  loaded.value = true
 })
 
 watch(
-  () => ({ enable: config.enable, events: getEventsData() }),
+  config,
   () => {
+    if (!loaded.value) return
     if (saveTimer) clearTimeout(saveTimer)
-    saveTimer = setTimeout(autoSave, 500)
+    saveState.value = 'saving'
+    saveTimer = setTimeout(() => saveConfig(false), 500)
   },
   { deep: true },
 )
 
-function autoSave() {
-  configStorage.save({ enable: config.enable, events: getEventsData() })
-}
+function saveConfig(showMessage = true) {
+  configStorage.save(config.value)
+  runtime.update(config.value)
+  saveState.value = 'saved'
 
-function save() {
-  saving.value = true
-  configStorage.save({ enable: config.enable, events: getEventsData() })
-  ElMessage.success('配置已保存')
-  saving.value = false
-}
-
-function addEvent() {
-  config.events.push({ id: '', title: '新事件', data: {} })
-  activeNames.value.push(config.events.length - 1)
-}
-
-function removeEvent(index: number) {
-  if (config.events[index].isPreset) {
-    ElMessage.warning('预制规则不可删除')
-    return
-  }
-  config.events.splice(index, 1)
-  activeNames.value = activeNames.value.filter(n => n !== index)
-}
-
-function addCondition(eventIndex: number) {
-  const conditions = config.events[eventIndex].paramsConditions || []
-  config.events[eventIndex].paramsConditions = [...conditions, { path: '', value: '' }]
-}
-
-function removeCondition(eventIndex: number, condIndex: number) {
-  config.events[eventIndex].paramsConditions?.splice(condIndex, 1)
-}
-
-function applyTemplate(eventIndex: number, templateId: string) {
-  const template = templates.value.find(t => t.id === templateId)
-  if (template) {
-    config.events[eventIndex].data = cloneData(template.data)
+  if (showMessage) {
+    ElMessage.success('配置已保存')
   }
 }
 
-function startSaveTemplate(eventIndex: number) {
-  if (!config.events[eventIndex].id) {
+function addRule() {
+  const rule = createRule()
+  config.value.rules.unshift(rule)
+  activeRuleIds.value = [rule.id, ...activeRuleIds.value]
+}
+
+function duplicateRule(rule: MockRule) {
+  const copied = cloneRule(rule)
+  copied.id = createId('rule')
+  copied.title = `${rule.title || '规则'} 副本`
+  config.value.rules.unshift(copied)
+  activeRuleIds.value = [copied.id, ...activeRuleIds.value]
+}
+
+function removeRule(ruleId: string) {
+  config.value.rules = config.value.rules.filter(rule => rule.id !== ruleId)
+  activeRuleIds.value = activeRuleIds.value.filter(id => id !== ruleId)
+  delete selectedTemplateByRule[ruleId]
+  delete templateNameByRule[ruleId]
+}
+
+function addCondition(rule: MockRule) {
+  rule.conditions.push({ path: '', value: '' })
+}
+
+function removeCondition(rule: MockRule, index: number) {
+  rule.conditions.splice(index, 1)
+}
+
+function applyTemplate(rule: MockRule, templateId: string) {
+  const template = templates.value.find(item => item.id === templateId)
+  if (!template) return
+
+  applyTemplateResponse(rule, template.response)
+  ElMessage.success('模板已套用')
+}
+
+function saveTemplate(rule: MockRule) {
+  if (!rule.eventId) {
     ElMessage.warning('请先设置 eventId')
     return
   }
-  savingTemplateIndex.value = eventIndex
-  templateName.value = `${config.events[eventIndex].title}_模板`
-}
 
-function cancelSaveTemplate() {
-  savingTemplateIndex.value = null
-  templateName.value = ''
-}
-
-function confirmSaveTemplate(eventIndex: number) {
-  if (!templateName.value.trim()) {
+  const name = templateNameByRule[rule.id]?.trim()
+  if (!name) {
     ElMessage.warning('请输入模板名称')
     return
   }
 
-  const event = config.events[eventIndex]
   templateStorage.add({
-    id: `tpl_${Date.now()}`,
-    eventId: event.id,
-    name: templateName.value.trim(),
-    data: cloneData(event.data),
+    id: createId('tpl'),
+    eventId: rule.eventId,
+    name,
+    response: cloneJsonObject(rule.response),
+  })
+  templateNameByRule[rule.id] = ''
+  templates.value = templateStorage.getAll()
+  ElMessage.success('模板已保存')
+}
+
+function deleteTemplate(template: MockTemplate) {
+  if (!templateStorage.remove(template.id)) {
+    ElMessage.warning('预置模板不可删除')
+    return
+  }
+
+  Object.keys(selectedTemplateByRule).forEach((ruleId) => {
+    if (selectedTemplateByRule[ruleId] === template.id) {
+      delete selectedTemplateByRule[ruleId]
+    }
   })
   templates.value = templateStorage.getAll()
-  savingTemplateIndex.value = null
-  templateName.value = ''
-  ElMessage.success('模板保存成功')
+  ElMessage.success('模板已删除')
 }
 
-function deleteTemplate(templateId: string) {
-  templateStorage.remove(templateId)
+function importPresets() {
+  const count = templateStorage.importPresets(getPresetTemplates())
   templates.value = templateStorage.getAll()
-  selectedTemplateId.value = null
-  ElMessage.success('模板删除成功')
+  ElMessage.success(count > 0 ? `已导入 ${count} 个预置模板` : '预置模板已是最新')
 }
 
-function getEventIdOptions(eventId: string) {
-  return templates.value.filter(t => t.eventId === eventId)
+function getTemplatesByEventId(eventId: string) {
+  return templates.value.filter(template => template.eventId === eventId)
+}
+
+function getRuleSummary(rule: MockRule) {
+  const eventId = rule.eventId || '未设置 eventId'
+  const status = rule.enabled ? '启用' : '禁用'
+  return `${eventId} / ${status} / ${normalizeConditions(rule.conditions).length} 条条件`
+}
+
+function createRule(): MockRule {
+  return {
+    id: createId('rule'),
+    enabled: true,
+    eventId: '',
+    title: '新规则',
+    conditions: [],
+    response: {},
+  }
+}
+
+function cloneRule(rule: MockRule): MockRule {
+  return {
+    ...rule,
+    conditions: normalizeConditions(rule.conditions),
+    response: cloneJsonObject(rule.response),
+  }
+}
+
+function createId(prefix: string) {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
 }
 </script>
 
 <template>
   <div class="event-mock">
-    <div class="header">
-      <el-switch v-model="config.enable" active-text="启用" inactive-text="禁用" />
-      <el-button type="primary" size="small" :loading="saving" @click="save">
-        保存配置
-      </el-button>
-      <el-button size="small" @click="addEvent">
-        + 添加事件
-      </el-button>
+    <div class="toolbar">
+      <div class="toolbar-main">
+        <el-switch v-model="config.enabled" active-text="启用" inactive-text="禁用" />
+        <span class="summary">{{ enabledRulesCount }} / {{ config.rules.length }} 条规则启用</span>
+        <span v-if="saveState === 'saving'" class="save-state">保存中</span>
+        <span v-else-if="saveState === 'saved'" class="save-state">已保存</span>
+      </div>
+      <div class="toolbar-actions">
+        <el-button size="small" @click="importPresets">
+          导入预置模板
+        </el-button>
+        <el-button size="small" @click="saveConfig(true)">
+          保存配置
+        </el-button>
+        <el-button type="primary" size="small" @click="addRule">
+          添加规则
+        </el-button>
+      </div>
     </div>
 
-    <el-collapse v-model="activeNames" class="events-collapse">
+    <el-collapse v-model="activeRuleIds" class="rules">
       <el-collapse-item
-        v-for="(event, index) in config.events"
-        :key="index"
-        :name="index"
+        v-for="rule in config.rules"
+        :key="rule.id"
+        :name="rule.id"
       >
         <template #title>
-          <div class="collapse-title">
-            <span class="event-title">{{ event.title }}</span>
-            <span class="event-id">{{ event.id || '未设置' }}</span>
-            <span v-if="event.isPreset" class="preset-tag">预制</span>
-            <el-button
-              v-if="!event.isPreset"
-              type="danger"
+          <div class="rule-title">
+            <el-switch
+              v-model="rule.enabled"
               size="small"
-              @click.stop="removeEvent(index)"
-            >
-              删除
-            </el-button>
+              @click.stop
+            />
+            <div class="rule-title-text">
+              <span class="rule-name">{{ rule.title || '未命名规则' }}</span>
+              <span class="rule-summary">{{ getRuleSummary(rule) }}</span>
+            </div>
+            <div class="rule-actions">
+              <el-button size="small" @click.stop="duplicateRule(rule)">
+                复制
+              </el-button>
+              <el-button type="danger" size="small" @click.stop="removeRule(rule.id)">
+                删除
+              </el-button>
+            </div>
           </div>
         </template>
 
-        <div class="event-config">
-          <div class="config-row">
-            <label>标题:</label>
-            <el-input v-model="event.title" placeholder="事件标题" size="small" class="title-input" />
-            <label>eventId:</label>
+        <div class="rule-editor">
+          <div class="form-row">
+            <label>标题</label>
+            <el-input v-model="rule.title" size="small" placeholder="规则标题" />
+            <label>eventId</label>
             <el-select
-              v-model="event.id"
-              placeholder="选择或输入"
+              v-model="rule.eventId"
               size="small"
               filterable
               allow-create
               clearable
-              class="event-id-select"
+              placeholder="选择或输入 eventId"
             >
               <el-option
                 v-for="preset in eventIdPresets"
@@ -205,237 +240,247 @@ function getEventIdOptions(eventId: string) {
             </el-select>
           </div>
 
-          <div class="config-section">
+          <div class="section">
             <div class="section-header">
-              <span>params 匹配条件（可选）</span>
-              <el-button size="small" @click="addCondition(index)">
-                + 添加条件
+              <span>params 匹配条件</span>
+              <el-button size="small" @click="addCondition(rule)">
+                添加条件
               </el-button>
             </div>
+            <div v-if="rule.conditions.length === 0" class="empty-text">
+              无条件规则会作为该 eventId 的默认返回。
+            </div>
             <div
-              v-for="(cond, condIndex) in event.paramsConditions"
-              :key="condIndex"
+              v-for="(condition, conditionIndex) in rule.conditions"
+              :key="conditionIndex"
               class="condition-row"
             >
-              <el-input v-model="cond.path" placeholder="JSON路径 (如 body.identityEntryId)" size="small" />
-              <el-input v-model="cond.value" placeholder="匹配值" size="small" />
-              <el-button size="small" @click="removeCondition(index, condIndex)">
+              <el-input v-model="condition.path" size="small" placeholder="路径，如 body.cardType" />
+              <el-input v-model="condition.value" size="small" placeholder="匹配值" />
+              <el-button size="small" @click="removeCondition(rule, conditionIndex)">
                 删除
               </el-button>
             </div>
-            <div v-if="!event.paramsConditions?.length" class="condition-empty">
-              无 params 条件时，该事件作为默认返回
-            </div>
           </div>
 
-          <div class="config-row">
-            <label>模板:</label>
-            <el-select
-              v-model="selectedTemplateId"
-              placeholder="选择模板"
-              size="small"
-              clearable
-              class="template-select"
-              @change="(val: string) => applyTemplate(index, val)"
-              @clear="selectedTemplateId = null"
-            >
-              <el-option
-                v-for="t in getEventIdOptions(event.id)"
-                :key="t.id"
-                :label="t.name"
-                :value="t.id"
-              >
-                <span>{{ t.name }}</span>
-                <el-button
-                  type="danger"
-                  size="small"
-                  link
-                  class="template-delete-btn"
-                  @click.stop="deleteTemplate(t.id)"
-                >
-                  删除
-                </el-button>
-              </el-option>
-            </el-select>
-            <!-- 保存模板：点击后显示输入框 -->
-            <template v-if="savingTemplateIndex === index">
-              <el-input
-                v-model="templateName"
-                placeholder="模板名称"
-                size="small"
-                class="template-name-input"
-              />
-              <el-button size="small" @click="cancelSaveTemplate">
-                取消
-              </el-button>
-              <el-button type="primary" size="small" @click="confirmSaveTemplate(index)">
-                保存
-              </el-button>
-            </template>
-            <template v-else>
-              <el-button size="small" @click="startSaveTemplate(index)">
-                保存模板
-              </el-button>
-            </template>
-          </div>
-
-          <div class="config-section">
+          <div class="section">
             <div class="section-header">
-              返回数据
+              <span>模板</span>
             </div>
-            <JsonEditor v-model="event.data" />
+            <div class="template-row">
+              <el-select
+                v-model="selectedTemplateByRule[rule.id]"
+                size="small"
+                clearable
+                placeholder="选择模板"
+                @change="(templateId: string) => applyTemplate(rule, templateId)"
+              >
+                <el-option
+                  v-for="template in getTemplatesByEventId(rule.eventId)"
+                  :key="template.id"
+                  :label="template.preset ? `${template.name}（预置）` : template.name"
+                  :value="template.id"
+                >
+                  <div class="template-option">
+                    <span>{{ template.name }}{{ template.preset ? '（预置）' : '' }}</span>
+                    <el-button
+                      type="danger"
+                      size="small"
+                      link
+                      :disabled="template.preset"
+                      @click.stop="deleteTemplate(template)"
+                    >
+                      删除
+                    </el-button>
+                  </div>
+                </el-option>
+              </el-select>
+              <el-input
+                v-model="templateNameByRule[rule.id]"
+                size="small"
+                placeholder="模板名称"
+              />
+              <el-button size="small" @click="saveTemplate(rule)">
+                保存为模板
+              </el-button>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <span>返回数据</span>
+            </div>
+            <JsonEditor v-model="rule.response" class="response-editor" />
           </div>
         </div>
       </el-collapse-item>
     </el-collapse>
 
-    <div v-if="config.events.length === 0" class="empty-tip">
-      点击 "+ 添加事件" 开始配置
-    </div>
+    <el-empty v-if="config.rules.length === 0" description="暂无规则" />
   </div>
 </template>
 
 <style scoped>
 .event-mock {
   padding: 16px;
-  background-color: #fff;
+  background: #fff;
 }
 
-.header {
+.toolbar {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
-  align-items: center;
+  flex-wrap: wrap;
 }
 
-.events-collapse {
-  border: none;
-}
-
-.events-collapse :deep(.el-collapse-item__header) {
-  background: #f5f7fa;
-  border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  padding: 8px 16px;
-  height: auto;
-  line-height: 1.5;
-}
-
-.events-collapse :deep(.el-collapse-item__wrap) {
-  border: none;
-}
-
-.events-collapse :deep(.el-collapse-item__content) {
-  padding: 16px;
-  background: #fff;
-  border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-.collapse-title {
+.toolbar-main,
+.toolbar-actions {
   display: flex;
-  gap: 12px;
   align-items: center;
-  width: 100%;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.preset-tag {
-  background: #e6a23c;
-  color: #fff;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.event-id {
-  font-weight: 600;
-  color: #409eff;
-  min-width: 100px;
-}
-
-.event-title {
+.summary,
+.save-state,
+.rule-summary,
+.empty-text {
   color: #606266;
+  font-size: 13px;
 }
 
-.event-config {
+.rules {
+  border: 0;
+}
+
+.rules :deep(.el-collapse-item__header) {
+  min-height: 56px;
+  height: auto;
+  padding: 8px 12px;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  background: #f7f8fa;
+}
+
+.rules :deep(.el-collapse-item__wrap) {
+  border: 0;
+}
+
+.rules :deep(.el-collapse-item__content) {
+  padding: 12px 0 18px;
+}
+
+.rule-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.rule-title-text {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.4;
 }
 
-.config-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: nowrap;
-}
-
-.config-row label {
-  font-size: 14px;
-  color: #606266;
+.rule-name {
+  color: #303133;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.config-row .title-input {
-  width: 120px;
+.rule-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
-.config-row .event-id-select {
-  width: 200px;
-}
-
-.config-row .template-select {
-  width: 300px;
-}
-
-.config-row .template-name-input {
-  width: 150px;
-}
-
-.config-section {
+.rule-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 6px;
+  padding: 16px;
 }
 
-/* 返回数据区域的 JsonEditor 固定高度 */
-.config-section:last-child :deep(.json-editor-container) {
-  height: 300px;
+.form-row,
+.template-row,
+.condition-row {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto minmax(180px, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.template-row {
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr) auto;
+}
+
+.condition-row {
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr) auto;
+}
+
+.form-row label {
+  color: #606266;
+  font-size: 13px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .section-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #303133;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.template-option {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  color: #606266;
+  gap: 12px;
+  width: 100%;
 }
 
-.condition-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
+.response-editor :deep(.code-editor),
+.response-editor :deep(.cm-editor) {
+  height: 200px;
+  max-height: 200px;
 }
 
-.condition-row .el-input {
-  flex: 1;
+.response-editor :deep(.cm-scroller) {
+  max-height: 200px;
+  overflow: auto;
 }
 
-.template-delete-btn {
-  float: right;
-}
+@media (max-width: 720px) {
+  .form-row,
+  .template-row,
+  .condition-row {
+    grid-template-columns: 1fr;
+  }
 
-.condition-empty {
-  color: #909399;
-  font-size: 12px;
-}
+  .rule-title {
+    align-items: flex-start;
+  }
 
-.empty-tip {
-  text-align: center;
-  color: #909399;
-  padding: 32px;
+  .rule-actions {
+    flex-direction: column;
+  }
 }
 </style>

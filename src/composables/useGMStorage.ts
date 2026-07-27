@@ -2,22 +2,20 @@
  * GM Storage Composable
  */
 
-interface UseGMStorageOptions<T> {
+interface UseGMStorageOptions {
   autoSave?: boolean
   deep?: boolean
-  reset?: (data: Ref<T>) => void
 }
 
 interface UseGMStorageReturn<T> {
   data: Ref<T>
   save: () => void
-  reset: () => void
 }
 
 export function useGMStorage<T>(
   key: string,
   defaultValue: T,
-  options?: UseGMStorageOptions<T>,
+  options?: UseGMStorageOptions,
 ): UseGMStorageReturn<T> {
   const { autoSave = true, deep = true } = options ?? {}
 
@@ -27,20 +25,11 @@ export function useGMStorage<T>(
     GM_setValue(key, data.value)
   }
 
-  function reset() {
-    if (typeof defaultValue === 'object' && defaultValue !== null) {
-      data.value = JSON.parse(JSON.stringify(defaultValue))
-    } else {
-      data.value = defaultValue as T
-    }
-    save()
-  }
-
   if (autoSave) {
     watch(data, save, { deep })
   }
 
-  return { data, save, reset }
+  return { data, save }
 }
 
 export function useGMStorageWithEnable<T extends { enable: boolean }>(
@@ -50,10 +39,8 @@ export function useGMStorageWithEnable<T extends { enable: boolean }>(
   data: Ref<T>
   enable: Ref<boolean>
   save: () => void
-  reset: () => void
-  toggle: () => void
 } {
-  const { data, save, reset } = useGMStorage(key, defaultValue)
+  const { data, save } = useGMStorage(key, defaultValue)
 
   const enable = computed({
     get: () => data.value.enable,
@@ -62,9 +49,5 @@ export function useGMStorageWithEnable<T extends { enable: boolean }>(
     },
   })
 
-  function toggle() {
-    enable.value = !enable.value
-  }
-
-  return { data, enable, save, reset, toggle }
+  return { data, enable, save }
 }

@@ -12,6 +12,8 @@ export interface FeatureConfig {
   plain: boolean
   /** 功能描述 */
   description?: string
+  /** 顶层工具模块导出名；子功能不设置 */
+  exportName?: string
   /** 父级功能名称（用于子功能分组） */
   parent?: string
 }
@@ -19,21 +21,24 @@ export interface FeatureConfig {
 export const FEATURES: FeatureConfig[] = [
   {
     name: 'event-mock',
-    userscript: false,
+    userscript: true,
     plain: false,
     description: '事件模拟 - 需要 GM API 支持',
+    exportName: 'EventMockModule',
   },
   {
     name: 'storage-copy',
     userscript: true,
     plain: true,
     description: 'Storage 克隆 - 使用 localStorage',
+    exportName: 'StorageCopyModule',
   },
   {
     name: 'others',
     userscript: true,
     plain: true,
     description: '其他辅助功能 - 运维平台相关',
+    exportName: 'OthersModule',
   },
   // others 子功能
   {
@@ -69,21 +74,18 @@ export const FEATURES: FeatureConfig[] = [
     userscript: true,
     plain: false,
     description: '参数模拟 - 需要 ajax-hook 和 GM API',
+    exportName: 'ParamMockModule',
   },
   {
     name: 'request-modify',
     userscript: true,
     plain: false,
     description: '请求修改 - 需要 ajax-hook 和 GM API',
+    exportName: 'RequestModifyModule',
   },
 ]
 
 /** 根据模式获取启用的功能列表 */
 export function getEnabledFeatures(mode: 'userscript' | 'plain'): string[] {
   return FEATURES.filter(f => f[mode]).map(f => f.name)
-}
-
-/** 检查功能在指定模式下是否启用 */
-export function isFeatureEnabled(featureName: string, mode: 'userscript' | 'plain'): boolean {
-  return FEATURES.find(f => f.name === featureName)?.[mode] ?? false
 }

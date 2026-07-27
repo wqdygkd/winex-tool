@@ -42,13 +42,6 @@ export interface StorageItem {
 
 export interface EnableStorage extends BaseStorageData {}
 
-export interface ToolModule {
-  name: string
-  init: () => void
-  storageKey: string
-  routes?: string[]
-}
-
 export interface HeaderOperation {
   key: string
   value?: string
@@ -109,7 +102,7 @@ export interface ParamConfig {
 
 // Winning SDK 类型
 export interface WinningSDK {
-  dispatchEvent?: (eventId: string, params: string, cb: (result: string) => void) => void
+  dispatchEvent?: (eventId: string, params?: unknown, cb?: (result: string) => void) => string | void
   getMacadress?: () => string
   getPcName?: () => string
   getIP?: () => string

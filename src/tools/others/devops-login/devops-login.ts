@@ -34,14 +34,11 @@ export function init() {
     const checkboxForSleepWell = document.querySelector('#checkboxForSleepWell') as HTMLInputElement | null
     checkboxForSleepWell?.remove()
 
-    // 给username元素添加name属性，帮助浏览器识别用户名
-    const usernameInput = document.querySelector('#username') as HTMLInputElement | null
-    if (usernameInput && !usernameInput.name) {
-      usernameInput.name = 'username'
-    }
+    const passwordInput = document.querySelector('#password') as HTMLInputElement | null
 
-    // 删除隐藏的form元素
-    document.querySelectorAll('body > form[style*="display:none"], body > form[style*="display: none"]').forEach(el => el.remove())
+    if (passwordInput) {
+      passwordInput.type = 'password'
+    }
   }
 
   document.addEventListener('DOMContentLoaded', handleLoginPage)

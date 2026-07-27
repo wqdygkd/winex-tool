@@ -11,6 +11,7 @@ const prodMeta: Partial<UserScriptMetadata> = {
     'http://172.16.9.84:*/*',
     'http://172.16.0.197:8089/*',
     'http*://172.16.7.77:*/*',
+    'http*://172.16.7.47:*/*',
     'http://wxp.cpp.iwincloud.com:8089/*',
     'http://tfs2018-web.winning.com.cn:8080/*',
   ],

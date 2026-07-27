@@ -4,32 +4,24 @@
  */
 
 import type { Plugin } from 'vite'
-import { FEATURES } from '../config/features'
+import { FEATURES, getEnabledFeatures } from '../config/features'
 
 interface FeatureFilterOptions {
   /** 构建模式 */
   mode: 'userscript' | 'plain'
 }
 
-// 模块名映射（目录名 → 导出名称）
-const MODULE_EXPORT_NAMES: Record<string, string> = {
-  'event-mock': 'EventMockModule',
-  'storage-copy': 'StorageCopyModule',
-  'others': 'OthersModule',
-  'param-mock': 'ParamMockModule',
-  'request-modify': 'RequestModifyModule',
-}
-
 export default function featureFilterPlugin(options: FeatureFilterOptions): Plugin {
   const { mode } = options
-  const enabledFeatures = FEATURES.filter(f => f[mode]).map(f => f.name)
+  const enabledFeatures = getEnabledFeatures(mode)
+  const enabledToolFeatures = FEATURES.filter(f => f[mode] && f.exportName)
 
   return {
     name: 'vite-plugin-feature-filter',
     apply: 'build',
     enforce: 'pre',
 
-    configResolved(config) {
+    configResolved() {
       console.log('\n')
       console.log('╔════════════════════════════════════════════╗')
       console.log('║       功能过滤配置                          ║')
@@ -51,15 +43,10 @@ export default function featureFilterPlugin(options: FeatureFilterOptions): Plug
       // 只生成启用功能的导入
       const imports: string[] = []
       const registers: string[] = []
-      const exports: string[] = []
 
-      enabledFeatures.forEach((featureName) => {
-        const exportName = MODULE_EXPORT_NAMES[featureName]
-        if (!exportName) return
-
-        imports.push(`import { ${exportName} } from './${featureName}'`)
-        registers.push(`registerTool(${exportName})`)
-        exports.push(`export const ${exportName.replace('Module', '')} = ${exportName}.component!`)
+      enabledToolFeatures.forEach((feature) => {
+        imports.push(`import { ${feature.exportName} } from './${feature.name}'`)
+        registers.push(`registerTool(${feature.exportName})`)
       })
 
       const newCode = `/**
@@ -73,9 +60,6 @@ import { registerTool } from './registry'
 
 // 注册启用的模块
 ${registers.join('\n')}
-
-// 导出 Vue 组件
-${exports.join('\n')}
 
 export { getTools, initAllTools } from './registry'
 `
