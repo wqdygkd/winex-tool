@@ -2,6 +2,7 @@
 import DevopsDashboard from './devops-dashboard'
 import DevopsLogin from './devops-login'
 import DisableTraceid from './disable-traceid'
+import ShowIdentityLabel from './show-identity-label'
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import DisableTraceid from './disable-traceid'
       <DevopsLogin />
       <DevopsDashboard />
       <DisableTraceid />
+      <ShowIdentityLabel />
     </div>
   </div>
 </template>

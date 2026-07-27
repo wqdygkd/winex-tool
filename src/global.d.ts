@@ -14,6 +14,7 @@ declare const __FEATURE_STORAGE_COPY__: boolean
 declare const __FEATURE_DEVOPS_DASHBOARD__: boolean
 declare const __FEATURE_DEVOPS_LOGIN__: boolean
 declare const __FEATURE_DISABLE_TRACEID__: boolean
+declare const __FEATURE_SHOW_IDENTITY_LABEL__: boolean
 
 declare function GM_getValue<T>(key: string, defaultValue: T): T
 declare function GM_setValue(key: string, value: unknown): void

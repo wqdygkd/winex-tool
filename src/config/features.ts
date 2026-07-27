@@ -19,7 +19,7 @@ export interface FeatureConfig {
 export const FEATURES: FeatureConfig[] = [
   {
     name: 'event-mock',
-    userscript: true,
+    userscript: false,
     plain: false,
     description: '事件模拟 - 需要 GM API 支持',
   },
@@ -46,15 +46,22 @@ export const FEATURES: FeatureConfig[] = [
   {
     name: 'devops-login',
     userscript: true,
-    plain: true,
+    plain: false,
     description: '运维平台登录',
     parent: 'others',
   },
   {
     name: 'disable-traceid',
     userscript: true,
-    plain: true,
+    plain: false,
     description: '禁用 traceid',
+    parent: 'others',
+  },
+  {
+    name: 'show-identity-label',
+    userscript: true,
+    plain: false,
+    description: '显示 Identity 标签 - TFS 页面',
     parent: 'others',
   },
   {

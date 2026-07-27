@@ -6,9 +6,11 @@ export const urls = {
   devopsLogin: '/cluster/action/login/login',
   devopsLoginAlternatives: [
     'http://172.16.0.197:8089/login/',
+    'http://172.16.7.47:8089/login/',
     'http://wxp.cpp.iwincloud.com:8089/login',
   ],
   devopsDashboard: '/cluster/cluster/portal',
+  tfs: 'http://tfs2018-web.winning.com.cn:8080/',
 }
 
 export const apiPaths = {

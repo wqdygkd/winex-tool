@@ -7,6 +7,7 @@ import type { ToolModule } from '../registry'
 import { DevopsDashboardInit } from './devops-dashboard'
 import { DevopsLoginInit } from './devops-login'
 import { DisableTraceidInit } from './disable-traceid'
+import { ShowIdentityLabelInit } from './show-identity-label'
 import Others from './others.vue'
 
 const name = '其他辅助功能'
@@ -21,6 +22,9 @@ function init() {
   }
   if (__FEATURE_DISABLE_TRACEID__) {
     DisableTraceidInit()
+  }
+  if (__FEATURE_SHOW_IDENTITY_LABEL__) {
+    ShowIdentityLabelInit()
   }
 }
 
